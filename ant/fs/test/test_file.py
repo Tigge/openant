@@ -21,14 +21,16 @@
 # DEALINGS IN THE SOFTWARE.
 
 import array
+import unittest
 
 from ant.fs.file import Directory
 
-def parse_dir():
-    
-    data = array.array('B', [1, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 1, 0, 1, 12, 0, 0, 0, 80, 0, 224, 25, 0, 0, 0, 0, 0, 2, 0,
-            1, 13, 0, 0, 0, 48, 0, 0, 4, 0, 0, 0, 0, 0, 3, 0, 128, 1, 255,
+class DirectoryParse(unittest.TestCase):
+
+    def setUp(self):
+        self.dir = array.array('B', [1, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 1, 12, 0, 0, 0, 80, 0, 224, 25, 0, 0, 0, 0, 0, 2,
+            0, 1, 13, 0, 0, 0, 48, 0, 0, 4, 0, 0, 0, 0, 0, 3, 0, 128, 1, 255,
             255, 0, 144, 92, 2, 0, 0, 0, 0, 0, 0, 4, 0, 128, 2, 255, 255,
             0, 208, 29, 2, 0, 0, 0, 0, 0, 0, 5, 0, 128, 3, 3, 0, 0, 208,
             172, 4, 0, 0, 0, 0, 0, 0, 6, 0, 128, 3, 1, 0, 0, 208, 172, 4,
@@ -57,6 +59,12 @@ def parse_dir():
             176, 239, 23, 0, 0, 154, 250, 213, 41, 30, 0, 128, 4, 56, 0, 0,
             176, 155, 35, 0, 0, 156, 250, 213, 41, 31, 0, 128, 4, 57, 0, 0,
             176, 156, 19, 0, 0, 158, 250, 213, 41])
-    
-    d = Directory.parse(data)
-    print d, d.get_version(), d._time_format, d._current_system_time, d._last_modified
+
+    def parse_dir(self):
+        
+        directory = Directory.parse(self.dir)
+        
+
+        print d, d.get_version(), d._time_format, d._current_system_time, d._last_modified
+        
+        self.assertEqual(d.get_version(), 0)

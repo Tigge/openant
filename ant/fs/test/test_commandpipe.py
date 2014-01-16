@@ -21,23 +21,24 @@
 # DEALINGS IN THE SOFTWARE.
 
 import array
+import unittest
 
 from ant.fs.commandpipe import parse, CreateFile
 
-def main():
-
-    # Test create file
-    data    = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]
-    request = CreateFile(len(data), 0x80, [0x04, 0x00, 0x00], [0x00, 0xff, 0xff])
-    print request
-    print request.get()
+class CreateFileTest(unittest.TestCase):
     
-    # Test create file response
-    response_data = array.array('B', [2, 0, 0, 0, 4, 0, 0, 0, 128, 4, 123, 0, 103, 0, 0, 0])
-    response = parse(response_data)
-    assert response.get_request_id() == 0x04
-    assert response.get_response()   == 0x00
-    assert response.get_data_type()  == 0x80 #FIT
-    assert response.get_identifier() == array.array('B', [4, 123, 0])
-    assert response.get_index()      == 103
+    def runTest(self):
+
+        # Test create file
+        data    = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]
+        request = CreateFile(len(data), 0x80, [0x04, 0x00, 0x00], [0x00, 0xff, 0xff])
+        
+        # Test create file response
+        response_data = array.array('B', [2, 0, 0, 0, 4, 0, 0, 0, 128, 4, 123, 0, 103, 0, 0, 0])
+        response = parse(response_data)
+        self.assertEqual(response.get_request_id(), 0x04)
+        self.assertEqual(response.get_response(), 0x00)
+        self.assertEqual(response.get_data_type(), 0x80) #FIT
+        self.assertEqual(response.get_identifier(), array.array('B', [4, 123, 0]))
+        self.assertEqual(response.get_index(), 103)
 
