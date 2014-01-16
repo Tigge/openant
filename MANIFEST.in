@@ -1,0 +1,3 @@
+include README
+include LICENCE
+include resources/ant-usb-sticks.rules
