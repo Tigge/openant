@@ -25,7 +25,7 @@ import collections
 import logging
 import struct
 
-_logger = logging.getLogger("garmin.ant.fs.commandpipe")
+_logger = logging.getLogger("ant.fs.commandpipe")
 
 class CommandPipe:
     

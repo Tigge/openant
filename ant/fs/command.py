@@ -26,7 +26,7 @@ import copy
 import logging
 import struct
 
-_logger = logging.getLogger("garmin.ant.fs.command")
+_logger = logging.getLogger("ant.fs.command")
 
 class Command:
     

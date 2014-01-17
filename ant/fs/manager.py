@@ -39,7 +39,7 @@ from ant.fs.commandpipe import CreateFile, CreateFileResponse, Response
 from ant.fs.file import Directory, File
 from ant.fs.commons import crc
 
-_logger = logging.getLogger("garmin.ant.fs.manager")
+_logger = logging.getLogger("ant.fs.manager")
 
 class AntFSException(Exception):
 

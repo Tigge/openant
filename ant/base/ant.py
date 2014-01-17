@@ -35,7 +35,7 @@ from message import Message
 from commons import format_list
 from driver import find_driver
 
-_logger = logging.getLogger("garmin.ant.base.ant")
+_logger = logging.getLogger("ant.base.ant")
 
 class Ant():
 

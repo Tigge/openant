@@ -47,7 +47,7 @@ def main():
 
     try:
         # Set up logging
-        logger = logging.getLogger("garmin")
+        logger = logging.getLogger("ant")
         logger.setLevel(logging.DEBUG)
         handler = logging.FileHandler("test.log", "w")
         #handler = logging.StreamHandler()

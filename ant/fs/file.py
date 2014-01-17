@@ -24,7 +24,7 @@ import datetime
 import logging
 import struct
 
-_logger = logging.getLogger("garmin.ant.fs.file")
+_logger = logging.getLogger("ant.fs.file")
 
 class Directory:
     def __init__(self, version, time_format, current_system_time,

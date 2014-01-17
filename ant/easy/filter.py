@@ -25,7 +25,7 @@ import logging
 from ant.base.message import Message
 from ant.easy.exception import AntException, TransferFailedException
 
-_logger = logging.getLogger("garmin.ant.easy.filter")
+_logger = logging.getLogger("ant.easy.filter")
 
 def wait_for_message(match, process, queue, condition):
     """

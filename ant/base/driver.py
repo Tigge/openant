@@ -22,7 +22,7 @@
 
 import logging
 
-_logger = logging.getLogger("garmin.ant.base.driver")
+_logger = logging.getLogger("ant.base.driver")
 
 class DriverException(Exception):
     pass

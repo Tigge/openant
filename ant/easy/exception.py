@@ -22,7 +22,7 @@
 
 import logging
 
-_logger = logging.getLogger("garmin.ant.easy.exception")
+_logger = logging.getLogger("ant.easy.exception")
 
 class AntException(Exception):
     pass

@@ -28,7 +28,7 @@ import logging
 
 from commons import format_list
 
-_logger = logging.getLogger("garmin.ant.base.message")
+_logger = logging.getLogger("ant.base.message")
 
 class Message:
 

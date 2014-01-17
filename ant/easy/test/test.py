@@ -13,7 +13,7 @@ class AntEasyTests(unittest.TestCase):
     def test_search(self):
 
         try:
-            logger = logging.getLogger("garmin")
+            logger = logging.getLogger("ant")
             logger.setLevel(logging.DEBUG)
             handler = logging.StreamHandler()
             handler.setFormatter(logging.Formatter(fmt='%(asctime)s  %(name)-15s  %(levelname)-8s  %(message)s'))

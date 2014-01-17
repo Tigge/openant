@@ -28,7 +28,7 @@ from ant.base.message import Message
 from ant.easy.exception import TransferFailedException
 from ant.easy.filter import wait_for_event, wait_for_response, wait_for_special
 
-_logger = logging.getLogger("garmin.ant.easy.channel")
+_logger = logging.getLogger("ant.easy.channel")
 
 class Channel():
     
