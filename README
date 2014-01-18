@@ -10,10 +10,25 @@ Features
  - Three libs (ant.base basic ANT library, ant.easy blocking version using 
    ant.base, ant.fs ANT-FS library)
 
+Installing
+==============================================================================
+
+Automatic install:
+
+Install openant by typing `python setup.py install`. You need to be root this
+as root, so either run with `sudo` or `su` first.
+
+Doing this will install requried libs, openant in the correct place, and 
+install the udev rules.
+
+
 Requirements
 ==============================================================================
 
 - Python 2.7+
+
+These should only be necessary to install manually if you are not using the
+setup.py installation script:
 
 - PyUSB 1.0 (seems to be a bug which makes it segfaults on version before
   Alpha 2). It is recommended to use pip to install PyUSB:
@@ -29,11 +44,24 @@ Requirements
 
   sudo cp resources/ant-usbstick2.rules /etc/udev/rules.d
 
+
+
+
 Supported devices
 ==============================================================================
 
+ANT USB Sticks:
+
+ - ANTUSB2 Stick  (0fcf:1008: Dynastream Innovations, Inc.)
+   http://www.thisisant.com/developer/components/antusb2/
+ - ANTUSB-m Stick (0fcf:1009: Dynastream Innovations, Inc.)
+   http://www.thisisant.com/developer/components/antusb-m/
+
+
+ANT-FS Devices:
+
 Any compliant ANT-FS device should in theory work. Users of these device have
-been able to download data of their watches:
+reported them to work:
 
  - Garmin Forerunner 60
  - Garmin Forerunner 405CX
@@ -43,12 +71,5 @@ been able to download data of their watches:
  - Garmin FR70
  - Garmin Swim
 
-It's possible that other manufactures using ANT+/ANT-FS, such as Suunto and
-Timex might work, but have *never* been tested as far as I know. Please let
-me know if you have any success with devices that are not listed here.
-
-The following USB sticks are known to work:
-
- - ANT USBStick2 (0fcf:1008 Dynastream Innovations, Inc.)
- - ANT USBStick3 (0fcf:1009 Dynastream Innovations, Inc.)
-
+Please let me know if you have any success with devices that are not listed
+here.
