@@ -117,12 +117,31 @@ class File:
     def get_date(self):
         return self._date
 
+    def is_readable(self):
+        return self._flags & 0b10000000
+
+    def is_writable(self):
+        return self._flags & 0b01000000
+
+    def is_erasable(self):
+        return self._flags & 0b00100000
+
+    def is_archived(self):
+        return self._flags & 0b00010000
+
+    def is_append_only(self):
+        return self._flags & 0b00001000
+
+    def is_encrypted(self):
+        return self._flags & 0b00000100
+
     def get_flags_string(self):
-        s  = "r" if self._flags & 0b00001000 == 0 else "-"
-        s += "w" if self._flags & 0b00010000 == 0 else "-"
-        s += "e" if self._flags & 0b00100000 == 0 else "-"
-        s += "a" if self._flags & 0b01000000 == 0 else "-"
-        s += "A" if self._flags & 0b10000000 == 0 else "-"
+        s  = "r" if self.is_readable() else "-"
+        s += "w" if self.is_writable() else "-"
+        s += "e" if self.is_erasable() else "-"
+        s += "A" if self.is_archived() else "-"
+        s += "a" if self.is_append_only() else "-"
+        s += "c" if self.is_encrypted() else "-"
         return s
 
     @staticmethod
