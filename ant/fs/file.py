@@ -86,6 +86,7 @@ class File:
         GOALS            = 11
         BLOOD_PRESSURE   = 14
         ACTIVITY_SUMMARY = 20
+        STEPS            = 32
 
     def  __init__(self, index, typ, ident, typ_flags, flags, size, date):
         self._index = index
