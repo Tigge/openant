@@ -40,13 +40,15 @@ class CommandPipe:
         SET_CLIENT_FRIENDLY_NAME   = 0x07
         FACTORY_RESET_COMMAND      = 0x08
 
-    _format = "<BxxB"
-    _id     = None
+    _format   = "<BxxB"
+    _id       = None
+    _sequence = 0
 
     def __init__(self):
         self._arguments = collections.OrderedDict()
         self._add_argument('command',  self._id)
-        self._add_argument('sequence', 0)
+        CommandPipe._sequence += 1
+        self._add_argument('sequence', CommandPipe._sequence)
 
     def _add_argument(self, name, value):
         self._arguments[name] = value
@@ -56,6 +58,14 @@ class CommandPipe:
     
     def _get_arguments(self):
         return self._arguments.values()
+
+    def __getattr__(self, attr):
+        # Get arguments with get_*
+        if attr.startswith("get_"):
+            name = attr[4:]
+            if name in self._arguments:
+                return lambda: self._arguments[name]
+        raise AttributeError("No such attribute")
 
     def get(self):
         data = struct.pack(self._format, *self._get_arguments())
@@ -105,18 +115,12 @@ class Response(CommandPipe):
     _id     = CommandPipe.Type.RESPONSE
     _format = CommandPipe._format + "BxBx"
 
-    def get_request_id(self):
-        return self._get_argument("request_id")
-
-    def get_response(self):
-        return self._get_argument("response")
-
     def __init__(self, request_id, response):
         CommandPipe.__init__(self)
         self._add_argument('request_id', request_id)
         self._add_argument('response', response)
 
-class Time(CommandPipe):
+class Time(Request):
     
     class Format:
         DIRECTORY = 0
@@ -128,9 +132,11 @@ class Time(CommandPipe):
     
     def __init__(self, current_time, system_time, time_format):
         CommandPipe.__init__(self)
+        self._add_argument('current_time', current_time)
+        self._add_argument('system_time', system_time)
+        self._add_argument('time_format', time_format)
 
-
-class CreateFile(CommandPipe):
+class CreateFile(Request):
     
     _id     = CommandPipe.Type.CREATE_FILE
     _format = None
@@ -166,22 +172,13 @@ class CreateFileResponse(Response):
         self._add_argument('identifier', identifier)
         self._add_argument('index', index)
 
-    def get_data_type(self):
-        return self._get_argument("data_type")
-
-    def get_identifier(self):
-        return self._get_argument("identifier")
-    
-    def get_index(self):
-        return self._get_argument("index")
-
     @classmethod
     def _parse_args(cls, data):
         return Response._parse_args(data[:8]) + \
                 (data[8], data[9:12], struct.unpack("<H", data[12:14])[0])
 
 _classes = {
-    CommandPipe.Type.REQUEST:                     Request,
+    CommandPipe.Type.REQUEST:                    Request,
     CommandPipe.Type.RESPONSE:                   Response,
     CommandPipe.Type.TIME:                       Time,
     CommandPipe.Type.CREATE_FILE:                CreateFile,
@@ -191,6 +188,7 @@ _classes = {
     CommandPipe.Type.FACTORY_RESET_COMMAND:      None}
 
 _responses = {
+    CommandPipe.Type.TIME:                       Response,
     CommandPipe.Type.CREATE_FILE:                CreateFileResponse}
 
 def parse(data):
