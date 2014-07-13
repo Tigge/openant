@@ -40,7 +40,7 @@ class custom_install(install):
         execute(udev_trigger, [], "Triggering udev rules")
 
 setup(name='openant',
-      version='0.1',
+      version='0.2',
 
       description='ANT and ANT-FS Python Library',
       long_description= open('README').read(),

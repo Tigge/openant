@@ -77,15 +77,18 @@ class File:
     class Identifier:
         DEVICE           = 1
         SETTING          = 2
-        SPORT_SETTING    = 3
+        SPORT            = 3
         ACTIVITY         = 4
         WORKOUT          = 5
         COURSE           = 6
+        SCHEDULES        = 7
         WEIGHT           = 9
         TOTALS           = 10
         GOALS            = 11
         BLOOD_PRESSURE   = 14
+        MONITORING_A     = 15
         ACTIVITY_SUMMARY = 20
+        MONITORING_DAILY = 28
         MONITORING_B     = 32
 
     def  __init__(self, index, typ, ident, typ_flags, flags, size, date):
