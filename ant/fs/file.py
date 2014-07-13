@@ -38,6 +38,15 @@ class Directory:
     def get_version(self):
         return self._version
 
+    def get_time_format(self):
+        return self._time_format
+
+    def get_current_system_time(self):
+        return self._current_system_time
+
+    def get_last_modified(self):
+        return self._last_modified
+
     def get_files(self):
         return self._files
 
