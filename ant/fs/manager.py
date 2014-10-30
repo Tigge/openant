@@ -322,6 +322,16 @@ class Application:
         data = self.download(0, callback)
         return Directory.parse(data)
 
+    def erase(self, index):
+        self._send_command(EraseRequestCommand(index))
+        response = self._get_command()
+        arg = response._get_argument("response")
+
+        if arg == EraseResponse.Response.ERASE_SUCCESSFUL:
+            return True
+        else:
+            return False
+
     def link(self):
         self._channel.request_message(Message.ID.RESPONSE_CHANNEL_ID)
         self._send_command(LinkCommand(self._frequency, 4, self._serial_number))
