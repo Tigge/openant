@@ -64,6 +64,11 @@ class AntFSUploadException(AntFSException):
     def __init__(self, error, errno=None):
         AntFSException.__init__(self, error, errno)
 
+class AntFSEraseException(AntFSException):
+    
+    def __init__(self, error, errno=None):
+        AntFSException.__init__(self, error, errno)
+
 class AntFSAuthenticationException(AntFSException):
     
     def __init__(self, error, errno=None):
@@ -203,10 +208,7 @@ class Application:
 
     def stop(self):
         self._node.stop()
-    
-    def erase(self, index):
-        pass
-    
+
     def _send_commandpipe(self, data):
         #print "send commandpipe", data
         self.upload(0xfffe, data)
@@ -321,6 +323,14 @@ class Application:
     def download_directory(self, callback=None):
         data = self.download(0, callback)
         return Directory.parse(data)
+
+    def erase(self, index):
+        self._send_command(EraseRequestCommand(index))
+        response = self._get_command()
+
+        if response._get_argument("response") != EraseResponse.Response.ERASE_SUCCESSFUL:
+            raise AntFSDownloadException("Erase request failed: ",
+                    response._get_argument("response"))
 
     def link(self):
         self._channel.request_message(Message.ID.RESPONSE_CHANNEL_ID)
