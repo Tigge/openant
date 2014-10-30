@@ -317,11 +317,12 @@ class UploadDataResponse(Command):
 class EraseRequestCommand(Command):
     
     _id     = Command.Type.ERASE_REQUEST
-    _format = Command._format + "I"
+    _format = Command._format + "IH"
     
     def __init__(self, data_file_index):
         Command.__init__(self)
         self._add_argument("data_file_index", data_file_index)
+        self._add_argument("padding", 0)
 
 class EraseResponse(Command):
     
@@ -331,9 +332,9 @@ class EraseResponse(Command):
         NOT_READY        = 2
     
     _id     = Command.Type.ERASE_RESPONSE
-    _format = Command._format + "B"
+    _format = Command._format + "BBI"
     
-    def __init__(self, response):
+    def __init__(self, response, *padding):
         Command.__init__(self)
         self._add_argument("response", response)
 
