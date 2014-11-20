@@ -317,7 +317,7 @@ class UploadDataResponse(Command):
 class EraseRequestCommand(Command):
     
     _id     = Command.Type.ERASE_REQUEST
-    _format = Command._format + "I"
+    _format = Command._format + "I2x"
     
     def __init__(self, data_file_index):
         Command.__init__(self)
@@ -331,7 +331,7 @@ class EraseResponse(Command):
         NOT_READY        = 2
     
     _id     = Command.Type.ERASE_RESPONSE
-    _format = Command._format + "B"
+    _format = Command._format + "B5x"
     
     def __init__(self, response):
         Command.__init__(self)
