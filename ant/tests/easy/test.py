@@ -28,8 +28,8 @@ import sys
 import struct
 import unittest
 
-from ..node import Node, Message
-from ..channel import Channel
+from ant.easy.node import Node, Message
+from ant.easy.channel import Channel
 
 
 class AntEasyTests(unittest.TestCase):
