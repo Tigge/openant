@@ -20,25 +20,34 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function, division
+
 import array
 import collections
 import struct
 import threading
 import time
-import Queue
+
+try:
+    # Python 3
+    import queue
+except ImportError:
+    # Python 2
+    import Queue as queue
+
 import logging
 
 import usb.core
 import usb.util
 
-from message import Message
-from commons import format_list
-from driver import find_driver
+from .message import Message
+from .commons import format_list
+from .driver import find_driver
 
 _logger = logging.getLogger("ant.base.ant")
 
-class Ant():
 
+class Ant():
     _RESET_WAIT = 1
 
     def __init__(self):
@@ -46,10 +55,10 @@ class Ant():
         self._driver = find_driver()
 
         self._message_queue_cond = threading.Condition()
-        self._message_queue      = collections.deque()
+        self._message_queue = collections.deque()
 
-        self._events = Queue.Queue()
-    
+        self._events = queue.Queue()
+
         self._buffer = array.array('B', [])
         self._burst_data = array.array('B', [])
         self._last_data = array.array('B', [])
@@ -74,18 +83,18 @@ class Ant():
 
     def _on_broadcast(self, message):
         self._events.put(('event', (message._data[0],
-                Message.Code.EVENT_RX_BROADCAST, message._data[1:])))
+                                    Message.Code.EVENT_RX_BROADCAST, message._data[1:])))
 
     def _on_acknowledge(self, message):
         self._events.put(('event', (message._data[0],
-                Message.Code.EVENT_RX_ACKNOWLEDGED, message._data[1:])))
+                                    Message.Code.EVENT_RX_ACKNOWLEDGED, message._data[1:])))
 
     def _on_burst_data(self, message):
 
         sequence = message._data[0] >> 5
-        channel  = message._data[0] & 0b00011111
-        data     = message._data[1:]
-        
+        channel = message._data[0] & 0b00011111
+        data = message._data[1:]
+
         # First sequence
         if sequence == 0:
             self._burst_data = data
@@ -96,7 +105,7 @@ class Ant():
         # Last sequence (indicated by bit 3)
         if sequence & 0b100 != 0:
             self._events.put(('event', (channel,
-                    Message.Code.EVENT_RX_BURST_PACKET, self._burst_data)))
+                                        Message.Code.EVENT_RX_BURST_PACKET, self._burst_data)))
 
     def _worker(self):
 
@@ -105,7 +114,7 @@ class Ant():
         while self._running:
             try:
                 message = self.read_message()
-                
+
                 if message == None:
                     break
 
@@ -113,30 +122,30 @@ class Ant():
 
                 # Only do callbacks for new data. Resent data only indicates
                 # a new channel timeslot.
-                if not (message._id == Message.ID.BROADCAST_DATA and 
-                    message._data == self._last_data):
-                   
+                if not (message._id == Message.ID.BROADCAST_DATA and
+                                message._data == self._last_data):
+
                     # Notifications
-                    if message._id in [Message.ID.STARTUP_MESSAGE, \
-                            Message.ID.SERIAL_ERROR_MESSAGE]:
-                        self._events.put(('response', (None, message._id, 
-                                message._data)))
-                    # Response (no channel)
-                    elif message._id in [Message.ID.RESPONSE_VERSION, \
-                            Message.ID.RESPONSE_CAPABILITIES, \
-                            Message.ID.RESPONSE_SERIAL_NUMBER]:
+                    if message._id in [Message.ID.STARTUP_MESSAGE,
+                                       Message.ID.SERIAL_ERROR_MESSAGE]:
                         self._events.put(('response', (None, message._id,
-                                message._data)))
+                                                       message._data)))
+                    # Response (no channel)
+                    elif message._id in [Message.ID.RESPONSE_VERSION,
+                                         Message.ID.RESPONSE_CAPABILITIES,
+                                         Message.ID.RESPONSE_SERIAL_NUMBER]:
+                        self._events.put(('response', (None, message._id,
+                                                       message._data)))
                     # Response (channel)
-                    elif message._id in [Message.ID.RESPONSE_CHANNEL_STATUS, \
-                            Message.ID.RESPONSE_CHANNEL_ID]:
+                    elif message._id in [Message.ID.RESPONSE_CHANNEL_STATUS,
+                                         Message.ID.RESPONSE_CHANNEL_ID]:
                         self._events.put(('response', (message._data[0],
-                                message._id, message._data[1:])))
+                                                       message._id, message._data[1:])))
                     # Response (other)
-                    elif (message._id == Message.ID.RESPONSE_CHANNEL \
+                    elif (message._id == Message.ID.RESPONSE_CHANNEL
                           and message._data[1] != 0x01):
-                        self._events.put(('response', (message._data[0], 
-                                message._data[1], message._data[2:])))
+                        self._events.put(('response', (message._data[0],
+                                                       message._data[1], message._data[2:])))
                     # Channel event
                     elif message._id == Message.ID.BROADCAST_DATA:
                         self._on_broadcast(message)
@@ -147,7 +156,7 @@ class Ant():
                     elif message._id == Message.ID.RESPONSE_CHANNEL:
                         _logger.debug("Got channel event, %r", message)
                         self._events.put(('event', (message._data[0],
-                                message._data[1], message._data[2:])))
+                                                    message._data[1], message._data[2:])))
                     else:
                         _logger.warning("Got unknown message, %r", message)
                 else:
@@ -162,9 +171,9 @@ class Ant():
                             m = self._message_queue.popleft()
                             self.write_message(m)
                             _logger.debug(" - sent message from queue, %r", m)
-                            
-                            if(m._id != Message.ID.BURST_TRANSFER_DATA or \
-                               m._data[0] & 0b10000000):# or m._data[0] == 0):
+
+                            if m._id != Message.ID.BURST_TRANSFER_DATA or \
+                                            m._data[0] & 0b10000000:  # or m._data[0] == 0:
                                 break
                         else:
                             _logger.debug(" - no messages in queue")
@@ -183,14 +192,14 @@ class Ant():
                 (event_type, event) = self._events.get(True, 1.0)
                 self._events.task_done()
                 (channel, event, data) = event
-                
+
                 if event_type == 'response':
                     self.response_function(channel, event, data)
                 elif event_type == 'event':
                     self.channel_event_function(channel, event, data)
                 else:
                     _logger.warning("Unknown message typ '%s': %r", event_type, event)
-            except Queue.Empty as e:
+            except queue.Empty as e:
                 pass
 
     def write_message_timeslot(self, message):
@@ -207,7 +216,7 @@ class Ant():
         while self._running:
             # If we have a message in buffer already, return it
             if len(self._buffer) >= 5 and len(self._buffer) >= self._buffer[1] + 4:
-                packet       = self._buffer[:self._buffer[1] + 4]
+                packet = self._buffer[:self._buffer[1] + 4]
                 self._buffer = self._buffer[self._buffer[1] + 4:]
                 return Message.parse(packet)
             # Otherwise, read some data and call the function again
@@ -283,7 +292,7 @@ class Ant():
     def send_burst_transfer(self, channel, data):
         assert len(data) % 8 == 0
         _logger.debug("Send burst transfer, chan %s, data %s", channel, data)
-        packets = len(data) / 8
+        packets = len(data) // 8
         for i in range(packets):
             sequence = ((i - 1) % 3) + 1
             if i == 0:
@@ -293,7 +302,7 @@ class Ant():
             channel_seq = channel | sequence << 5
             packet_data = data[i * 8:i * 8 + 8]
             _logger.debug("Send burst transfer, packet %d, seq %d, data %s", i, sequence, packet_data)
-            self.send_burst_transfer_packet(channel_seq, packet_data, first=i==0)
+            self.send_burst_transfer_packet(channel_seq, packet_data, first=i == 0)
 
     def response_function(self, channel, event, data):
         pass

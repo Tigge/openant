@@ -20,32 +20,34 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 import struct
 
+
 class Beacon:
-    
     class ClientDeviceState:
-        LINK           = 0x00 # 0b0000
-        AUTHENTICATION = 0x01 # 0b0001
-        TRANSPORT      = 0x02 # 0b0010
-        BUSY           = 0x03 # 0b0011
+        LINK = 0x00  # 0b0000
+        AUTHENTICATION = 0x01  # 0b0001
+        TRANSPORT = 0x02  # 0b0010
+        BUSY = 0x03  # 0b0011
 
     BEACON_ID = 0x43
 
     def is_data_available(self):
-        return bool(self._status_byte_1 & 0x20) # 0b00100000
+        return bool(self._status_byte_1 & 0x20)  # 0b00100000
 
     def is_upload_enabled(self):
-        return bool(self._status_byte_1 & 0x10) # 0b00010000
+        return bool(self._status_byte_1 & 0x10)  # 0b00010000
 
     def is_pairing_enabled(self):
-        return bool(self._status_byte_1 & 0x08) # 0b00001000
+        return bool(self._status_byte_1 & 0x08)  # 0b00001000
 
     def get_channel_period(self):
-        return self._status_byte_1 & 0x07 # 0b00000111, TODO
+        return self._status_byte_1 & 0x07  # 0b00000111, TODO
 
     def get_client_device_state(self):
-        return self._status_byte_2 & 0x0f # 0b00001111, TODO
+        return self._status_byte_2 & 0x0f  # 0b00001111, TODO
 
     def get_serial(self):
         return struct.unpack("<I", self._descriptor)[0]
@@ -56,9 +58,9 @@ class Beacon:
     @staticmethod
     def parse(data):
         values = struct.unpack("<BBBB4x", data)
-        
+
         assert values[0] == 0x43
-        
+
         beacon = Beacon()
         beacon._status_byte_1 = values[1]
         beacon._status_byte_2 = values[2]

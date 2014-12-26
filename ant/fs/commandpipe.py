@@ -20,42 +20,46 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 import array
-import collections
+from collections import OrderedDict
 import logging
 import struct
 
+from ant.fs.command import Command
+
 _logger = logging.getLogger("ant.fs.commandpipe")
 
-class CommandPipe:
-    
-    class Type:
-        
-        REQUEST                    = 0x01
-        RESPONSE                   = 0x02
-        TIME                       = 0x03
-        CREATE_FILE                = 0x04
-        DIRECTORY_FILTER           = 0x05
-        SET_AUTHENTICATION_PASSKEY = 0x06
-        SET_CLIENT_FRIENDLY_NAME   = 0x07
-        FACTORY_RESET_COMMAND      = 0x08
 
-    _format   = "<BxxB"
-    _id       = None
+class CommandPipe:
+    class Type:
+
+        REQUEST = 0x01
+        RESPONSE = 0x02
+        TIME = 0x03
+        CREATE_FILE = 0x04
+        DIRECTORY_FILTER = 0x05
+        SET_AUTHENTICATION_PASSKEY = 0x06
+        SET_CLIENT_FRIENDLY_NAME = 0x07
+        FACTORY_RESET_COMMAND = 0x08
+
+    _format = "<BxxB"
+    _id = None
     _sequence = 0
 
     def __init__(self):
-        self._arguments = collections.OrderedDict()
-        self._add_argument('command',  self._id)
+        self._arguments = OrderedDict()
+        self._add_argument('command', self._id)
         CommandPipe._sequence += 1
         self._add_argument('sequence', CommandPipe._sequence)
 
     def _add_argument(self, name, value):
         self._arguments[name] = value
-    
+
     def _get_argument(self, name):
         return self._arguments[name]
-    
+
     def _get_arguments(self):
         return self._arguments.values()
 
@@ -68,8 +72,9 @@ class CommandPipe:
         raise AttributeError("No such attribute")
 
     def get(self):
-        data = struct.pack(self._format, *self._get_arguments())
-        lst  = array.array('B', data)
+        arguments = list(self._get_arguments())
+        data = struct.pack(self._format, *arguments)
+        lst = array.array('B', data)
         _logger.debug("packing %r in %r,%s", data, lst, type(lst))
         return lst
 
@@ -89,30 +94,30 @@ class CommandPipe:
             max_key_length = max(len(str(key)), max_key_length)
             max_value_length = max(len(str(value)), max_value_length)
         max_length = max_key_length + max_value_length + 3
-        print "=" * max_length
-        print self.__class__.__name__
-        print "-" * max_length
+        print("=" * max_length)
+        print(self.__class__.__name__)
+        print("-" * max_length)
         for key, value in self._arguments.items():
-            print str(key) + ":", " " * (max_length - len(key)), str(value)
-        print "=" * max_length
+            print(str(key) + ":", " " * (max_length - len(key)), str(value))
+        print("=" * max_length)
+
 
 class Request(CommandPipe):
-    
-    _id     = CommandPipe.Type.REQUEST
+    _id = CommandPipe.Type.REQUEST
     _format = CommandPipe._format + "Bxxx"
 
     def __init__(self, request_id):
         CommandPipe.__init__(self)
 
+
 class Response(CommandPipe):
-    
     class Response:
-        OK            = 0
-        FAILED        = 1
-        REJECTED      = 2
+        OK = 0
+        FAILED = 1
+        REJECTED = 2
         NOT_SUPPORTED = 3
-    
-    _id     = CommandPipe.Type.RESPONSE
+
+    _id = CommandPipe.Type.RESPONSE
     _format = CommandPipe._format + "BxBx"
 
     def __init__(self, request_id, response):
@@ -120,25 +125,25 @@ class Response(CommandPipe):
         self._add_argument('request_id', request_id)
         self._add_argument('response', response)
 
+
 class Time(Request):
-    
     class Format:
         DIRECTORY = 0
-        SYSTEM    = 1
-        COUNTER   = 2
-    
-    _id     = CommandPipe.Type.TIME
+        SYSTEM = 1
+        COUNTER = 2
+
+    _id = CommandPipe.Type.TIME
     _format = CommandPipe._format + "IIBxxx"
-    
+
     def __init__(self, current_time, system_time, time_format):
         CommandPipe.__init__(self)
         self._add_argument('current_time', current_time)
         self._add_argument('system_time', system_time)
         self._add_argument('time_format', time_format)
 
+
 class CreateFile(Request):
-    
-    _id     = CommandPipe.Type.CREATE_FILE
+    _id = CommandPipe.Type.CREATE_FILE
     _format = None
 
     def __init__(self, size, data_type, identifier, identifier_mask):
@@ -149,8 +154,8 @@ class CreateFile(Request):
         self._add_argument('identifier_mask', identifier_mask)
 
     def get(self):
-        data = array.array('B', struct.pack(CommandPipe._format + "IB",
-                           *self._get_arguments()[:4]))
+        arguments = list(self._get_arguments())
+        data = array.array('B', struct.pack(CommandPipe._format + "IB", *arguments[:4]))
         data.extend(self._get_argument("identifier"))
         data.extend([0])
         data.extend(self._get_argument("identifier_mask"))
@@ -158,12 +163,10 @@ class CreateFile(Request):
 
     @classmethod
     def _parse_args(cls, data):
-        return struct.unpack(Command._format + "IB", data[0:9])\
-                + (data[9:12],) + (data[13:16],)
+        return struct.unpack(Command._format + "IB", data[0:9]) + (data[9:12],) + (data[13:16],)
 
 
 class CreateFileResponse(Response):
-
     _format = Response._format + "BBBBHxx"
 
     def __init__(self, request_id, response, data_type, identifier, index):
@@ -174,22 +177,23 @@ class CreateFileResponse(Response):
 
     @classmethod
     def _parse_args(cls, data):
-        return Response._parse_args(data[:8]) + \
-                (data[8], data[9:12], struct.unpack("<H", data[12:14])[0])
+        return Response._parse_args(data[:8]) + (data[8], data[9:12], struct.unpack("<H", data[12:14])[0])
+
 
 _classes = {
-    CommandPipe.Type.REQUEST:                    Request,
-    CommandPipe.Type.RESPONSE:                   Response,
-    CommandPipe.Type.TIME:                       Time,
-    CommandPipe.Type.CREATE_FILE:                CreateFile,
-    CommandPipe.Type.DIRECTORY_FILTER:           None,
+    CommandPipe.Type.REQUEST: Request,
+    CommandPipe.Type.RESPONSE: Response,
+    CommandPipe.Type.TIME: Time,
+    CommandPipe.Type.CREATE_FILE: CreateFile,
+    CommandPipe.Type.DIRECTORY_FILTER: None,
     CommandPipe.Type.SET_AUTHENTICATION_PASSKEY: None,
-    CommandPipe.Type.SET_CLIENT_FRIENDLY_NAME:   None,
-    CommandPipe.Type.FACTORY_RESET_COMMAND:      None}
+    CommandPipe.Type.SET_CLIENT_FRIENDLY_NAME: None,
+    CommandPipe.Type.FACTORY_RESET_COMMAND: None}
 
 _responses = {
-    CommandPipe.Type.TIME:                       Response,
-    CommandPipe.Type.CREATE_FILE:                CreateFileResponse}
+    CommandPipe.Type.TIME: Response,
+    CommandPipe.Type.CREATE_FILE: CreateFileResponse}
+
 
 def parse(data):
     commandpipe_type = _classes[data[0]]

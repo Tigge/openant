@@ -20,6 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 from ant.easy.node import Node
 from ant.easy.channel import Channel
 from ant.base.message import Message
@@ -31,6 +33,7 @@ import sys
 
 NETWORK_KEY= [0xb9, 0xa5, 0x21, 0xfb, 0xbd, 0x72, 0xc3, 0x45]
 
+
 def on_data(data):
     hearthrate = data[7]
     string = "Hearthrate: " + str(data[7]) + "   "
@@ -39,8 +42,9 @@ def on_data(data):
     sys.stdout.flush()
     sys.stdout.write("\b" * len(string))
 
+
 def main():
-    #logging.basicConfig()
+    # logging.basicConfig()
 
     node = Node()
     node.set_network_key(0x00, NETWORK_KEY)

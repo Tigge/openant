@@ -20,10 +20,13 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from ant.fs.manager import Application
+from __future__ import absolute_import, print_function
+
+from ant.fs.manager import Application, AntFSAuthenticationException
 from ant.fs.commandpipe import Time
 import logging
 import datetime
+
 
 class Listener(Application):
 
@@ -39,15 +42,15 @@ class Listener(Application):
         
         channel.open()
         
-        print "Lister: Searching for devices..."
+        print("Lister: Searching for devices...")
     
     def on_link(self, beacon):
-        print "Lister: Link", beacon.get_serial(), beacon.get_descriptor()
+        print("Lister: Link", beacon.get_serial(), beacon.get_descriptor())
         self.link()
         return True
     
     def on_authentication(self, beacon):
-        print "Lister: Auth", self.authentication_serial()
+        print("Lister: Auth", self.authentication_serial())
         try:
             self.authentication_pair("ANT-FS List")
             return True
@@ -61,15 +64,16 @@ class Listener(Application):
         self._send_commandpipe(t.get())
         result = self._get_commandpipe()
     
-        print "Time, response:", result.get_request_id(), result.get_response()
+        print("Time, response:", result.get_request_id(), result.get_response())
     
-        print "Listener: Transport"
+        print("Listener: Transport")
         directory = self.download_directory()
-        print "Directory version:      ", directory.get_version()
-        print "Directory time format:  ", directory.get_time_format()
-        print "Directory system time:  ", directory.get_current_system_time()
-        print "Directory last modified:", directory.get_last_modified()
+        print("Directory version:      ", directory.get_version())
+        print("Directory time format:  ", directory.get_time_format())
+        print("Directory system time:  ", directory.get_current_system_time())
+        print("Directory last modified:", directory.get_last_modified())
         directory.print_list()
+
 
 def main():
 
@@ -77,14 +81,14 @@ def main():
 
     try:
         a = Listener()
-        print "Start"
+        print("Start")
         a.start()
     except:
-        print "Aborted"
+        print("Aborted")
         raise
     finally:
-        print "Stop"
-        #a.stop()
+        print("Stop")
+        # a.stop()
     
 if __name__ == "__main__":
     main()

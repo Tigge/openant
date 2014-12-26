@@ -20,16 +20,19 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from .. node import Node, Message
-from .. channel import Channel
+from __future__ import absolute_import, print_function
 
 import logging
 import os
+import sys
 import struct
 import unittest
 
-class AntEasyTests(unittest.TestCase):
+from ..node import Node, Message
+from ..channel import Channel
 
+
+class AntEasyTests(unittest.TestCase):
     @unittest.skipUnless("ANT_TEST_USB_STICK" in os.environ, "Testing with USB stick not enabled")
     def test_search(self):
 
@@ -41,19 +44,19 @@ class AntEasyTests(unittest.TestCase):
             logger.addHandler(handler)
 
             self.node = Node()
-            print "Request basic information..."
+            print("Request basic information...")
             m = self.node.request_message(Message.ID.RESPONSE_VERSION)
-            print "  ANT version:  ", struct.unpack("<10sx", m[2])[0]
+            print("  ANT version:  ", struct.unpack("<10sx", m[2])[0])
             m = self.node.request_message(Message.ID.RESPONSE_CAPABILITIES)
-            print "  Capabilities: ", m[2]
+            print("  Capabilities: ", m[2])
             m = self.node.request_message(Message.ID.RESPONSE_SERIAL_NUMBER)
-            print "  Serial number:", struct.unpack("<I", m[2])[0]
+            print("  Serial number:", struct.unpack("<I", m[2])[0])
 
-            print "Starting system..."
+            print("Starting system...")
 
-            NETWORK_KEY= [0xa8, 0xa4, 0x23, 0xb9, 0xf5, 0x5e, 0x63, 0xc1]
+            NETWORK_KEY = [0xa8, 0xa4, 0x23, 0xb9, 0xf5, 0x5e, 0x63, 0xc1]
 
-            #self.node.reset_system()
+            # self.node.reset_system()
             self.node.set_network_key(0x00, NETWORK_KEY)
 
             c = n.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE)
@@ -63,20 +66,20 @@ class AntEasyTests(unittest.TestCase):
             c.set_rf_freq(50)
             c.set_search_waveform([0x53, 0x00])
             c.set_id(0, 0x01, 0)
-            
-            print "Open channel..."
+
+            print("Open channel...")
             c.open()
             c.request_message(Message.ID.RESPONSE_CHANNEL_STATUS)
 
-            print "Searching..."
+            print("Searching...")
 
             self.node.start()
 
-            print "Done"
+            print("Done")
         except KeyboardInterrupt:
-            print "Interrupted"
+            print("Interrupted")
             self.node.stop()
             sys.exit(1)
 
-    def stop():
+    def stop(self):
         self.node.stop()

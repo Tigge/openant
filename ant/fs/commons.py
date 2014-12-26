@@ -20,11 +20,13 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 # http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat.arc
 def crc(data, seed=0x0000):
     rem = seed
     for byte in data:
-        rem ^= byte 
+        rem ^= byte
         for _ in range(0, 8):
             if rem & 0x0001:
                 rem = (rem >> 1)
