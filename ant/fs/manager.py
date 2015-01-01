@@ -20,7 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division
 
 import array
 import logging
@@ -236,6 +236,10 @@ class Application:
         # print "create result", result, result.get_index(), result.get_data_type(), result.get_identifier()
         # d = self.download_directory()
 
+        # Inform the application that the upload request was successfully created
+        if callback is not None:
+            callback(0)
+
         self.upload(result.get_index(), data, callback)
         return result.get_index()
 
@@ -283,7 +287,7 @@ class Application:
                                            upload_data_response._get_argument("response"))
 
             if callback is not None and len(data) != 0:
-                callback(float(offset) / float(len(data)))
+                callback((offset + len(data_packet)) / len(data))
 
             if offset + len(data_packet) >= len(data):
                 # print " done"
@@ -312,7 +316,7 @@ class Application:
                     # TODO: check CRC
 
                     if callback is not None and response._get_argument("size") != 0:
-                        callback(float(total) / float(response._get_argument("size")))
+                        callback(total / response._get_argument("size"))
                     if total == response._get_argument("size"):
                         return data
                     crc = response._get_argument("crc")
