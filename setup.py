@@ -22,13 +22,15 @@
 
 from __future__ import absolute_import, print_function
 
-from distutils.core import setup
-from distutils.command.install import install
+from setuptools.command.install import install
+from setuptools import setup
 from distutils.util import execute
 from subprocess import call
 
+
 def udev_reload_rules():
     call(["udevadm", "control", "--reload-rules"])
+
 
 def udev_trigger():
     call(["udevadm", "trigger", "--subsystem-match=usb", 
@@ -42,6 +44,7 @@ class CustomInstall(install):
         execute(udev_reload_rules, [], "Reloading udev rules")
         execute(udev_trigger, [], "Triggering udev rules")
 
+
 setup(name='openant',
       version='0.2',
 
@@ -51,7 +54,7 @@ setup(name='openant',
       author='Gustav Tiger',
       author_email='gustav@tiger.name',
 
-      url='http://www.github.com/Tigge/openant',
+      url='https://github.com/Tigge/openant',
 
       classifiers=['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
@@ -64,11 +67,12 @@ setup(name='openant',
                    ],
 
       packages=['ant', 'ant.base', 'ant.easy', 'ant.fs'],
-      
-      requires=['pyusb (>1.0a2)'],
+
+      install_requires=['pyusb>=1.0a2'],
       
       data_files=[('/etc/udev/rules.d', ['resources/ant-usb-sticks.rules'])],
 
-      cmdclass={'install': CustomInstall}
-      )
+      cmdclass={'install': CustomInstall},
 
+      test_suite='ant.tests'
+      )
