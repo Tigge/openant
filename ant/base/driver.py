@@ -20,36 +20,42 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 import logging
 
 _logger = logging.getLogger("ant.base.driver")
 
+
 class DriverException(Exception):
     pass
+
 
 class DriverNotFound(DriverException):
     pass
 
+
 class DriverTimeoutException(DriverException):
     pass
 
+
 class Driver:
-    
     @classmethod
     def find(cls):
         pass
-    
+
     def open(self):
         pass
-    
+
     def close(self):
         pass
 
     def read(self):
         pass
-    
+
     def write(self, data):
         pass
+
 
 drivers = []
 
@@ -62,13 +68,13 @@ try:
 
     class SerialDriver(Driver):
 
-        ID_VENDOR  = 0x0fcf
+        ID_VENDOR = 0x0fcf
         ID_PRODUCT = 0x1004
 
         @classmethod
         def find(cls):
-            return cls.get_url() != None
-        
+            return cls.get_url() is not None
+
         @classmethod
         def get_url(cls):
             try:
@@ -86,42 +92,42 @@ try:
                 return None
             except OSError:
                 return None
-        
+
         def open(self):
-            
+
             # TODO find correct port on our own, could be done with
-            #      serial.tools.list_ports, but that seems to have some
-            #      problems at the moment.
-            
+            # serial.tools.list_ports, but that seems to have some
+            # problems at the moment.
+
             try:
                 self._serial = serial.serial_for_url(self.get_url(), 115200)
             except serial.SerialException as e:
                 raise DriverException(e)
-            
-            print "Serial information:"
-            print "name:            ", self._serial.name
-            print "port:            ", self._serial.port
-            print "baudrate:        ", self._serial.baudrate
-            print "bytesize:        ", self._serial.bytesize
-            print "parity:          ", self._serial.parity
-            print "stopbits:        ", self._serial.stopbits
-            print "timeout:         ", self._serial.timeout
-            print "writeTimeout:    ", self._serial.writeTimeout
-            print "xonxoff:         ", self._serial.xonxoff
-            print "rtscts:          ", self._serial.rtscts
-            print "dsrdtr:          ", self._serial.dsrdtr
-            print "interCharTimeout:", self._serial.interCharTimeout
+
+            print("Serial information:")
+            print("name:            ", self._serial.name)
+            print("port:            ", self._serial.port)
+            print("baudrate:        ", self._serial.baudrate)
+            print("bytesize:        ", self._serial.bytesize)
+            print("parity:          ", self._serial.parity)
+            print("stopbits:        ", self._serial.stopbits)
+            print("timeout:         ", self._serial.timeout)
+            print("writeTimeout:    ", self._serial.writeTimeout)
+            print("xonxoff:         ", self._serial.xonxoff)
+            print("rtscts:          ", self._serial.rtscts)
+            print("dsrdtr:          ", self._serial.dsrdtr)
+            print("interCharTimeout:", self._serial.interCharTimeout)
 
             self._serial.timeout = 0
-        
+
         def read(self):
             data = self._serial.read(4096)
-            #print "serial read", len(data), type(data), data
+            # print "serial read", len(data), type(data), data
             return array.array('B', data)
 
         def write(self, data):
             try:
-                #print "serial write", type(data), data
+                # print "serial write", type(data), data
                 self._serial.write(data)
             except serial.SerialTimeoutException as e:
                 raise DriverTimeoutException(e)
@@ -130,10 +136,9 @@ try:
             self._serial.close()
 
     drivers.append(SerialDriver)
-    
+
 except ImportError:
     pass
-
 
 try:
     import usb.core
@@ -146,7 +151,7 @@ try:
 
         @classmethod
         def find(cls):
-            return usb.core.find(idVendor=cls.ID_VENDOR, idProduct=cls.ID_PRODUCT) != None
+            return usb.core.find(idVendor=cls.ID_VENDOR, idProduct=cls.ID_PRODUCT) is not None
 
         def open(self):
             # Find USB device
@@ -179,24 +184,24 @@ try:
             # configuration will be the active one
             dev.set_configuration()
             dev.reset()
-            #dev.set_configuration()
+            # dev.set_configuration()
 
             # get an endpoint instance
             cfg = dev.get_active_configuration()
-            interface_number = cfg[(0,0)].bInterfaceNumber
+            interface_number = cfg[(0, 0)].bInterfaceNumber
             alternate_setting = usb.control.get_interface(dev, interface_number)
             intf = usb.util.find_descriptor(
-                cfg, bInterfaceNumber = interface_number,
-                bAlternateSetting = alternate_setting
+                cfg, bInterfaceNumber=interface_number,
+                bAlternateSetting=alternate_setting
             )
 
             self._out = usb.util.find_descriptor(
                 intf,
                 # match the first OUT endpoint
-                custom_match = \
-                lambda e: \
-                    usb.util.endpoint_direction(e.bEndpointAddress) == \
-                    usb.util.ENDPOINT_OUT
+                custom_match=
+                lambda e:
+                usb.util.endpoint_direction(e.bEndpointAddress) ==
+                usb.util.ENDPOINT_OUT
             )
 
             _logger.debug("UBS Endpoint out: %s, %s", self._out, self._out.bEndpointAddress)
@@ -204,31 +209,31 @@ try:
             self._in = usb.util.find_descriptor(
                 intf,
                 # match the first OUT endpoint
-                custom_match = \
-                lambda e: \
-                    usb.util.endpoint_direction(e.bEndpointAddress) == \
-                    usb.util.ENDPOINT_IN
+                custom_match=
+                lambda e:
+                usb.util.endpoint_direction(e.bEndpointAddress) ==
+                usb.util.ENDPOINT_IN
             )
 
             _logger.debug("UBS Endpoint in: %s, %s", self._in, self._in.bEndpointAddress)
 
             assert self._out is not None and self._in is not None
-        
+
         def close(self):
             pass
-        
+
         def read(self):
             return self._in.read(4096)
-        
+
         def write(self, data):
             self._out.write(data)
 
     class USB2Driver(USBDriver):
-        ID_VENDOR  = 0x0fcf
+        ID_VENDOR = 0x0fcf
         ID_PRODUCT = 0x1008
 
     class USB3Driver(USBDriver):
-        ID_VENDOR  = 0x0fcf
+        ID_VENDOR = 0x0fcf
         ID_PRODUCT = 0x1009
 
     drivers.append(USB2Driver)
@@ -237,13 +242,13 @@ try:
 except ImportError:
     pass
 
+
 def find_driver():
-    
-    print "Driver available:", drivers
-    
+    print("Driver available:", drivers)
+
     for driver in reversed(drivers):
         if driver.find():
-            print " - Using:", driver
+            print(" - Using:", driver)
             return driver()
     raise DriverNotFound
 

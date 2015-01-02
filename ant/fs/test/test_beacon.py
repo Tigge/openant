@@ -20,11 +20,14 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 import array
 
 from ant.fs.beacon import Beacon
 
+
 def parse():
     data = array.array('B', [0x43, 0x04, 0x00, 0x03, 0x41, 0x05, 0x01, 0x00])
     beacon = Beacon.parse(data)
-    print beacon
+    print(beacon)

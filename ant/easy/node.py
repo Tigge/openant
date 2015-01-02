@@ -20,10 +20,18 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 import collections
 import threading
 import logging
-import Queue
+
+try:
+    # Python 3
+    import queue
+except ImportError:
+    # Python 2
+    import Queue as queue
 
 from ant.base.ant import Ant
 from ant.base.message import Message
@@ -32,23 +40,23 @@ from ant.easy.filter import wait_for_event, wait_for_response, wait_for_special
 
 _logger = logging.getLogger("ant.easy.node")
 
+
 class Node():
-    
     def __init__(self):
-        
+
         self._responses_cond = threading.Condition()
-        self._responses      = collections.deque()
-        self._event_cond     = threading.Condition()
-        self._events         = collections.deque()
-        
-        self._datas = Queue.Queue()
-        
+        self._responses = collections.deque()
+        self._event_cond = threading.Condition()
+        self._events = collections.deque()
+
+        self._datas = queue.Queue()
+
         self.channels = {}
-        
+
         self.ant = Ant()
-        
+
         self._running = True
-        
+
         self._worker_thread = threading.Thread(target=self._worker, name="ant.easy")
         self._worker_thread.start()
 
@@ -97,23 +105,23 @@ class Node():
     def _worker(self):
         self.ant.response_function = self._worker_response
         self.ant.channel_event_function = self._worker_event
-        
+
         # TODO: check capabilities
         self.ant.start()
-        
+
     def _main(self):
         while self._running:
             try:
                 (data_type, channel, data) = self._datas.get(True, 1.0)
                 self._datas.task_done()
-                
+
                 if data_type == 'broadcast':
                     self.channels[channel].on_broadcast_data(data)
                 elif data_type == 'burst':
                     self.channels[channel].on_burst_data(data)
                 else:
                     _logger.warning("Unknown data type '%s': %r", data_type, data)
-            except Queue.Empty as e:
+            except queue.Empty as e:
                 pass
 
     def start(self):

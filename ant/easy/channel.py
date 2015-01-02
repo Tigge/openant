@@ -20,8 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import collections
-import threading
+from __future__ import absolute_import, print_function
+
 import logging
 
 from ant.base.message import Message
@@ -30,20 +30,20 @@ from ant.easy.filter import wait_for_event, wait_for_response, wait_for_special
 
 _logger = logging.getLogger("ant.easy.channel")
 
+
 class Channel():
-    
     class Type:
-        BIDIRECTIONAL_RECEIVE         = 0x00
-        BIDIRECTIONAL_TRANSMIT        = 0x10
-        
-        SHARED_BIDIRECTIONAL_RECEIVE  = 0x20
+        BIDIRECTIONAL_RECEIVE = 0x00
+        BIDIRECTIONAL_TRANSMIT = 0x10
+
+        SHARED_BIDIRECTIONAL_RECEIVE = 0x20
         SHARED_BIDIRECTIONAL_TRANSMIT = 0x30
-        
-        UNIDIRECTIONAL_RECEIVE_ONLY   = 0x40
-        UNIDIRECTIONAL_TRANSMIT_ONLY  = 0x50
-    
+
+        UNIDIRECTIONAL_RECEIVE_ONLY = 0x40
+        UNIDIRECTIONAL_TRANSMIT_ONLY = 0x50
+
     def __init__(self, id, node, ant):
-        self.id  = id
+        self.id = id
         self._node = node
         self._ant = ant
 
@@ -70,15 +70,15 @@ class Channel():
     def set_id(self, deviceNum, deviceType, transmissionType):
         self._ant.set_channel_id(self.id, deviceNum, deviceType, transmissionType)
         return self.wait_for_response(Message.ID.SET_CHANNEL_ID)
-    
+
     def set_period(self, messagePeriod):
         self._ant.set_channel_period(self.id, messagePeriod)
         return self.wait_for_response(Message.ID.SET_CHANNEL_PERIOD)
-    
+
     def set_search_timeout(self, timeout):
         self._ant.set_channel_search_timeout(self.id, timeout)
         return self.wait_for_response(Message.ID.SET_CHANNEL_SEARCH_TIMEOUT)
-    
+
     def set_rf_freq(self, rfFreq):
         self._ant.set_channel_rf_freq(self.id, rfFreq)
         return self.wait_for_response(Message.ID.SET_CHANNEL_RF_FREQ)
@@ -109,7 +109,6 @@ class Channel():
 
     def send_burst_transfer(self, data):
         try:
-            #self._last_call = (self.send_burst_transfer, [self.id, data])
             _logger.debug("send burst transfer %s", self.id)
             self._ant.send_burst_transfer(self.id, data)
             self.wait_for_event([Message.Code.EVENT_TRANSFER_TX_START])

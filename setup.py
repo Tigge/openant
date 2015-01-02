@@ -20,6 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 from distutils.core import setup
 from distutils.command.install import install
 from distutils.util import execute
@@ -32,7 +34,8 @@ def udev_trigger():
     call(["udevadm", "trigger", "--subsystem-match=usb", 
           "--attr-match=idVendor=0fcf", "--action=add"])
 
-class custom_install(install):
+
+class CustomInstall(install):
     def run(self):
         install.run(self)
 
@@ -43,7 +46,7 @@ setup(name='openant',
       version='0.2',
 
       description='ANT and ANT-FS Python Library',
-      long_description= open('README').read(),
+      long_description=open('README.md').read(),
 
       author='Gustav Tiger',
       author_email='gustav@tiger.name',
@@ -55,6 +58,8 @@ setup(name='openant',
                    'Intended Audience :: Healthcare Industry',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 2.7',
+                   'Programming Language :: Python :: 3.3',
+                   'Programming Language :: Python :: 3.4',
                    'Topic :: Software Development :: Libraries :: Python Modules'
                    ],
 
@@ -64,6 +69,6 @@ setup(name='openant',
       
       data_files=[('/etc/udev/rules.d', ['resources/ant-usb-sticks.rules'])],
 
-      cmdclass={'install': custom_install}
+      cmdclass={'install': CustomInstall}
       )
 

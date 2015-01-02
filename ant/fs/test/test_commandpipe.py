@@ -20,25 +20,26 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import absolute_import, print_function
+
 import array
 import unittest
 
 from ant.fs.commandpipe import parse, CreateFile
 
-class CreateFileTest(unittest.TestCase):
-    
-    def runTest(self):
 
+class CreateFileTest(unittest.TestCase):
+    def runTest(self):
         # Test create file
-        data    = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]
+        data = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]
         request = CreateFile(len(data), 0x80, [0x04, 0x00, 0x00], [0x00, 0xff, 0xff])
-        
+
         # Test create file response
         response_data = array.array('B', [2, 0, 0, 0, 4, 0, 0, 0, 128, 4, 123, 0, 103, 0, 0, 0])
         response = parse(response_data)
         self.assertEqual(response.get_request_id(), 0x04)
         self.assertEqual(response.get_response(), 0x00)
-        self.assertEqual(response.get_data_type(), 0x80) #FIT
+        self.assertEqual(response.get_data_type(), 0x80)  # FIT
         self.assertEqual(response.get_identifier(), array.array('B', [4, 123, 0]))
         self.assertEqual(response.get_index(), 103)
 
