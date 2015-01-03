@@ -23,9 +23,15 @@
 from __future__ import absolute_import, print_function
 
 from setuptools.command.install import install
-from setuptools import setup
+from setuptools.command.develop import develop
+from setuptools import setup, find_packages
 from distutils.util import execute
+from distutils.cmd import Command
 from subprocess import call
+
+import errno
+import os
+import shutil
 
 
 def udev_reload_rules():
@@ -36,20 +42,55 @@ def udev_trigger():
     call(["udevadm", "trigger", "--subsystem-match=usb", 
           "--attr-match=idVendor=0fcf", "--action=add"])
 
+def install_udev_rules():
+    if check_root():
+        shutil.copy('resources/ant-usb-sticks.rules', '/etc/udev/rules.d')
+        execute(udev_reload_rules, [], "Reloading udev rules")
+        execute(udev_trigger, [], "Triggering udev rules")
+    else:
+        print("You must have root privileges to install udev rules. Run \"sudo python setup.py udev_rules\"")
+
+
+def check_root():
+    return os.geteuid() == 0
+
+
+class InstallUdevRules(Command):
+    description = "install udev rules (requires root privileges)"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        install_udev_rules()
+
 
 class CustomInstall(install):
     def run(self):
         install.run(self)
+        install_udev_rules()
 
-        execute(udev_reload_rules, [], "Reloading udev rules")
-        execute(udev_trigger, [], "Triggering udev rules")
 
+class CustomDevelop(develop):
+    def run(self):
+        develop.run(self)
+        install_udev_rules()
+
+try:
+    with open('README.md') as file:
+        long_description = file.read()
+except IOError:
+    long_description=''
 
 setup(name='openant',
       version='0.2',
 
       description='ANT and ANT-FS Python Library',
-      long_description=open('README.md').read(),
+      long_description=long_description,
 
       author='Gustav Tiger',
       author_email='gustav@tiger.name',
@@ -66,13 +107,11 @@ setup(name='openant',
                    'Topic :: Software Development :: Libraries :: Python Modules'
                    ],
 
-      packages=['ant', 'ant.base', 'ant.easy', 'ant.fs'],
+      packages=find_packages(),
 
       install_requires=['pyusb>=1.0a2'],
-      
-      data_files=[('/etc/udev/rules.d', ['resources/ant-usb-sticks.rules'])],
 
-      cmdclass={'install': CustomInstall},
+      cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
 
       test_suite='ant.tests'
       )
