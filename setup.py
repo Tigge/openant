@@ -42,13 +42,17 @@ def udev_trigger():
     call(["udevadm", "trigger", "--subsystem-match=usb", 
           "--attr-match=idVendor=0fcf", "--action=add"])
 
-def install_udev_rules():
+def install_udev_rules(raise_exception):
     if check_root():
         shutil.copy('resources/ant-usb-sticks.rules', '/etc/udev/rules.d')
         execute(udev_reload_rules, [], "Reloading udev rules")
         execute(udev_trigger, [], "Triggering udev rules")
     else:
-        print("You must have root privileges to install udev rules. Run \"sudo python setup.py udev_rules\"")
+        msg = "You must have root privileges to install udev rules. Run \"sudo python setup.py udev_rules\""
+        if raise_exception:
+            raise OSError(msg)
+        else:
+            print(msg)
 
 
 def check_root():
@@ -66,25 +70,25 @@ class InstallUdevRules(Command):
         pass
 
     def run(self):
-        install_udev_rules()
+        install_udev_rules(True)
 
 
 class CustomInstall(install):
     def run(self):
         install.run(self)
-        install_udev_rules()
+        install_udev_rules(True)
 
 
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
-        install_udev_rules()
+        install_udev_rules(False)
 
 try:
     with open('README.md') as file:
         long_description = file.read()
 except IOError:
-    long_description=''
+    long_description = ''
 
 setup(name='openant',
       version='0.2',
