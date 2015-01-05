@@ -6,3 +6,5 @@ MANIFEST
 build/
 dist/
 *.egg-info/
+.tox/
+.eggs/
