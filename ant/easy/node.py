@@ -61,8 +61,9 @@ class Node():
         self._worker_thread.start()
 
     def new_channel(self, ctype):
-        channel = Channel(0, self, self.ant)
-        self.channels[0] = channel
+        size = len(self.channels)
+        channel = Channel(size, self, self.ant)
+        self.channels[size] = channel
         channel._assign(ctype, 0x00)
         return channel
 
