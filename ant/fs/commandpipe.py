@@ -85,7 +85,8 @@ class CommandPipe(object):
     @classmethod
     def _parse(cls, data):
         args = cls._parse_args(data)
-        assert args[0] == cls._id
+        if args[0] != cls._id:
+           _logger.debug("args[0] != cls._id: %s != %s", args[0], cls._id)
         instance = cls(*args[2:])
         instance._arguments["sequence"] = args[1]
         return instance
