@@ -24,8 +24,9 @@ from __future__ import absolute_import, print_function
 
 import array
 import unittest
+import datetime
 
-from ant.fs.commandpipe import parse, CreateFile
+from ant.fs.commandpipe import parse, CreateFile, Request, CommandPipe, Time, TimeResponse
 
 
 class CreateFileTest(unittest.TestCase):
@@ -43,3 +44,36 @@ class CreateFileTest(unittest.TestCase):
         self.assertEqual(response.get_identifier(), array.array('B', [4, 123, 0]))
         self.assertEqual(response.get_index(), 103)
 
+
+class TimeTest(unittest.TestCase):
+    def runTest(self):
+        # Test time request
+        request = Request(CommandPipe.Type.TIME)
+        self.assertEqual(request.get(), array.array('B', [0x01, 0x00, 0x00, CommandPipe._sequence, 0x03, 0x00, 0x00, 0x00]))
+
+        # Test time parse
+        response_data = array.array('B', [0x03, 0x00, 0x00, 0x0f, 0x78, 0xb5, 0xca, 0x25,
+                                          0xc8, 0xa0, 0xf4, 0x29, 0x01, 0x00, 0x00, 0x00])
+        response = parse(response_data)
+        self.assertIsInstance(response, Time)
+        self.assertEqual(response.get_command(), 0x03)
+        self.assertEqual(response.get_sequence(), 0x0f)
+        current_time = (datetime.datetime(2010, 2, 2, 10, 42, 0) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+        self.assertEqual(response.get_current_time(), current_time)
+        system_time = (datetime.datetime(2012, 4, 20, 23, 10, 0) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+        self.assertEqual(response.get_system_time(), system_time)
+        self.assertEqual(response.get_time_format(), 1)
+
+        # Test time create
+        current_time = (datetime.datetime(2015, 1, 4, 21, 23, 30) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+        system_time = (datetime.datetime(2012, 4, 20, 23, 10, 0) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+
+        time = Time(int(current_time), int(system_time), Time.Format.COUNTER)
+        self.assertEqual(time.get(), array.array('B', [0x03, 0x00, 0x00, CommandPipe._sequence, 0x52, 0x63, 0x0c, 0x2f,
+                                                       0xc8, 0xa0, 0xf4, 0x29, 0x02, 0x00, 0x00, 0x00]))
+
+        # Test time request response
+        response_data = array.array('B', [0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+                                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+        response = parse(response_data)
+        self.assertIsInstance(response, TimeResponse)
