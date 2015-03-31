@@ -32,7 +32,7 @@ from ant.fs.command import Command
 _logger = logging.getLogger("ant.fs.commandpipe")
 
 
-class CommandPipe:
+class CommandPipe(object):
     class Type:
 
         REQUEST = 0x01
@@ -86,7 +86,9 @@ class CommandPipe:
     def _parse(cls, data):
         args = cls._parse_args(data)
         assert args[0] == cls._id
-        return cls(*args[2:])
+        instance = cls(*args[2:])
+        instance._arguments["sequence"] = args[1]
+        return instance
 
     def _debug(self):
         max_key_length, max_value_length = 0, 0
@@ -108,6 +110,7 @@ class Request(CommandPipe):
 
     def __init__(self, request_id):
         CommandPipe.__init__(self)
+        self._add_argument('request_id', request_id)
 
 
 class Response(CommandPipe):
@@ -126,7 +129,7 @@ class Response(CommandPipe):
         self._add_argument('response', response)
 
 
-class Time(Request):
+class Time(CommandPipe):
     class Format:
         DIRECTORY = 0
         SYSTEM = 1
@@ -191,14 +194,14 @@ _classes = {
     CommandPipe.Type.FACTORY_RESET_COMMAND: None}
 
 _responses = {
-    CommandPipe.Type.TIME: Response,
+    CommandPipe.Type.TIME: Time,
     CommandPipe.Type.CREATE_FILE: CreateFileResponse}
 
 
 def parse(data):
     commandpipe_type = _classes[data[0]]
     if commandpipe_type == Response:
-        if data[4] in _responses:
+        if data[4] in _responses and len(data) > 8:
             commandpipe_type = _responses[data[4]]
     return commandpipe_type._parse(data)
 
