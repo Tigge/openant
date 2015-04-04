@@ -22,14 +22,12 @@
 
 from __future__ import absolute_import, print_function
 
-from ant.fs.manager import Application, AntFSAuthenticationException
-from ant.fs.commandpipe import Time
 import logging
-import datetime
+
+from ant.fs.manager import Application, AntFSAuthenticationException, AntFSTimeException
 
 
 class Listener(Application):
-
     def __init__(self):
         Application.__init__(self)
 
@@ -39,16 +37,16 @@ class Listener(Application):
         channel.set_rf_freq(50)
         channel.set_search_waveform([0x53, 0x00])
         channel.set_id(0, 0x01, 0)
-        
+
         channel.open()
-        
+
         print("Lister: Searching for devices...")
-    
+
     def on_link(self, beacon):
         print("Lister: Link", beacon.get_serial(), beacon.get_descriptor())
         self.link()
         return True
-    
+
     def on_authentication(self, beacon):
         print("Lister: Auth", self.authentication_serial())
         try:
@@ -56,16 +54,13 @@ class Listener(Application):
             return True
         except AntFSAuthenticationException as e:
             return False
-    
+
     def on_transport(self, beacon):
-        x = datetime.datetime.now() - datetime.datetime(1989, 12, 31, 0, 0, 0)
-        t = Time(int(x.total_seconds()), 0xffffffff, 0)
-    
-        self._send_commandpipe(t.get())
-        result = self._get_commandpipe()
-    
-        print("Time, response:", result.get_request_id(), result.get_response())
-    
+        try:
+            self.set_time()
+        except AntFSTimeException:
+            print("Could not set time")
+
         print("Listener: Transport")
         directory = self.download_directory()
         print("Directory version:      ", directory.get_version())
@@ -76,7 +71,6 @@ class Listener(Application):
 
 
 def main():
-
     logging.basicConfig()
 
     try:
@@ -89,7 +83,8 @@ def main():
     finally:
         print("Stop")
         # a.stop()
-    
+
+
 if __name__ == "__main__":
     main()
 

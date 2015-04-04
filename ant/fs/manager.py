@@ -23,6 +23,7 @@
 from __future__ import absolute_import, print_function, division
 
 import array
+import datetime
 import logging
 import threading
 
@@ -42,7 +43,7 @@ from ant.fs.command import (LinkCommand, DownloadRequest, DownloadResponse,
                             AuthenticateCommand, AuthenticateResponse, DisconnectCommand,
                             UploadRequest, UploadResponse, UploadDataCommand, UploadDataResponse,
                             EraseRequestCommand, EraseResponse)
-from ant.fs.commandpipe import CreateFile, Response
+from ant.fs.commandpipe import CreateFile, Response, Time, TimeResponse
 from ant.fs.file import Directory
 from ant.fs.commons import crc
 
@@ -82,10 +83,14 @@ class AntFSAuthenticationException(AntFSException):
         AntFSException.__init__(self, error, errno)
 
 
-class AntFSCreateFileException():
+class AntFSCreateFileException(AntFSException):
     def __init__(self, error, errno=None):
         AntFSException.__init__(self, error, errno)
 
+
+class AntFSTimeException(AntFSException):
+    def __init__(self, error, errno=None):
+        AntFSException.__init__(self, error, errno)
 
 class Application:
     _serial_number = 1337
@@ -331,6 +336,20 @@ class Application:
     def download_directory(self, callback=None):
         data = self.download(0, callback)
         return Directory.parse(data)
+
+    def set_time(self, time=datetime.datetime.utcnow()):
+        """
+        :param time: datetime in UTC, or None to set to current time
+        """
+        utc_tai_diff_seconds = 35
+        offset = time - datetime.datetime(1989, 12, 31, 0, 0, 0)
+        t = Time(int(offset.total_seconds()) + utc_tai_diff_seconds, 0xffffffff, 0)
+        self._send_commandpipe(t.get())
+
+        result = self._get_commandpipe()
+
+        if result.get_response() != TimeResponse.Response.OK:
+            raise AntFSTimeException("Failed to set time", result.get_response())
 
     def erase(self, index):
         self._send_command(EraseRequestCommand(index))
