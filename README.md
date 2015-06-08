@@ -23,11 +23,19 @@ Requirements
 Automatic install
 -----------------
 
-Run the following command:
+- Install [setuptools](https://pypi.python.org/pypi/setuptools):
+ 
+        apt-get install python-setuptools
+or
 
-`sudo python setup.py install`
+        wget https://bootstrap.pypa.io/ez_setup.py -O - | sudo python
 
-This will install everything requires on your active python installation.
+- Run the following command:
+
+        sudo python setup.py install
+
+This will install everything required on your active python installation.
+
 
 Manual install
 --------------
