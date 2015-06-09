@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # openant distutils setup script
 #
 # Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>
