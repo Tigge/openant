@@ -29,7 +29,8 @@ from ant.fs.file import Directory
 
 
 class DirectoryParse(unittest.TestCase):
-    def setUp(self):
+
+    def test_parse(self):
         self.dir = array.array('B', [1, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                      0, 0, 0, 1, 0, 1, 12, 0, 0, 0, 80, 0, 224, 25, 0, 0, 0, 0, 0, 2,
                                      0, 1, 13, 0, 0, 0, 48, 0, 0, 4, 0, 0, 0, 0, 0, 3, 0, 128, 1, 255,
@@ -62,9 +63,5 @@ class DirectoryParse(unittest.TestCase):
                                      176, 155, 35, 0, 0, 156, 250, 213, 41, 31, 0, 128, 4, 57, 0, 0,
                                      176, 156, 19, 0, 0, 158, 250, 213, 41])
 
-    def parse_dir(self):
         directory = Directory.parse(self.dir)
-
-        print(directory, directory.get_version(), directory._time_format, directory._current_system_time, directory._last_modified)
-
-        self.assertEqual(directory.get_version(), 0)
+        self.assertEqual(directory.get_version(), (0, 1))

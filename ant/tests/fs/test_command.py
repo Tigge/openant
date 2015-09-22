@@ -29,12 +29,13 @@ from ant.fs.command import parse, DownloadRequest, DownloadResponse, Authenticat
 
 
 class AuthenticateCommandTest(unittest.TestCase):
-    def runTest(self):
+    def test_serial(self):
         command = AuthenticateCommand(
             AuthenticateCommand.Request.SERIAL, 123456789)
         self.assertEqual(command.get(), array.array('B',
                                                     [0x44, 0x04, 0x01, 0x00, 0x15, 0xcd, 0x5b, 0x7]))
 
+    def test_pairing(self):
         command = AuthenticateCommand(
             AuthenticateCommand.Request.PAIRING, 987654321,
             map(ord, 'hello'))
@@ -44,7 +45,7 @@ class AuthenticateCommandTest(unittest.TestCase):
 
 
 class DownloadRequestTest(unittest.TestCase):
-    def runTest(self):
+    def test(self):
         # Download request
         data = array.array('B', [0x44, 0x09, 0x5f, 0x00, 0x00, 0xba, 0x00,
                                  0x00, 0x00, 0x00, 0x9e, 0xc2, 0x00, 0x00, 0x00, 0x00])

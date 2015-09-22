@@ -77,3 +77,4 @@ class TimeTest(unittest.TestCase):
                                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         response = parse(response_data)
         self.assertIsInstance(response, TimeResponse)
+
