@@ -241,7 +241,10 @@ class DownloadResponse(Command):
 
     @classmethod
     def _parse_args(cls, data):
-        return struct.unpack("<BBBxIII", data[0:16]) + (data[16:-8],) + struct.unpack("<6xH", data[-8:])
+        if data[2] == DownloadResponse.Response.OK:
+            return struct.unpack("<BBBxIII", data[0:16]) + (data[16:-8],) + struct.unpack("<6xH", data[-8:])
+        else:
+            return struct.unpack("<BBBxIII", data[0:16]) + (array.array('B', []),) + (0,)
 
 
 class UploadRequest(Command):

@@ -54,38 +54,31 @@ class DownloadRequestTest(unittest.TestCase):
 
 
 class DownloadResponseTest(unittest.TestCase):
-    def runTest(self):
-        # Download response
-        data = array.array('B', [68, 137, 0, 0, 241, 1, 0, 0, 0, 186, 0,
-                                 0, 241, 187, 0, 0, 56, 4, 83, 78, 255, 255, 1, 12, 255, 255, 255, 3, 72,
-                                 129, 233, 42, 96, 64, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 10,
-                                 42, 0, 0, 73, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 2, 120,
-                                 255, 99, 255, 2, 192, 129, 233, 42, 121, 0, 0, 0, 21, 3, 255, 71, 0, 0,
-                                 19, 0, 33, 253, 4, 134, 2, 4, 134, 3, 4, 133, 4, 4, 133, 5, 4, 133, 6, 4,
-                                 133, 7, 4, 134, 8, 4, 134, 9, 4, 134, 10, 4, 134, 27, 4, 133, 28, 4, 133,
-                                 29, 4, 133, 30, 4, 133, 254, 2, 132, 11, 2, 132, 12, 2, 132, 13, 2, 132,
-                                 14, 2, 132, 19, 2, 132, 20, 2, 132, 21, 2, 132, 22, 2, 132, 0, 1, 0, 1,
-                                 1, 0, 15, 1, 2, 16, 1, 2, 17, 1, 2, 18, 1, 2, 23, 1, 0, 24, 1, 0, 25, 1,
-                                 0, 26, 1, 2, 7, 150, 130, 233, 42, 234, 120, 233, 42, 19, 218, 10, 41,
-                                 131, 80, 137, 8, 208, 206, 10, 41, 220, 95, 137, 8, 22, 176, 32, 0, 22,
-                                 176, 32, 0, 88, 34, 9, 0, 255, 255, 255, 255, 172, 1, 11, 41, 164, 238,
-                                 139, 8, 58, 63, 10, 41, 131, 80, 137, 8, 0, 0, 137, 2, 0, 0, 234, 10, 57,
-                                 14, 255, 255, 255, 255, 184, 0, 227, 0, 9, 1, 164, 172, 255, 255, 255, 7,
-                                 1, 255, 2, 150, 130, 233, 42, 1, 0, 0, 0, 8, 9, 1, 72, 0, 0, 18, 0, 34,
-                                 253, 4, 134, 2, 4, 134, 3, 4, 133, 4, 4, 133, 7, 4, 134, 8, 4, 134, 9, 4,
-                                 134, 10, 4, 134, 29, 4, 133, 30, 4, 133, 31, 4, 133, 32, 4, 133, 254, 2,
-                                 132, 11, 2, 132, 13, 2, 132, 14, 2, 132, 15, 2, 132, 20, 2, 132, 21, 2,
-                                 132, 22, 2, 132, 23, 2, 132, 25, 2, 132, 26, 2, 132, 0, 1, 0, 1, 1, 0, 5,
-                                 1, 0, 6, 1, 0, 16, 1, 2, 17, 1, 2, 18, 1, 2, 19, 1, 2, 24, 1, 2, 27, 1, 2,
-                                 28, 1, 0, 8, 150, 130, 233, 42, 234, 120, 233, 42, 19, 218, 10, 41, 131,
-                                 80, 137, 8, 22, 176, 32, 0, 22, 176, 32, 0, 88, 34, 9, 0, 255, 255, 255,
-                                 255, 172, 1, 11, 41, 164, 238, 139, 8, 58, 63, 10, 41, 131, 80, 137, 8, 0,
-                                 0, 137, 2, 0, 0, 234, 10, 57, 14, 255, 255, 255, 255, 184, 0, 227, 0, 0,
-                                 0, 1, 0, 9, 1, 1, 0, 164, 172, 255, 255, 46, 255, 0, 73, 0, 0, 34, 0, 7,
-                                 253, 4, 134, 0, 4, 134, 1, 2, 132, 2, 1, 0, 3, 1, 0, 4, 1, 0, 6, 1, 2, 9,
-                                 150, 130, 233, 42, 22, 176, 32, 0, 1, 0, 0, 26, 1, 255, 233, 66, 0, 0, 0,
-                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    def test_ok(self):
+        # Download response, ok
+        data = array.array('B', [68, 137, 0, 0, 8, 0, 0, 0,
+                                 0, 0, 0, 0, 8, 0, 0, 0,
+                                 2, 0, 0, 1, 3, 0, 3, 0,
+                                 0, 0, 0, 0, 0, 0, 188, 173])
 
         response = parse(data)
         self.assertIsInstance(response, DownloadResponse)
+        self.assertEqual(response._get_argument("response"), DownloadResponse.Response.OK)
+        self.assertEqual(response._get_argument("remaining"), 8)
+        self.assertEqual(response._get_argument("offset"), 0)
+        self.assertEqual(response._get_argument("size"), 8)
+        self.assertEqual(response._get_argument("data"), array.array('B', [2, 0, 0, 1, 3, 0, 3, 0]))
+        self.assertEqual(response._get_argument("crc"), 44476)
+
+    def test_not_readable(self):
+
+        # Download response, failed
+        data = array.array('B', [68, 137, 2, 0, 0, 0, 0, 0, 
+                                 0, 0, 0, 0, 119, 239, 36, 174])
+        response = parse(data)
+        self.assertIsInstance(response, DownloadResponse)
+        self.assertEqual(response._get_argument("response"), DownloadResponse.Response.NOT_READABLE)
+        self.assertEqual(response._get_argument("remaining"), 0)
+        self.assertEqual(response._get_argument("data"), array.array('B', []))
+        self.assertEqual(response._get_argument("crc"), 0)
 
