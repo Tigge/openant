@@ -21,10 +21,9 @@
 # DEALINGS IN THE SOFTWARE.
 
 from __future__ import absolute_import, print_function
-
 import logging
-
-from ant.fs.manager import Application, AntFSAuthenticationException, AntFSTimeException
+from ant.fs.manager import Application, AntFSAuthenticationException, AntFSTimeException, AntFSDownloadException, \
+    AntFSUploadException
 
 
 class Listener(Application):
@@ -58,7 +57,7 @@ class Listener(Application):
     def on_transport(self, beacon):
         try:
             self.set_time()
-        except AntFSTimeException:
+        except (AntFSTimeException, AntFSDownloadException, AntFSUploadException):
             print("Could not set time")
 
         print("Listener: Transport")
@@ -87,4 +86,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
