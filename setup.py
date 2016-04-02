@@ -117,7 +117,7 @@ setup(name='openant',
 
       install_requires=['pyusb>=1.0a2'],
 
-      cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
+#      cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
 
       test_suite='ant.tests'
       )
