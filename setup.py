@@ -27,38 +27,32 @@ from __future__ import absolute_import, print_function
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from setuptools import setup, find_packages
-from distutils.util import execute
 from distutils.cmd import Command
-from subprocess import call
 
-import errno
 import os
-import shutil
+
+
+def udev_copy_rules():
+    print('sudo cp resources/ant-usb-sticks.rules /etc/udev/rules.d')
+    os.system('sudo cp resources/ant-usb-sticks.rules /etc/udev/rules.d')
 
 
 def udev_reload_rules():
-    call(["udevadm", "control", "--reload-rules"])
+    print('sudo udevadm control --reload-rules')
+    os.system('sudo udevadm control --reload-rules')
 
 
 def udev_trigger():
-    call(["udevadm", "trigger", "--subsystem-match=usb", 
-          "--attr-match=idVendor=0fcf", "--action=add"])
-
-def install_udev_rules(raise_exception):
-    if check_root():
-        shutil.copy('resources/ant-usb-sticks.rules', '/etc/udev/rules.d')
-        execute(udev_reload_rules, [], "Reloading udev rules")
-        execute(udev_trigger, [], "Triggering udev rules")
-    else:
-        msg = "You must have root privileges to install udev rules. Run \"sudo python setup.py udev_rules\""
-        if raise_exception:
-            raise OSError(msg)
-        else:
-            print(msg)
+    print('sudo udevadm trigger --subsystem-match=usb'
+              ' --attr-match=idVendor=0fcf --action=add')
+    os.system('sudo udevadm trigger --subsystem-match=usb'
+              ' --attr-match=idVendor=0fcf --action=add')
 
 
-def check_root():
-    return os.geteuid() == 0
+def install_udev_rules():
+    udev_copy_rules()
+    udev_reload_rules()
+    udev_trigger()
 
 
 class InstallUdevRules(Command):
@@ -72,19 +66,19 @@ class InstallUdevRules(Command):
         pass
 
     def run(self):
-        install_udev_rules(True)
+        install_udev_rules()
 
 
 class CustomInstall(install):
     def run(self):
         install.run(self)
-        install_udev_rules(True)
+        install_udev_rules()
 
 
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
-        install_udev_rules(False)
+        install_udev_rules()
 
 try:
     with open('README.md') as file:
@@ -117,7 +111,9 @@ setup(name='openant',
 
       install_requires=['pyusb>=1.0a2'],
 
-      cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
+      cmdclass={'udev_rules': InstallUdevRules,
+                'install': CustomInstall,
+                'develop': CustomDevelop},
 
       test_suite='ant.tests'
       )
