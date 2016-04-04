@@ -183,8 +183,11 @@ try:
             # set the active configuration. With no arguments, the first
             # configuration will be the active one
             dev.set_configuration()
-            dev.reset()
-            # dev.set_configuration()
+            try:
+                dev.reset()
+            except NotImplementedError as e:
+                _logger.warning("Could not reset the device, not implemented in usb backend")
+
 
             # get an endpoint instance
             cfg = dev.get_active_configuration()
