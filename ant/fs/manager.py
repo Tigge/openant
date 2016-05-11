@@ -365,7 +365,7 @@ class Application:
 
         # New period, search timeout
         self._channel.set_period(4096)
-        self._channel.set_search_timeout(3)
+        self._channel.set_search_timeout(10)
         self._channel.set_rf_freq(self._frequency)
 
     def authentication_serial(self):
