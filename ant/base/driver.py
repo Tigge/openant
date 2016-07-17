@@ -23,8 +23,11 @@
 from __future__ import absolute_import, print_function
 
 import logging
+import os
+import importlib
 
 _logger = logging.getLogger("ant.base.driver")
+
 
 
 class DriverException(Exception):
@@ -149,14 +152,48 @@ try:
         def __init__(self):
             pass
 
+        @staticmethod
+        def get_usb_backend():
+            '''Support for environmental variables to override backend
+                library location'''''
+            backend_map=dict(OPEN_ANT_LIBUSB0_BACKEND='libusb0',
+                              OPEN_ANT_LIBUSB1_BACKEND='libusb1',
+                              OPEN_ANT_OPENUSB_BACKEND='openusb')
+
+            backend=None
+            for variable_name, module_name in backend_map.iteritems():
+                path=os.environ.get(variable_name,None)
+                if path is not None:
+                    module_path='usb.backend.%s' % module_name
+                    module=importlib.import_module(module_path)
+
+                    backend=module.get_backend(find_library=lambda _: path)
+                    _logger.debug('Using USB backend "%s" from file "%s"' %
+                                  (variable_name, path))
+
+                    break
+
+            return backend
+
+        @staticmethod
+        def usb_core_find_wrapper(idVendor, idProduct):
+            import usb.backend.libusb1
+            backend=USBDriver.get_usb_backend()
+            return usb.core.find(idVendor=idVendor,
+                                 idProduct=idProduct,
+                                 backend=backend)
+
+
         @classmethod
         def find(cls):
-            return usb.core.find(idVendor=cls.ID_VENDOR, idProduct=cls.ID_PRODUCT) is not None
+            dev = USBDriver.usb_core_find_wrapper(idVendor=cls.ID_VENDOR,
+                                                  idProduct=cls.ID_PRODUCT)
+            return dev is not None
 
         def open(self):
             # Find USB device
             _logger.debug("USB Find device, vendor %#04x, product %#04x", self.ID_VENDOR, self.ID_PRODUCT)
-            dev = usb.core.find(idVendor=self.ID_VENDOR, idProduct=self.ID_PRODUCT)
+            dev = USBDriver.usb_core_find_wrapper(idVendor=self.ID_VENDOR, idProduct=self.ID_PRODUCT)
 
             # was it found?
             if dev is None:
