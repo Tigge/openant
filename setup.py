@@ -24,16 +24,16 @@
 
 from __future__ import absolute_import, print_function
 
-from setuptools.command.install import install
-from setuptools.command.develop import develop
-from setuptools import setup, find_packages
-from distutils.util import execute
-from distutils.cmd import Command
-from subprocess import call
-
 import errno
 import os
 import shutil
+
+from distutils.util import execute
+from distutils.cmd import Command
+from subprocess import call
+from setuptools.command.install import install
+from setuptools.command.develop import develop
+from setuptools import setup, find_packages
 
 
 def udev_reload_rules():
