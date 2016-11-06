@@ -73,7 +73,7 @@ class Command:
         return self._id
 
     def get(self):
-        arguments = list(self._get_arguments());
+        arguments = list(self._get_arguments())
         data = struct.pack(self._format, *arguments)
         lst = array.array('B', data)
         _logger.debug("packing %r in %r,%s", data, lst, type(lst))
