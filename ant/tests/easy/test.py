@@ -59,7 +59,7 @@ class AntEasyTests(unittest.TestCase):
             # self.node.reset_system()
             self.node.set_network_key(0x00, NETWORK_KEY)
 
-            c = n.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE)
+            c = self.node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE)
 
             c.set_period(4096)
             c.set_search_timeout(255)
