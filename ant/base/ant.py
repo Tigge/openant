@@ -122,8 +122,8 @@ class Ant():
 
                 # Only do callbacks for new data. Resent data only indicates
                 # a new channel timeslot.
-                if not (message._id == Message.ID.BROADCAST_DATA and
-                                message._data == self._last_data):
+                if not (message._id == Message.ID.BROADCAST_DATA
+                        and message._data == self._last_data):
 
                     # Notifications
                     if message._id in [Message.ID.STARTUP_MESSAGE,

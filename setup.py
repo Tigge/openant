@@ -111,7 +111,7 @@ setup(name='openant',
                    'Programming Language :: Python :: 3.3',
                    'Programming Language :: Python :: 3.4',
                    'Topic :: Software Development :: Libraries :: Python Modules'
-                   ],
+                  ],
 
       packages=find_packages(),
 
@@ -120,4 +120,4 @@ setup(name='openant',
       cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
 
       test_suite='ant.tests'
-      )
+     )
