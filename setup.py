@@ -41,7 +41,7 @@ def udev_reload_rules():
 
 
 def udev_trigger():
-    call(["udevadm", "trigger", "--subsystem-match=usb", 
+    call(["udevadm", "trigger", "--subsystem-match=usb",
           "--attr-match=idVendor=0fcf", "--action=add"])
 
 def install_udev_rules(raise_exception):

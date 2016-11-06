@@ -74,7 +74,7 @@ class DownloadResponseTest(unittest.TestCase):
     def test_not_readable(self):
 
         # Download response, failed
-        data = array.array('B', [68, 137, 2, 0, 0, 0, 0, 0, 
+        data = array.array('B', [68, 137, 2, 0, 0, 0, 0, 0,
                                  0, 0, 0, 0, 119, 239, 36, 174])
         response = parse(data)
         self.assertIsInstance(response, DownloadResponse)
