@@ -302,8 +302,7 @@ class UploadDataCommand(Command):
 
     @classmethod
     def _parse_args(cls, data):
-        return struct.unpack("<BBHI", data[0:8])
-        + (data[8:-8],) + struct.unpack("<6xH", data[-8:])
+        return struct.unpack("<BBHI", data[0:8]) + (data[8:-8],) + struct.unpack("<6xH", data[-8:])
 
 
 class UploadDataResponse(Command):
