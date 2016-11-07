@@ -24,16 +24,15 @@
 
 from __future__ import absolute_import, print_function
 
-from setuptools.command.install import install
-from setuptools.command.develop import develop
-from setuptools import setup, find_packages
+import os
+import shutil
+
 from distutils.util import execute
 from distutils.cmd import Command
 from subprocess import call
-
-import errno
-import os
-import shutil
+from setuptools.command.install import install
+from setuptools.command.develop import develop
+from setuptools import setup, find_packages
 
 
 def udev_reload_rules():
@@ -41,7 +40,7 @@ def udev_reload_rules():
 
 
 def udev_trigger():
-    call(["udevadm", "trigger", "--subsystem-match=usb", 
+    call(["udevadm", "trigger", "--subsystem-match=usb",
           "--attr-match=idVendor=0fcf", "--action=add"])
 
 def install_udev_rules(raise_exception):
@@ -111,7 +110,7 @@ setup(name='openant',
                    'Programming Language :: Python :: 3.3',
                    'Programming Language :: Python :: 3.4',
                    'Topic :: Software Development :: Libraries :: Python Modules'
-                   ],
+                  ],
 
       packages=find_packages(),
 
@@ -120,4 +119,4 @@ setup(name='openant',
       cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
 
       test_suite='ant.tests'
-      )
+     )
