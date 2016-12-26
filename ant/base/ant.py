@@ -115,7 +115,7 @@ class Ant():
             try:
                 message = self.read_message()
 
-                if message == None:
+                if message is None:
                     break
 
                 # TODO: flag and extended for broadcast, acknowledge, and burst
