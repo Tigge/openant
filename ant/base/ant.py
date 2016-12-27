@@ -131,7 +131,7 @@ class Ant():
                         self._events.put(('response', (None, message._id,
                                                        message._data)))
                     # Response (no channel)
-                    elif message._id in [Message.ID.RESPONSE_VERSION,
+                    elif message._id in [Message.ID.RESPONSE_ANT_VERSION,
                                          Message.ID.RESPONSE_CAPABILITIES,
                                          Message.ID.RESPONSE_SERIAL_NUMBER]:
                         self._events.put(('response', (None, message._id,
@@ -149,7 +149,7 @@ class Ant():
                     # Channel event
                     elif message._id == Message.ID.BROADCAST_DATA:
                         self._on_broadcast(message)
-                    elif message._id == Message.ID.ACKNOWLEDGE_DATA:
+                    elif message._id == Message.ID.ACKNOWLEDGED_DATA:
                         self._on_acknowledge(message)
                     elif message._id == Message.ID.BURST_TRANSFER_DATA:
                         self._on_burst_data(message)
@@ -279,7 +279,7 @@ class Ant():
 
     def send_acknowledged_data(self, channel, data):
         assert len(data) == 8
-        message = Message(Message.ID.ACKNOWLEDGE_DATA,
+        message = Message(Message.ID.ACKNOWLEDGED_DATA,
                           array.array('B', [channel]) + data)
         self.write_message_timeslot(message)
 

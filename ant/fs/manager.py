@@ -112,7 +112,7 @@ class Application:
             m = self._node.request_message(Message.ID.RESPONSE_CAPABILITIES)
             print("  Capabilities: ", m[2])
 
-            # m = self._node.request_message(Message.ID.RESPONSE_VERSION)
+            # m = self._node.request_message(Message.ID.RESPONSE_ANT_VERSION)
             # print "  ANT version:  ", struct.unpack("<10sx", m[2])[0]
 
             #m = self._node.request_message(Message.ID.RESPONSE_SERIAL_NUMBER)
