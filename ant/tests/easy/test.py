@@ -45,7 +45,7 @@ class AntEasyTests(unittest.TestCase):
 
             self.node = Node()
             print("Request basic information...")
-            m = self.node.request_message(Message.ID.RESPONSE_VERSION)
+            m = self.node.request_message(Message.ID.RESPONSE_ANT_VERSION)
             print("  ANT version:  ", struct.unpack("<10sx", m[2])[0])
             m = self.node.request_message(Message.ID.RESPONSE_CAPABILITIES)
             print("  Capabilities: ", m[2])

@@ -49,11 +49,13 @@ class Message:
         SET_CHANNEL_RF_FREQ = 0x45
         SET_NETWORK_KEY = 0x46
         SET_TRANSMIT_POWER = 0x47
-        SET_SEARCH_WAVEFORM = 0x49  # XXX: Not in official docs
-        ADD_CHANNEL_ID = 0x59
-        CONFIG_LIST = 0x5A
+        SET_SEARCH_WAVEFORM = 0x49
+        ADD_CHANNEL_ID = 0x59 # Only used for slave channels
+        ADD_ENCRYPTION_ID = 0x59 # Only used for encrypted ANT master channels
+        CONFIG_LIST = 0x5A # Only used for slave channels
+        CONFIG_ENCRYPTION_LIST = 0x5A # Only used for encrypted ANT master channels
         SET_CHANNEL_TX_POWER = 0x60
-        LOW_PRIORITY_CHANNEL_SEARCH_TIMOUT = 0x63
+        LOW_PRIORITY_CHANNEL_SEARCH_TIMEOUT = 0x63
         SERIAL_NUMBER_SET_CHANNEL = 0x65
         ENABLE_EXT_RX_MESGS = 0x66
         ENABLE_LED = 0x68
@@ -61,7 +63,21 @@ class Message:
         LIB_CONFIG = 0x6E
         FREQUENCY_AGILITY = 0x70
         PROXIMITY_SEARCH = 0x71
+        CONFIG_EVENT_BUFFER = 0x74
         CHANNEL_SEARCH_PRIORITY = 0x75
+        SET_128_NETWORK_KEY = 0x76
+        HIGH_DUTY_SEARCH = 0x77
+        CONFIG_ADVANCED_BURST = 0x78
+        CONFIG_EVENT_FILTER = 0x79
+        CONFIG_SELECTIVE_DATA_UPDATE = 0x7A
+        SET_SDU_MASK = 0x7B
+        CONFIG_USER_NVM = 0x7C
+        ENABLE_SINGLE_CHANNEL_ENCRYPTION = 0x7D
+        SET_ENCRYPTION_KEY = 0x7E
+        SET_ENCRYPTION_INFO = 0x7F
+        CHANNEL_SEARCH_SHARING = 0x81
+        LOAD_STORE_ENCRYPTION_KEY = 0x83
+        SET_USB_DESCRIPTOR_STRING = 0xC7
         # SET_USB_INFO = 0xff
 
         # Notifications
@@ -72,24 +88,40 @@ class Message:
         RESET_SYSTEM = 0x4A
         OPEN_CHANNEL = 0x4B
         CLOSE_CHANNEL = 0x4C
-        OPEN_RX_SCAN_MODE = 0x5B
         REQUEST_MESSAGE = 0x4D
+        OPEN_RX_SCAN_MODE = 0x5B
         SLEEP_MESSAGE = 0xC5
 
         # Data messages
         BROADCAST_DATA = 0x4E
-        ACKNOWLEDGE_DATA = 0x4F
+        ACKNOWLEDGED_DATA = 0x4F
         BURST_TRANSFER_DATA = 0x50
+        ADVANCED_BURST_TRANSFER_DATA = 0x72
 
         # Responses (from channel)
+        # CHANNEL_EVENT = 0x40
         RESPONSE_CHANNEL = 0x40
 
         # Responses (from REQUEST_MESSAGE, 0x4d)
         RESPONSE_CHANNEL_STATUS = 0x52
         RESPONSE_CHANNEL_ID = 0x51
-        RESPONSE_VERSION = 0x3E
+        RESPONSE_ANT_VERSION = 0x3E
         RESPONSE_CAPABILITIES = 0x54
         RESPONSE_SERIAL_NUMBER = 0x61
+        RESPONSE_EVENT_BUFFER_CONFIG = 0x74 # dupe
+        RESPONSE_ADVANCED_BURST_CAPABILITIES = 0x78 # dupe
+        # RESPONSE_ADVANCED_BURST_CURRENT_CONFIG = 0x78 # dupe
+        RESPONSE_EVENT_FILTER = 0x79 # dupe
+
+        # Test mode
+        TEST_MODE_CW_INIT = 0x53
+        TEST_MODE_CW_TEST = 0x48
+
+        # Extended data messages (legacy)
+        LEGACY_EXTENDED_BROADCAST_DATA = 0x5d
+        LEGACY_EXTENDED_ACKNOWLEDGED_DATA = 0x5e
+        LEGACY_EXTENDED_BURST_DATA = 0x5f
+
 
     class Code:
         RESPONSE_NO_ERROR = 0
@@ -104,6 +136,8 @@ class Message:
         EVENT_RX_FAIL_GO_TO_SEARCH = 8
         EVENT_CHANNEL_COLLISION = 9
         EVENT_TRANSFER_TX_START = 10
+
+        EVENT_TRANSFER_NEXT_DATA_BLOCK = 17
 
         CHANNEL_IN_WRONG_STATE = 21
         CHANNEL_NOT_OPENED = 22
@@ -122,6 +156,7 @@ class Message:
         INVALID_PARAMETER_PROVIDED = 51
         EVENT_SERIAL_QUE_OVERFLOW = 52
         EVENT_QUE_OVERFLOW = 53
+        ENCRYPT_NEGOTIATION_FAIL = 57
         NVM_FULL_ERROR = 64
         NVM_WRITE_ERROR = 65
         USB_STRING_WRITE_FAIL = 112
