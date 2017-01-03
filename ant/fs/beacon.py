@@ -59,7 +59,7 @@ class Beacon:
     def parse(data):
         values = struct.unpack("<BBBB4x", data)
 
-        assert values[0] == 0x43
+        assert values[0] == Beacon.BEACON_ID
 
         beacon = Beacon()
         beacon._status_byte_1 = values[1]
