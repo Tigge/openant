@@ -34,6 +34,12 @@ class Beacon:
 
     BEACON_ID = 0x43
 
+    def __init__(self, status_byte_1, status_byte_2, authentication_type, descriptor):
+        self._status_byte_1 = status_byte_1
+        self._status_byte_2 = status_byte_2
+        self._authentication_type = authentication_type
+        self._descriptor = descriptor
+
     def is_data_available(self):
         return bool(self._status_byte_1 & 0x20)  # 0b00100000
 
@@ -57,14 +63,9 @@ class Beacon:
 
     @staticmethod
     def parse(data):
-        values = struct.unpack("<BBBB4x", data)
+        mark, status_byte_1, status_byte_2, authentication_type = struct.unpack("<BBBB4x", data)
 
-        assert values[0] == Beacon.BEACON_ID
+        assert mark == Beacon.BEACON_ID
 
-        beacon = Beacon()
-        beacon._status_byte_1 = values[1]
-        beacon._status_byte_2 = values[2]
-        beacon._authentication_type = values[3]
-        beacon._descriptor = data[4:]
-        return beacon
+        return Beacon(status_byte_1, status_byte_2, authentication_type, data[4:])
 
