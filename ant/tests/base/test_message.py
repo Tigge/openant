@@ -1,6 +1,6 @@
-# Ant-FS
+# Ant
 #
-# Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>
+# Copyright (c) 2017, Rhys Kidd <rhyskidd@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -25,20 +25,26 @@ from __future__ import absolute_import, print_function
 import array
 import unittest
 
-from ant.fs.beacon import Beacon
+from ant.base.message import Message
 
 
-class BeaconParseTest(unittest.TestCase):
-    def test_beacon_parse(self):
-        data = array.array('B', [0x43, 0x04, 0x00, 0x03, 0x41, 0x05, 0x01, 0x00])
+class MessageParse(unittest.TestCase):
 
-        beacon = Beacon.parse(data)
-        self.assertIsInstance(beacon, Beacon)
-        self.assertFalse(beacon.is_data_available())
-        self.assertFalse(beacon.is_upload_enabled())
-        self.assertFalse(beacon.is_pairing_enabled())
-        self.assertEqual(beacon.get_channel_period(), 4)
-        self.assertEqual(beacon.get_client_device_state(), Beacon.ClientDeviceState.LINK)
-        self.assertEqual(beacon.get_serial(), 66881)
-        self.assertEqual(beacon.get_descriptor(), (1345, 1))
+    def test_message_parse(self):
+        data = array.array('B', [0xa4, 0x03, 0x40, 0x00, 0x46, 0x00, 0xa1])
+        message = Message.parse(data)
+        self.assertIsInstance(message, Message)
 
+    # Add known != 0xa4 assert
+    #def test_bad_sync_message_parse(self):
+    #    data = array.array('B', [0x00, 0x03, 0x40, 0x00, 0x46, 0x00, 0xa1])
+    #    self.assertIsInstance(Message.parse(data), None)
+
+    # Add known invalid checksum assert    
+
+    def test_message_code_lookup(self):
+        self.assertEqual(Message.Code.lookup(Message.Code.EVENT_RX_SEARCH_TIMEOUT), "EVENT_RX_SEARCH_TIMEOUT")
+        self.assertEqual(Message.Code.lookup(1), "EVENT_RX_SEARCH_TIMEOUT")
+
+    def test_message_code_lookup_fail(self):
+        self.assertEqual(Message.Code.lookup(4444), None)

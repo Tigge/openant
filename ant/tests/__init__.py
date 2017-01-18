@@ -22,4 +22,4 @@
 
 from __future__ import absolute_import, print_function
 
-__all__ = ['easy', 'fs']
+__all__ = ['base', 'easy', 'fs']
