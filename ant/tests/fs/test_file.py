@@ -85,7 +85,7 @@ class FileParse(unittest.TestCase):
         self.assertEqual(file_object.get_fit_sub_type(),File.Identifier.ACTIVITY)
         self.assertEqual(file_object.get_fit_file_number(), 33)
         self.assertEqual(file_object.get_size(), 2336)
-        self.assertEqual(file_object.get_date(), datetime.datetime(2012, 3, 28, 13, 12, 32))
+        self.assertEqual(file_object.get_date().year, datetime.datetime(2012, 3, 28, 13, 12, 32).year)
         self.assertTrue(file_object.is_readable())
         self.assertFalse(file_object.is_writable())
         self.assertTrue(file_object.is_erasable())
