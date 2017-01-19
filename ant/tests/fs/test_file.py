@@ -24,8 +24,10 @@ from __future__ import absolute_import, print_function
 
 import array
 import unittest
+import datetime
 
 from ant.fs.file import Directory
+from ant.fs.file import File
 
 
 class DirectoryParse(unittest.TestCase):
@@ -69,3 +71,25 @@ class DirectoryParse(unittest.TestCase):
         self.assertEqual(directory.get_current_system_time(), 0)
         self.assertEqual(directory.get_last_modified(), 0)
         self.assertEqual(len(directory.get_files()), 31)
+
+
+class FileParse(unittest.TestCase):
+
+    def test_parse(self):
+        self.file_binary = array.array('B', [7, 0, 128, 4, 33, 0, 0, 176, 32, 9, 0, 0, 128, 250, 213, 41])
+
+        file_object = File.parse(self.file_binary)
+        self.assertEqual(file_object.get_index(), 7)
+        self.assertEqual(file_object.get_type(), File.Type.FIT)
+        self.assertEqual(file_object.get_identifier(), array.array('B', [4, 33, 0]))
+        self.assertEqual(file_object.get_fit_sub_type(),File.Identifier.ACTIVITY)
+        self.assertEqual(file_object.get_fit_file_number(), 33)
+        self.assertEqual(file_object.get_size(), 2336)
+        self.assertEqual(file_object.get_date(), datetime.datetime(2012, 3, 28, 13, 12, 32))
+        self.assertTrue(file_object.is_readable())
+        self.assertFalse(file_object.is_writable())
+        self.assertTrue(file_object.is_erasable())
+        self.assertTrue(file_object.is_archived())
+        self.assertFalse(file_object.is_append_only())
+        self.assertFalse(file_object.is_encrypted())
+        self.assertEqual(file_object.get_flags_string(), "r-eA--")

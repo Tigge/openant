@@ -101,6 +101,8 @@ class File:
         ACTIVITY_SUMMARY = 20
         MONITORING_DAILY = 28
         MONITORING_B = 32
+        SEGMENT = 34
+        SEGMENT_LIST = 35
 
     def __init__(self, index, typ, ident, typ_flags, flags, size, date):
         self._index = index
