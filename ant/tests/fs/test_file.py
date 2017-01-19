@@ -65,3 +65,7 @@ class DirectoryParse(unittest.TestCase):
 
         directory = Directory.parse(self.dir)
         self.assertEqual(directory.get_version(), (0, 1))
+        self.assertEqual(directory.get_time_format(), 0)
+        self.assertEqual(directory.get_current_system_time(), 0)
+        self.assertEqual(directory.get_last_modified(), 0)
+        self.assertEqual(len(directory.get_files()), 31)
