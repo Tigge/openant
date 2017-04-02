@@ -25,6 +25,7 @@ from __future__ import absolute_import, print_function
 import array
 import unittest
 import datetime
+import sys
 
 from ant.fs.file import Directory
 from ant.fs.file import File
@@ -85,7 +86,9 @@ class FileParse(unittest.TestCase):
         self.assertEqual(file_object.get_fit_sub_type(),File.Identifier.ACTIVITY)
         self.assertEqual(file_object.get_fit_file_number(), 33)
         self.assertEqual(file_object.get_size(), 2336)
-        self.assertEqual(file_object.get_date().year, datetime.datetime(2012, 3, 28, 13, 12, 32).year)
+        self.assertEqual(file_object.get_date().year, datetime.datetime(2012, 3, 28, 17, 12, 32).year)
+        if sys.version_info >= (3,3):
+            self.assertEqual(file_object.get_date(), datetime.datetime(2012, 3, 28, 17, 12, 32, tzinfo=datetime.timezone.utc))
         self.assertTrue(file_object.is_readable())
         self.assertFalse(file_object.is_writable())
         self.assertTrue(file_object.is_erasable())

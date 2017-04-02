@@ -25,6 +25,7 @@ from __future__ import absolute_import, print_function
 import datetime
 import logging
 import struct
+import sys
 
 _logger = logging.getLogger("ant.fs.file")
 
@@ -167,7 +168,10 @@ class File:
 
         # i1, i2, i3 -> three byte integer, not supported by struct
         index, data_type, data_flags, flags, file_size, file_date = struct.unpack("<HB3xBBII", data)
-        file_date = datetime.datetime.fromtimestamp(file_date + 631065600)
+        if sys.version_info >= (3,3):
+           file_date = datetime.datetime.fromtimestamp(file_date + 631065600, datetime.timezone.utc)
+        else:
+           file_date = datetime.datetime.fromtimestamp(file_date + 631065600)
         identifier = data[3:6]
 
         return File(index, data_type, identifier, data_flags, flags, file_size, file_date)
