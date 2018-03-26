@@ -277,6 +277,12 @@ class Ant():
         message = Message(Message.ID.REQUEST_MESSAGE, [channel, messageId])
         self.write_message(message)
 
+    def send_broadcast_data(self, channel, data):
+        assert len(data) == 8
+        message = Message(Message.ID.BROADCAST_DATA,
+                          array.array('B', [channel]) + data)
+        self.write_message_timeslot(message)
+
     def send_acknowledged_data(self, channel, data):
         assert len(data) == 8
         message = Message(Message.ID.ACKNOWLEDGED_DATA,

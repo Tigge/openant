@@ -93,6 +93,10 @@ class Channel():
         _logger.debug("done requesting message %#02x", messageId)
         return self.wait_for_special(messageId)
 
+    def send_broadcast_data(self, data):
+        _logger.debug("send broadcast data %s", self.id)
+        self._ant.send_broadcast_data(self.id, data)
+
     def send_acknowledged_data(self, data):
         try:
             _logger.debug("send acknowledged data %s", self.id)
