@@ -56,8 +56,8 @@ class Channel():
     def wait_for_special(self, event_id):
         return wait_for_special(event_id, self._node._responses, self._node._responses_cond)
 
-    def _assign(self, channelType, networkNumber):
-        self._ant.assign_channel(self.id, channelType, networkNumber)
+    def _assign(self, channelType, networkNumber, ext_assign):
+        self._ant.assign_channel(self.id, channelType, networkNumber, ext_assign)
         return self.wait_for_response(Message.ID.ASSIGN_CHANNEL)
 
     def _unassign(self):
@@ -82,6 +82,10 @@ class Channel():
     def set_rf_freq(self, rfFreq):
         self._ant.set_channel_rf_freq(self.id, rfFreq)
         return self.wait_for_response(Message.ID.SET_CHANNEL_RF_FREQ)
+
+    def enable_extended_messages(self, enable):
+        self._ant.enable_extended_messages(self.id, enable)
+        return self.wait_for_response(Message.ID.ENABLE_EXT_RX_MESGS)
 
     def set_search_waveform(self, waveform):
         self._ant.set_search_waveform(self.id, waveform)
@@ -117,4 +121,3 @@ class Channel():
         except TransferFailedException:
             _logger.warning("failed to send burst transfer %s, retrying", self.id)
             self.send_burst_transfer(data)
-
