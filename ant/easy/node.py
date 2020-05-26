@@ -60,11 +60,11 @@ class Node():
         self._worker_thread = threading.Thread(target=self._worker, name="ant.easy")
         self._worker_thread.start()
 
-    def new_channel(self, ctype, network_number=0x00):
+    def new_channel(self, ctype, network_number=0x00, ext_assign = None):
         size = len(self.channels)
         channel = Channel(size, self, self.ant)
         self.channels[size] = channel
-        channel._assign(ctype, network_number)
+        channel._assign(ctype, network_number, ext_assign)
         return channel
 
     def request_message(self, messageId):
@@ -134,5 +134,4 @@ class Node():
             self._running = False
             self.ant.stop()
             self._worker_thread.join()
-
 
