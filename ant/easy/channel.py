@@ -61,11 +61,17 @@ class Channel():
         return self.wait_for_response(Message.ID.ASSIGN_CHANNEL)
 
     def _unassign(self):
-        pass
+        self._ant.unassign_channel(self.id)
+        return self.wait_for_response(Message.ID.UNASSIGN_CHANNEL)
 
     def open(self):
         self._ant.open_channel(self.id)
         return self.wait_for_response(Message.ID.OPEN_CHANNEL)
+    
+    def close(self):
+        self._ant.close_channel(self.id)
+        self.wait_for_response(Message.ID.CLOSE_CHANNEL)
+        return self.wait_for_event([Message.Code.EVENT_CHANNEL_CLOSED])
 
     def set_id(self, deviceNum, deviceType, transmissionType):
         self._ant.set_channel_id(self.id, deviceNum, deviceType, transmissionType)
