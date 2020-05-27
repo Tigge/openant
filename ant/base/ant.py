@@ -233,8 +233,6 @@ class Ant():
         pass
 
     def assign_channel(self, channel, channelType, networkNumber, ext_assign):
-        print("ext_assign")
-        print(ext_assign)
         if ext_assign is None:
             message = Message(Message.ID.ASSIGN_CHANNEL, [channel, channelType, networkNumber])
         else:
