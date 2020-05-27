@@ -133,7 +133,8 @@ class Ant():
                     # Response (no channel)
                     elif message._id in [Message.ID.RESPONSE_ANT_VERSION,
                                          Message.ID.RESPONSE_CAPABILITIES,
-                                         Message.ID.RESPONSE_SERIAL_NUMBER]:
+                                         Message.ID.RESPONSE_SERIAL_NUMBER,
+                                         Message.ID.ENABLE_EXT_RX_MESGS]:
                         self._events.put(('response', (None, message._id,
                                                        message._data)))
                     # Response (channel)
@@ -231,8 +232,11 @@ class Ant():
     def unassign_channel(self, channel):
         pass
 
-    def assign_channel(self, channel, channelType, networkNumber):
-        message = Message(Message.ID.ASSIGN_CHANNEL, [channel, channelType, networkNumber])
+    def assign_channel(self, channel, channelType, networkNumber, ext_assign):
+        if ext_assign is None:
+            message = Message(Message.ID.ASSIGN_CHANNEL, [channel, channelType, networkNumber])
+        else:
+            message = Message(Message.ID.ASSIGN_CHANNEL, [channel, channelType, networkNumber, ext_assign])
         self.write_message(message)
 
     def open_channel(self, channel):
@@ -255,6 +259,10 @@ class Ant():
 
     def set_channel_rf_freq(self, channel, rfFreq):
         message = Message(Message.ID.SET_CHANNEL_RF_FREQ, [channel, rfFreq])
+        self.write_message(message)
+
+    def enable_extended_messages(self, channel, enable):
+        message = Message(Message.ID.ENABLE_EXT_RX_MESGS, [channel, enable])
         self.write_message(message)
 
     def set_network_key(self, network, key):
