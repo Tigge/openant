@@ -94,6 +94,7 @@ class File:
         WORKOUT = 5
         COURSE = 6
         SCHEDULES = 7
+        WAYPOINTS = 8
         WEIGHT = 9
         TOTALS = 10
         GOALS = 11
