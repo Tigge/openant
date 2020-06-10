@@ -1,0 +1,13 @@
+# This files changes the mode of the Dynastream ANT UsbStick2 so all users
+# can read and write to it.
+#
+# This file should go into '/etc/udev/rules.d'. Note that it should go in
+# before 73-seat-late.rules for `uaccess` to work.
+
+ACTION!="add", GOTO="openant_rules_end"
+SUBSYSTEM!="usb", GOTO="openant_rules_end"
+
+ATTR{idVendor}=="0fcf", ATTR{idProduct}=="1008", ENV{ID_ANT_DEVICE}="1", TAG+="uaccess"
+ATTR{idVendor}=="0fcf", ATTR{idProduct}=="1009", ENV{ID_ANT_DEVICE}="1", TAG+="uaccess"
+
+LABEL="openant_rules_end"
