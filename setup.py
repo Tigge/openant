@@ -45,7 +45,7 @@ def udev_trigger():
 
 def install_udev_rules(raise_exception):
     if check_root():
-        shutil.copy('resources/ant-usb-sticks.rules', '/etc/udev/rules.d')
+        shutil.copy('resources/42-ant-usb-sticks.rules', '/etc/udev/rules.d')
         execute(udev_reload_rules, [], "Reloading udev rules")
         execute(udev_trigger, [], "Triggering udev rules")
     else:
