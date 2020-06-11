@@ -50,9 +50,7 @@ These should only be necessary to install manually, if you don't want to use the
 
 - Install [udev](http://en.wikipedia.org/wiki/Udev) rules (Only required to avoid running the program as root).
 
-        sudo cp resources/ant-usb-sticks.rules /etc/udev/rules.d
-        sudo udevadm control --reload-rules
-        sudo udevadm trigger --subsystem-match=usb --attr-match=idVendor=0fcf --action=add
+        sudo python setup.py udev_rules
 
 Supported devices
 -----------------
