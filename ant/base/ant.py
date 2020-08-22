@@ -243,6 +243,10 @@ class Ant():
         message = Message(Message.ID.OPEN_CHANNEL, [channel])
         self.write_message(message)
 
+    def open_rx_scan_mode(self,channel,syncmsgsonly):
+        message = Message(Message.ID.OPEN_RX_SCAN_MODE, [channel, syncmsgsonly] )
+        self.write_message(message)
+
     def set_channel_id(self, channel, deviceNum, deviceType, transmissionType):
         data = array.array('B', struct.pack("<BHBB", channel, deviceNum, deviceType, transmissionType))
         message = Message(Message.ID.SET_CHANNEL_ID, data)

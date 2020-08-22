@@ -67,6 +67,10 @@ class Channel():
         self._ant.open_channel(self.id)
         return self.wait_for_response(Message.ID.OPEN_CHANNEL)
 
+    def open_rx_scan_mode(self, syncmsgsonly):
+        self._ant.open_rx_scan_mode(self.id,syncmsgsonly)
+        return self.wait_for_response(Message.ID.OPEN_RX_SCAN_MODE)
+
     def set_id(self, deviceNum, deviceType, transmissionType):
         self._ant.set_channel_id(self.id, deviceNum, deviceType, transmissionType)
         return self.wait_for_response(Message.ID.SET_CHANNEL_ID)
