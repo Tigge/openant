@@ -148,16 +148,17 @@ class Ant():
                         self._events.put(('response', (message._data[0],
                                                        message._data[1], message._data[2:])))
                     # Channel event
+                    elif (message._id == Message.ID.RESPONSE_CHANNEL
+                          and message.data[1] == 0x01):
+                        _logger.debug("Got channel event, %r", message)
+                        self._events.put(('event', (message._data[0],
+                                                    message._data[2], message._data[3:])))
                     elif message._id == Message.ID.BROADCAST_DATA:
                         self._on_broadcast(message)
                     elif message._id == Message.ID.ACKNOWLEDGED_DATA:
                         self._on_acknowledge(message)
                     elif message._id == Message.ID.BURST_TRANSFER_DATA:
                         self._on_burst_data(message)
-                    elif message._id == Message.ID.RESPONSE_CHANNEL:
-                        _logger.debug("Got channel event, %r", message)
-                        self._events.put(('event', (message._data[0],
-                                                    message._data[1], message._data[2:])))
                     else:
                         _logger.warning("Got unknown message, %r", message)
                 else:
@@ -243,6 +244,15 @@ class Ant():
         message = Message(Message.ID.OPEN_CHANNEL, [channel])
         self.write_message(message)
 
+    def open_rx_scan_mode(self):
+        message = Message(Message.ID.OPEN_RX_SCAN_MODE, [0, 1]) # [0-Channel, 1-Enable]
+        self.write_message(message)
+
+    def close_channel(self, channel):
+        _logger.debug("Closing channel %d", channel)
+        message = Message(Message.ID.CLOSE_CHANNEL, [channel])
+        self.write_message(message)
+
     def set_channel_id(self, channel, deviceNum, deviceType, transmissionType):
         data = array.array('B', struct.pack("<BHBB", channel, deviceNum, deviceType, transmissionType))
         message = Message(Message.ID.SET_CHANNEL_ID, data)
@@ -283,6 +293,12 @@ class Ant():
 
     def request_message(self, channel, messageId):
         message = Message(Message.ID.REQUEST_MESSAGE, [channel, messageId])
+        self.write_message(message)
+
+    def send_broadcast_data(self, channel, data):
+        assert len(data) == 8
+        message = Message(Message.ID.BROADCAST_DATA,
+                          array.array('B', [channel]) + data)
         self.write_message(message)
 
     def send_acknowledged_data(self, channel, data):

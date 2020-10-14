@@ -67,6 +67,14 @@ class Channel():
         self._ant.open_channel(self.id)
         return self.wait_for_response(Message.ID.OPEN_CHANNEL)
 
+    def open_rx_scan_mode(self):
+        self._ant.open_rx_scan_mode()
+        return self.wait_for_response(Message.ID.OPEN_RX_SCAN_MODE)
+
+    def close(self):
+        self._ant.close_channel(self.id)
+        return self.wait_for_response(Message.ID.CLOSE_CHANNEL)
+
     def set_id(self, deviceNum, deviceType, transmissionType):
         self._ant.set_channel_id(self.id, deviceNum, deviceType, transmissionType)
         return self.wait_for_response(Message.ID.SET_CHANNEL_ID)
@@ -96,6 +104,10 @@ class Channel():
         self._ant.request_message(self.id, messageId)
         _logger.debug("done requesting message %#02x", messageId)
         return self.wait_for_special(messageId)
+
+    def send_broadcast_data(self, data):
+        _logger.debug("send broadcast data %s", self.id)
+        self._ant.send_broadcast_data(self.id, data)
 
     def send_acknowledged_data(self, data):
         try:

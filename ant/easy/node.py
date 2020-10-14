@@ -97,6 +97,10 @@ class Node():
             self._datas.put(('burst', channel, data))
         elif event == Message.Code.EVENT_RX_BROADCAST:
             self._datas.put(('broadcast', channel, data))
+        elif event == Message.Code.EVENT_TX:
+            self._datas.put(('broadcast_tx', channel, data))
+        elif event == Message.Code.EVENT_RX_ACKNOWLEDGED:
+            self._datas.put(('acknowledge', channel, data))
         else:
             self._event_cond.acquire()
             self._events.append((channel, event, data))
@@ -120,6 +124,10 @@ class Node():
                     self.channels[channel].on_broadcast_data(data)
                 elif data_type == 'burst':
                     self.channels[channel].on_burst_data(data)
+                elif data_type == 'broadcast_tx':
+                    self.channels[channel].on_broadcast_tx_data(data)
+                elif data_type == 'acknowledge':
+                    self.channels[channel].on_acknowledge_data(data)
                 else:
                     _logger.warning("Unknown data type '%s': %r", data_type, data)
             except queue.Empty as e:
@@ -134,4 +142,3 @@ class Node():
             self._running = False
             self.ant.stop()
             self._worker_thread.join()
-
