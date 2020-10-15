@@ -173,6 +173,9 @@ try:
             if dev is None:
                 raise ValueError("Device not found")
 
+            #SDS : add self._dev in order to dispose_resources at the close()
+            self._dev = dev
+
             _logger.debug("USB Config values:")
             for cfg in dev:
                 _logger.debug(" Config %s", cfg.bConfigurationValue)
@@ -188,7 +191,7 @@ try:
             # unmount a kernel driver (TODO: should probably reattach later)
             try:
                 if dev.is_kernel_driver_active(0):
-                    _logger.debug("A kernel driver active, detatching")
+                    _logger.debug("A kernel driver active, detaching")
                     dev.detach_kernel_driver(0)
                 else:
                     _logger.debug("No kernel driver active")
@@ -225,7 +228,7 @@ try:
             )
 
             _logger.debug(
-                "UBS Endpoint out: %s, %s", self._out, self._out.bEndpointAddress
+                "USB Endpoint out: %s, %s", self._out, self._out.bEndpointAddress
             )
 
             self._in = usb.util.find_descriptor(
@@ -236,14 +239,18 @@ try:
             )
 
             _logger.debug(
-                "UBS Endpoint in: %s, %s", self._in, self._in.bEndpointAddress
+                "USB Endpoint in: %s, %s", self._in, self._in.bEndpointAddress
             )
 
             assert self._out is not None and self._in is not None
 
         def close(self):
-            pass
+            #SDS test
+            usb.util.dispose_resources(self._dev)
+            self._dev.attach_kernel_driver(0)
+            _logger.debug("usbdriver.closed")
 
+        # TODO SDS: detect device disconnect!
         def read(self):
             return self._in.read(4096)
 

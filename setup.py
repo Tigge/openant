@@ -25,12 +25,13 @@
 import os
 import shutil
 
-from distutils.util import execute
-from distutils.cmd import Command
-from subprocess import call
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from setuptools import setup, find_packages
+#sds : moved after setuptools to avoid warning
+from distutils.util import execute
+from distutils.cmd import Command
+from subprocess import call
 
 
 def udev_reload_rules():

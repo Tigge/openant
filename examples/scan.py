@@ -61,7 +61,8 @@ def main():
     channel.on_burst_data = on_data
     channel.on_acknowledge = on_data
 
-    channel.set_id(0, 120, 0)
+    #channel.set_id(0, 120, 0)
+    channel.set_id(0, 0, 0) # all wild cards
     channel.enable_extended_messages(1)
     channel.set_search_timeout(0xFF)
     channel.set_period(8070)
@@ -75,4 +76,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    # ant node in a separate thread, not to lock up the console
+    node_thread = threading.Thread(target=main, name="ant.node")
+    node_thread.start()

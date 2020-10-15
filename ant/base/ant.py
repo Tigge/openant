@@ -68,9 +68,12 @@ class Ant:
 
     def stop(self):
         if self._running:
-            _logger.debug("Stoping ant.base")
+            _logger.debug("Stopping ant.base")
             self._running = False
             self._worker_thread.join()
+
+        #SDS - releasing resource (serial/usb)
+        self._driver.close()
 
     def _on_broadcast(self, message):
         self._events.put(
@@ -116,7 +119,7 @@ class Ant:
 
     def _worker(self):
 
-        _logger.debug("Ant runner started")
+        _logger.debug("ant.base started")
 
         while self._running:
             try:
@@ -129,10 +132,11 @@ class Ant:
 
                 # Only do callbacks for new data. Resent data only indicates
                 # a new channel timeslot.
-                if not (
-                    message._id == Message.ID.BROADCAST_DATA
-                    and message._data == self._last_data
-                ):
+                #SDS : TODO : klopt enkel bij 1 channel!
+                # bij meerdere channels krijg je channel data door elkaar, en ga je dus toch 
+                # per channel meerdere keren dezelfde data / events opslaan
+                if not (message._id == Message.ID.BROADCAST_DATA
+                        and message._data == self._last_data):
 
                     # Notifications
                     if message._id in [
@@ -199,10 +203,11 @@ class Ant:
 
                 # Send messages in queue, on indicated time slot
                 if message._id == Message.ID.BROADCAST_DATA:
-                    time.sleep(0.1)
-                    _logger.debug(
-                        "Got broadcast data, examine queue to see if we should send anything back"
-                    )
+                    #SDS TODO : na elke broadcast 100ms sleep??? 
+                    # geen wonder dat de input buffer fluctueert!!
+                    # of dat er overflows komen als er meerdere channels open staan & broadcasten!
+                    #SDS time.sleep(0.1)
+                    _logger.debug("Got broadcast data, examine queue to see if we should send anything back")
                     if self._message_queue_cond.acquire(blocking=False):
                         while len(self._message_queue) > 0:
                             m = self._message_queue.popleft()
@@ -223,12 +228,19 @@ class Ant:
             except usb.USBError as e:
                 _logger.warning("%s, %r", type(e), e.args)
 
-        _logger.debug("Ant runner stopped")
+        _logger.debug("ant.base stopped")
 
     def _main(self):
+        #TODO : beetje ongelukkig, want deze naam wordt in node.py gegeven, dit zou eigenlijk in ant.py moeten gebeuren
+        _logger.debug("ant.easy started")
+
         while self._running:
+            #SDS : waarom een timeout als ge toch niets doet met de empty exception??
+            # anders werkt node.stop() soms niet -> self._running wordt false gezet, 
+            # maar de loop zit vast, wachtend op een nieuw event dat nooit meer komt aangezien de usb aanvoer al is gestopt
             try:
                 (event_type, event) = self._events.get(True, 1.0)
+                #SDS (event_type, event) = self._events.get(True)
                 self._events.task_done()
                 (channel, event, data) = event
 
@@ -240,6 +252,8 @@ class Ant:
                     _logger.warning("Unknown message typ '%s': %r", event_type, event)
             except queue.Empty as e:
                 pass
+
+        _logger.debug("ant.easy stopped")
 
     def write_message_timeslot(self, message):
         with self._message_queue_cond:
@@ -292,6 +306,7 @@ class Ant:
         message = Message(Message.ID.OPEN_RX_SCAN_MODE, [0, 1])  # [0-Channel, 1-Enable]
         self.write_message(message)
 
+    #sds
     def close_channel(self, channel):
         _logger.debug("Closing channel %d", channel)
         message = Message(Message.ID.CLOSE_CHANNEL, [channel])

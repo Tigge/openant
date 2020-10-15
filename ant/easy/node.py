@@ -76,6 +76,9 @@ class Node:
         self.ant.set_network_key(network, key)
         return self.wait_for_response(Message.ID.SET_NETWORK_KEY)
 
+    # TODO: SDS wie gebruikt dit?? enkel channel.wait_for_event wordt blijkbaar gebruikt
+    # en heb ik aangepast met extra chnum
+    # dus deze call zal niet werken!!!
     def wait_for_event(self, ok_codes):
         return wait_for_event(ok_codes, self._events, self._event_cond)
 
@@ -114,8 +117,50 @@ class Node:
         self.ant.start()
 
     def _main(self):
+        _logger.debug("node._main started")
+
         while self._running:
+            #SDS TODO : hier de self._events opkuisen/afhandelen
+            # dan heeft die timeout op datas.get() nog zin
+            # beter om dit per channel te doen ipv de volledige node?
+            # SDS : voorlopige workaround
+            # remove RX_FAILED, COLLISION events that keep piling up
+            # TODO : nog niet ok, want als het [0] niet wordt gecleaned of gebruikt, stapelen de vuile events zich erachter op
+            # hier moet een algo komen die systematisch alle events afhandelt!
+            _logger.debug("SDS - cleaning node._events queue %r", self._events)
+            
+            # sds de .acquire() is niet echt nodig als je events.remove(message) gebruikt ipv popleft
+            # zonder de .acquire() zou de node._events queue kunnen wijzigen tussen message=... en node._events.popleft()
+            # om dezelfde reden kan je ook geen for message in node._events loop doen zonder lock acquire
+            # deze cleaning vermijdt nog niet dat wait_for_event wordt genotified bij elke inkomend event (ook die van <> channel)
+            # want deze cleaning routine krijgt niet noodzakelijk eerst toegang tot de gewijzigde node._events
+            # dit is sowieso tijdelijk, maar eigenlijk kan je ook beter een lijst hebben van events die moeten blijven ipv op te sommen wat weg moet
+            # ofwel moeten we hier die error events callbacken naar de applicatie
+            self._event_cond.acquire()
+            cleaning_done = False
+            while cleaning_done == False and len(self._events) != 0:
+                message = self._events[0]
+                if message[1] == 1 and message[2][0] in [Message.Code.EVENT_RX_FAIL,
+                                                        Message.Code.EVENT_CHANNEL_COLLISION, 
+                                                        Message.Code.EVENT_QUE_OVERFLOW,
+                                                        Message.Code.EVENT_SERIAL_QUE_OVERFLOW]:
+                    self._events.popleft()
+                elif message[1] == 1 and message[2][0] in [Message.Code.EVENT_TRANSFER_TX_FAILED]:
+                    _logger.warning(f"event cleanup(temp): TX_FAILED event on channel {message[0]}")
+                    _logger.warning(message)
+                    self._events.popleft()
+                elif message[1] == 1 and message[2][0] in [Message.Code.EVENT_RX_FAIL_GO_TO_SEARCH]:
+                    _logger.warning(f"event cleanup(temp):EVENT_RX_FAIL_GO_TO_SEARCH event on channel {message[0]}")
+                    _logger.warning(message)
+                    self._events.popleft()
+                else:
+                    # no more events to clean from the left of the self._events
+                    cleaning_done = True
+            self._event_cond.release()
+
             try:
+                #SDS info : timeout 1.0s enkel nodig om deze thread te kunnen terminate door self._running = False te zetten
+                #zie ook ant.py
                 (data_type, channel, data) = self._datas.get(True, 1.0)
                 self._datas.task_done()
 
@@ -131,13 +176,14 @@ class Node:
                     _logger.warning("Unknown data type '%s': %r", data_type, data)
             except queue.Empty as e:
                 pass
+        _logger.debug("node._main stopped")
 
     def start(self):
         self._main()
 
     def stop(self):
         if self._running:
-            _logger.debug("Stoping ant.easy")
+            _logger.debug("Stopping ant.easy")
             self._running = False
             self.ant.stop()
             self._worker_thread.join()
