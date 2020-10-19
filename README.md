@@ -1,7 +1,7 @@
 openant
 =======
 
-[![Build Status](https://img.shields.io/travis/com/Tigge/openant.svg?style=flat)](http://travis-ci.com/Tigge/openant)
+[![Build Status](https://github.com/Tigge/openant/workflows/Build/badge.svg?branch=master)](https://github.com/Tigge/openant/actions)
 [![Coverage Status](http://img.shields.io/coveralls/Tigge/openant.svg?style=flat)](https://coveralls.io/r/Tigge/openant)
 
 A python library to download and upload files from ANT-FS compliant devices (Garmin products).
@@ -16,8 +16,8 @@ Features
 Requirements
 ------------
 
-- Python 2.7+
-- PyUSB > 1.0a2 (seems to be a bug which makes it segfaults on version before Alpha 2)
+- Python >= 3.6
+- PyUSB >= 1.1.0
 - Root access (for installation only)
 
 Automatic install
