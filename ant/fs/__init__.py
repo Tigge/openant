@@ -22,4 +22,4 @@
 
 from __future__ import absolute_import, print_function
 
-__all__ = ['command', 'file', 'manager']
+__all__ = ["command", "file", "manager"]

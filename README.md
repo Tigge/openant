@@ -3,6 +3,7 @@ openant
 
 [![Build Status](https://github.com/Tigge/openant/workflows/Build/badge.svg?branch=master)](https://github.com/Tigge/openant/actions)
 [![Coverage Status](http://img.shields.io/coveralls/Tigge/openant.svg?style=flat)](https://coveralls.io/r/Tigge/openant)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A python library to download and upload files from ANT-FS compliant devices (Garmin products).
 

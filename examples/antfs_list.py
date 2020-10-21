@@ -22,8 +22,13 @@
 
 from __future__ import absolute_import, print_function
 import logging
-from ant.fs.manager import Application, AntFSAuthenticationException, AntFSTimeException, AntFSDownloadException, \
-    AntFSUploadException
+from ant.fs.manager import (
+    Application,
+    AntFSAuthenticationException,
+    AntFSTimeException,
+    AntFSDownloadException,
+    AntFSUploadException,
+)
 
 
 class Listener(Application):

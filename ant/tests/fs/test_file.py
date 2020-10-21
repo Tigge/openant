@@ -32,39 +32,40 @@ from ant.fs.file import File
 
 
 class DirectoryParse(unittest.TestCase):
-
     def test_parse(self):
-        self.dir = array.array('B', [1, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 1, 0, 1, 12, 0, 0, 0, 80, 0, 224, 25, 0, 0, 0, 0, 0, 2,
-                                     0, 1, 13, 0, 0, 0, 48, 0, 0, 4, 0, 0, 0, 0, 0, 3, 0, 128, 1, 255,
-                                     255, 0, 144, 92, 2, 0, 0, 0, 0, 0, 0, 4, 0, 128, 2, 255, 255,
-                                     0, 208, 29, 2, 0, 0, 0, 0, 0, 0, 5, 0, 128, 3, 3, 0, 0, 208,
-                                     172, 4, 0, 0, 0, 0, 0, 0, 6, 0, 128, 3, 1, 0, 0, 208, 172, 4,
-                                     0, 0, 0, 0, 0, 0, 7, 0, 128, 4, 33, 0, 0, 176, 32, 9, 0, 0, 128,
-                                     250, 213, 41, 8, 0, 128, 4, 34, 0, 0, 176, 160, 49, 0, 0, 130,
-                                     250, 213, 41, 9, 0, 128, 4, 35, 0, 0, 176, 184, 23, 0, 0, 130,
-                                     250, 213, 41, 10, 0, 128, 4, 36, 0, 0, 176, 233, 2, 0, 0, 130,
-                                     250, 213, 41, 11, 0, 128, 4, 37, 0, 0, 176, 139, 3, 0, 0, 132,
-                                     250, 213, 41, 12, 0, 128, 4, 38, 0, 0, 176, 233, 2, 0, 0, 132,
-                                     250, 213, 41, 13, 0, 128, 4, 39, 0, 0, 176, 45, 4, 0, 0, 134, 250,
-                                     213, 41, 14, 0, 128, 4, 40, 0, 0, 176, 49, 29, 0, 0, 134, 250, 213,
-                                     41, 15, 0, 128, 4, 41, 0, 0, 176, 89, 26, 0, 0, 134, 250, 213, 41,
-                                     16, 0, 128, 4, 42, 0, 0, 176, 173, 61, 0, 0, 136, 250, 213, 41, 17,
-                                     0, 128, 4, 43, 0, 0, 176, 80, 67, 0, 0, 138, 250, 213, 41, 18, 0,
-                                     128, 4, 44, 0, 0, 176, 107, 46, 0, 0, 138, 250, 213, 41, 19, 0,
-                                     128, 4, 45, 0, 0, 176, 40, 26, 0, 0, 140, 250, 213, 41, 20, 0, 128,
-                                     4, 46, 0, 0, 176, 217, 23, 0, 0, 140, 250, 213, 41, 21, 0, 128, 4,
-                                     47, 0, 0, 176, 108, 3, 0, 0, 144, 250, 213, 41, 22, 0, 128, 4, 48,
-                                     0, 0, 176, 166, 80, 0, 0, 144, 250, 213, 41, 23, 0, 128, 4, 49, 0,
-                                     0, 176, 159, 62, 0, 0, 146, 250, 213, 41, 24, 0, 128, 4, 50, 0, 0,
-                                     176, 253, 15, 0, 0, 148, 250, 213, 41, 25, 0, 128, 4, 51, 0, 0,
-                                     176, 163, 24, 0, 0, 150, 250, 213, 41, 26, 0, 128, 4, 52, 0, 0,
-                                     176, 56, 25, 0, 0, 150, 250, 213, 41, 27, 0, 128, 4, 53, 0, 0,
-                                     176, 158, 22, 0, 0, 152, 250, 213, 41, 28, 0, 128, 4, 54, 0, 0,
-                                     176, 114, 19, 0, 0, 154, 250, 213, 41, 29, 0, 128, 4, 55, 0, 0,
-                                     176, 239, 23, 0, 0, 154, 250, 213, 41, 30, 0, 128, 4, 56, 0, 0,
-                                     176, 155, 35, 0, 0, 156, 250, 213, 41, 31, 0, 128, 4, 57, 0, 0,
-                                     176, 156, 19, 0, 0, 158, 250, 213, 41])
+
+        self.dir = array.array(
+            "B",
+            b"\x01\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00"
+            b"\x01\x0c\x00\x00\x00\x50\x00\xe0\x19\x00\x00\x00\x00\x00\x02\x00\x01\x0d"
+            b"\x00\x00\x00\x30\x00\x00\x04\x00\x00\x00\x00\x00\x03\x00\x80\x01\xff\xff"
+            b"\x00\x90\x5c\x02\x00\x00\x00\x00\x00\x00\x04\x00\x80\x02\xff\xff\x00\xd0"
+            b"\x1d\x02\x00\x00\x00\x00\x00\x00\x05\x00\x80\x03\x03\x00\x00\xd0\xac\x04"
+            b"\x00\x00\x00\x00\x00\x00\x06\x00\x80\x03\x01\x00\x00\xd0\xac\x04\x00\x00"
+            b"\x00\x00\x00\x00\x07\x00\x80\x04\x21\x00\x00\xb0\x20\x09\x00\x00\x80\xfa"
+            b"\xd5\x29\x08\x00\x80\x04\x22\x00\x00\xb0\xa0\x31\x00\x00\x82\xfa\xd5\x29"
+            b"\x09\x00\x80\x04\x23\x00\x00\xb0\xb8\x17\x00\x00\x82\xfa\xd5\x29\x0a\x00"
+            b"\x80\x04\x24\x00\x00\xb0\xe9\x02\x00\x00\x82\xfa\xd5\x29\x0b\x00\x80\x04"
+            b"\x25\x00\x00\xb0\x8b\x03\x00\x00\x84\xfa\xd5\x29\x0c\x00\x80\x04\x26\x00"
+            b"\x00\xb0\xe9\x02\x00\x00\x84\xfa\xd5\x29\x0d\x00\x80\x04\x27\x00\x00\xb0"
+            b"\x2d\x04\x00\x00\x86\xfa\xd5\x29\x0e\x00\x80\x04\x28\x00\x00\xb0\x31\x1d"
+            b"\x00\x00\x86\xfa\xd5\x29\x0f\x00\x80\x04\x29\x00\x00\xb0\x59\x1a\x00\x00"
+            b"\x86\xfa\xd5\x29\x10\x00\x80\x04\x2a\x00\x00\xb0\xad\x3d\x00\x00\x88\xfa"
+            b"\xd5\x29\x11\x00\x80\x04\x2b\x00\x00\xb0\x50\x43\x00\x00\x8a\xfa\xd5\x29"
+            b"\x12\x00\x80\x04\x2c\x00\x00\xb0\x6b\x2e\x00\x00\x8a\xfa\xd5\x29\x13\x00"
+            b"\x80\x04\x2d\x00\x00\xb0\x28\x1a\x00\x00\x8c\xfa\xd5\x29\x14\x00\x80\x04"
+            b"\x2e\x00\x00\xb0\xd9\x17\x00\x00\x8c\xfa\xd5\x29\x15\x00\x80\x04\x2f\x00"
+            b"\x00\xb0\x6c\x03\x00\x00\x90\xfa\xd5\x29\x16\x00\x80\x04\x30\x00\x00\xb0"
+            b"\xa6\x50\x00\x00\x90\xfa\xd5\x29\x17\x00\x80\x04\x31\x00\x00\xb0\x9f\x3e"
+            b"\x00\x00\x92\xfa\xd5\x29\x18\x00\x80\x04\x32\x00\x00\xb0\xfd\x0f\x00\x00"
+            b"\x94\xfa\xd5\x29\x19\x00\x80\x04\x33\x00\x00\xb0\xa3\x18\x00\x00\x96\xfa"
+            b"\xd5\x29\x1a\x00\x80\x04\x34\x00\x00\xb0\x38\x19\x00\x00\x96\xfa\xd5\x29"
+            b"\x1b\x00\x80\x04\x35\x00\x00\xb0\x9e\x16\x00\x00\x98\xfa\xd5\x29\x1c\x00"
+            b"\x80\x04\x36\x00\x00\xb0\x72\x13\x00\x00\x9a\xfa\xd5\x29\x1d\x00\x80\x04"
+            b"\x37\x00\x00\xb0\xef\x17\x00\x00\x9a\xfa\xd5\x29\x1e\x00\x80\x04\x38\x00"
+            b"\x00\xb0\x9b\x23\x00\x00\x9c\xfa\xd5\x29\x1f\x00\x80\x04\x39\x00\x00\xb0"
+            b"\x9c\x13\x00\x00\x9e\xfa\xd5\x29",
+        )
 
         directory = Directory.parse(self.dir)
         self.assertEqual(directory.get_version(), (0, 1))
@@ -75,20 +76,30 @@ class DirectoryParse(unittest.TestCase):
 
 
 class FileParse(unittest.TestCase):
-
     def test_parse(self):
-        self.file_binary = array.array('B', [7, 0, 128, 4, 33, 0, 0, 176, 32, 9, 0, 0, 128, 250, 213, 41])
+        self.file_binary = array.array(
+            "B", b"\x07\x00\x80\x04\x21\x00\x00\xb0\x20\x09\x00\x00\x80\xfa\xd5\x29"
+        )
 
         file_object = File.parse(self.file_binary)
         self.assertEqual(file_object.get_index(), 7)
         self.assertEqual(file_object.get_type(), File.Type.FIT)
-        self.assertEqual(file_object.get_identifier(), array.array('B', [4, 33, 0]))
-        self.assertEqual(file_object.get_fit_sub_type(),File.Identifier.ACTIVITY)
+        self.assertEqual(
+            file_object.get_identifier(), array.array("B", b"\x04\x21\x00")
+        )
+        self.assertEqual(file_object.get_fit_sub_type(), File.Identifier.ACTIVITY)
         self.assertEqual(file_object.get_fit_file_number(), 33)
         self.assertEqual(file_object.get_size(), 2336)
-        self.assertEqual(file_object.get_date().year, datetime.datetime(2012, 3, 28, 17, 12, 32).year)
-        if sys.version_info >= (3,3):
-            self.assertEqual(file_object.get_date(), datetime.datetime(2012, 3, 28, 17, 12, 32, tzinfo=datetime.timezone.utc))
+        self.assertEqual(
+            file_object.get_date().year, datetime.datetime(2012, 3, 28, 17, 12, 32).year
+        )
+        if sys.version_info >= (3, 3):
+            self.assertEqual(
+                file_object.get_date(),
+                datetime.datetime(
+                    2012, 3, 28, 17, 12, 32, tzinfo=datetime.timezone.utc
+                ),
+            )
         self.assertTrue(file_object.is_readable())
         self.assertFalse(file_object.is_writable())
         self.assertTrue(file_object.is_erasable())

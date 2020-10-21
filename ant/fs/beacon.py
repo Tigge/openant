@@ -53,7 +53,7 @@ class Beacon:
         return self._status_byte_1 & 0x07  # 0b00000111, TODO
 
     def get_client_device_state(self):
-        return self._status_byte_2 & 0x0f  # 0b00001111, TODO
+        return self._status_byte_2 & 0x0F  # 0b00001111, TODO
 
     def get_serial(self):
         return struct.unpack("<I", self._descriptor)[0]
@@ -63,9 +63,10 @@ class Beacon:
 
     @staticmethod
     def parse(data):
-        mark, status_byte_1, status_byte_2, authentication_type = struct.unpack("<BBBB4x", data)
+        mark, status_byte_1, status_byte_2, authentication_type = struct.unpack(
+            "<BBBB4x", data
+        )
 
         assert mark == Beacon.BEACON_ID
 
         return Beacon(status_byte_1, status_byte_2, authentication_type, data[4:])
-

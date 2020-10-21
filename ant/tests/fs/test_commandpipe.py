@@ -26,22 +26,31 @@ import array
 import unittest
 import datetime
 
-from ant.fs.commandpipe import parse, CreateFile, Request, CommandPipe, Time, TimeResponse
+from ant.fs.commandpipe import (
+    parse,
+    CreateFile,
+    Request,
+    CommandPipe,
+    Time,
+    TimeResponse,
+)
 
 
 class CreateFileTest(unittest.TestCase):
     def runTest(self):
         # Test create file
-        data = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09]
-        request = CreateFile(len(data), 0x80, [0x04, 0x00, 0x00], [0x00, 0xff, 0xff])
+        data = b"\x01\x02\x03\x04\x05\x06\x07\x08\x09"
+        request = CreateFile(len(data), 0x80, [0x04, 0x00, 0x00], [0x00, 0xFF, 0xFF])
 
         # Test create file response
-        response_data = array.array('B', [2, 0, 0, 0, 4, 0, 0, 0, 128, 4, 123, 0, 103, 0, 0, 0])
+        response_data = array.array(
+            "B", b"\x02\x00\x00\x00\x04\x00\x00\x00\x80\x04\x7b\x00\x67\x00\x00\x00"
+        )
         response = parse(response_data)
         self.assertEqual(response.get_request_id(), 0x04)
         self.assertEqual(response.get_response(), 0x00)
         self.assertEqual(response.get_data_type(), 0x80)  # FIT
-        self.assertEqual(response.get_identifier(), array.array('B', [4, 123, 0]))
+        self.assertEqual(response.get_identifier(), array.array("B", b"\x04\x7b\x00"))
         self.assertEqual(response.get_index(), 103)
 
 
@@ -49,32 +58,60 @@ class TimeTest(unittest.TestCase):
     def runTest(self):
         # Test time request
         request = Request(CommandPipe.Type.TIME)
-        self.assertEqual(request.get(), array.array('B', [0x01, 0x00, 0x00, CommandPipe._sequence, 0x03, 0x00, 0x00, 0x00]))
+        self.assertEqual(
+            request.get(),
+            array.array(
+                "B",
+                b"\x01\x00\x00"
+                + CommandPipe._sequence.to_bytes(1, byteorder="big")
+                + b"\x03\x00\x00\x00",
+            ),
+        )
 
         # Test time parse
-        response_data = array.array('B', [0x03, 0x00, 0x00, 0x0f, 0x78, 0xb5, 0xca, 0x25,
-                                          0xc8, 0xa0, 0xf4, 0x29, 0x01, 0x00, 0x00, 0x00])
+        response_data = array.array(
+            "B", b"\x03\x00\x00\x0F\x78\xB5\xCA\x25\xC8\xA0\xF4\x29\x01\x00\x00\x00"
+        )
         response = parse(response_data)
         self.assertIsInstance(response, Time)
         self.assertEqual(response.get_command(), 0x03)
-        self.assertEqual(response.get_sequence(), 0x0f)
-        current_time = (datetime.datetime(2010, 2, 2, 10, 42, 0) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+        self.assertEqual(response.get_sequence(), 0x0F)
+        current_time = (
+            datetime.datetime(2010, 2, 2, 10, 42, 0)
+            - datetime.datetime(1989, 12, 31, 0, 0, 0)
+        ).total_seconds()
         self.assertEqual(response.get_current_time(), current_time)
-        system_time = (datetime.datetime(2012, 4, 20, 23, 10, 0) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+        system_time = (
+            datetime.datetime(2012, 4, 20, 23, 10, 0)
+            - datetime.datetime(1989, 12, 31, 0, 0, 0)
+        ).total_seconds()
         self.assertEqual(response.get_system_time(), system_time)
         self.assertEqual(response.get_time_format(), 1)
 
         # Test time create
-        current_time = (datetime.datetime(2015, 1, 4, 21, 23, 30) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
-        system_time = (datetime.datetime(2012, 4, 20, 23, 10, 0) - datetime.datetime(1989, 12, 31, 0, 0, 0)).total_seconds()
+        current_time = (
+            datetime.datetime(2015, 1, 4, 21, 23, 30)
+            - datetime.datetime(1989, 12, 31, 0, 0, 0)
+        ).total_seconds()
+        system_time = (
+            datetime.datetime(2012, 4, 20, 23, 10, 0)
+            - datetime.datetime(1989, 12, 31, 0, 0, 0)
+        ).total_seconds()
 
         time = Time(int(current_time), int(system_time), Time.Format.COUNTER)
-        self.assertEqual(time.get(), array.array('B', [0x03, 0x00, 0x00, CommandPipe._sequence, 0x52, 0x63, 0x0c, 0x2f,
-                                                       0xc8, 0xa0, 0xf4, 0x29, 0x02, 0x00, 0x00, 0x00]))
+        self.assertEqual(
+            time.get(),
+            array.array(
+                "B",
+                b"\x03\x00\x00"
+                + CommandPipe._sequence.to_bytes(1, byteorder="big")
+                + b"\x52\x63\x0c\x2f\xc8\xa0\xf4\x29\x02\x00\x00\x00",
+            ),
+        )
 
         # Test time request response
-        response_data = array.array('B', [0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
-                                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+        response_data = array.array(
+            "B", b"\x02\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        )
         response = parse(response_data)
         self.assertIsInstance(response, TimeResponse)
-

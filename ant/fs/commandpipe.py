@@ -50,9 +50,9 @@ class CommandPipe(object):
 
     def __init__(self):
         self._arguments = OrderedDict()
-        self._add_argument('command', self._id)
+        self._add_argument("command", self._id)
         CommandPipe._sequence += 1
-        self._add_argument('sequence', CommandPipe._sequence)
+        self._add_argument("sequence", CommandPipe._sequence)
 
     def _add_argument(self, name, value):
         self._arguments[name] = value
@@ -74,7 +74,7 @@ class CommandPipe(object):
     def get(self):
         arguments = list(self._get_arguments())
         data = struct.pack(self._format, *arguments)
-        lst = array.array('B', data)
+        lst = array.array("B", data)
         _logger.debug("packing %r in %r,%s", data, lst, type(lst))
         return lst
 
@@ -110,7 +110,7 @@ class Request(CommandPipe):
 
     def __init__(self, request_id):
         CommandPipe.__init__(self)
-        self._add_argument('request_id', request_id)
+        self._add_argument("request_id", request_id)
 
 
 class Response(CommandPipe):
@@ -125,8 +125,8 @@ class Response(CommandPipe):
 
     def __init__(self, request_id, response):
         CommandPipe.__init__(self)
-        self._add_argument('request_id', request_id)
-        self._add_argument('response', response)
+        self._add_argument("request_id", request_id)
+        self._add_argument("response", response)
 
 
 class Time(CommandPipe):
@@ -140,9 +140,9 @@ class Time(CommandPipe):
 
     def __init__(self, current_time, system_time, time_format):
         CommandPipe.__init__(self)
-        self._add_argument('current_time', current_time)
-        self._add_argument('system_time', system_time)
-        self._add_argument('time_format', time_format)
+        self._add_argument("current_time", current_time)
+        self._add_argument("system_time", system_time)
+        self._add_argument("time_format", time_format)
 
 
 class TimeResponse(Response):
@@ -158,14 +158,14 @@ class CreateFile(Request):
 
     def __init__(self, size, data_type, identifier, identifier_mask):
         CommandPipe.__init__(self)
-        self._add_argument('size', size)
-        self._add_argument('data_type', data_type)
-        self._add_argument('identifier', identifier)
-        self._add_argument('identifier_mask', identifier_mask)
+        self._add_argument("size", size)
+        self._add_argument("data_type", data_type)
+        self._add_argument("identifier", identifier)
+        self._add_argument("identifier_mask", identifier_mask)
 
     def get(self):
         arguments = list(self._get_arguments())
-        data = array.array('B', struct.pack(CommandPipe._format + "IB", *arguments[:4]))
+        data = array.array("B", struct.pack(CommandPipe._format + "IB", *arguments[:4]))
         data.extend(self._get_argument("identifier"))
         data.extend([0])
         data.extend(self._get_argument("identifier_mask"))
@@ -173,7 +173,11 @@ class CreateFile(Request):
 
     @classmethod
     def _parse_args(cls, data):
-        return struct.unpack(Command._format + "IB", data[0:9]) + (data[9:12],) + (data[13:16],)
+        return (
+            struct.unpack(Command._format + "IB", data[0:9])
+            + (data[9:12],)
+            + (data[13:16],)
+        )
 
 
 class CreateFileResponse(Response):
@@ -181,13 +185,17 @@ class CreateFileResponse(Response):
 
     def __init__(self, request_id, response, data_type, identifier, index):
         Response.__init__(self, request_id, response)
-        self._add_argument('data_type', data_type)
-        self._add_argument('identifier', identifier)
-        self._add_argument('index', index)
+        self._add_argument("data_type", data_type)
+        self._add_argument("identifier", identifier)
+        self._add_argument("index", index)
 
     @classmethod
     def _parse_args(cls, data):
-        return Response._parse_args(data[:8]) + (data[8], data[9:12], struct.unpack("<H", data[12:14])[0])
+        return Response._parse_args(data[:8]) + (
+            data[8],
+            data[9:12],
+            struct.unpack("<H", data[12:14])[0],
+        )
 
 
 _classes = {
@@ -198,11 +206,13 @@ _classes = {
     CommandPipe.Type.DIRECTORY_FILTER: None,
     CommandPipe.Type.SET_AUTHENTICATION_PASSKEY: None,
     CommandPipe.Type.SET_CLIENT_FRIENDLY_NAME: None,
-    CommandPipe.Type.FACTORY_RESET_COMMAND: None}
+    CommandPipe.Type.FACTORY_RESET_COMMAND: None,
+}
 
 _responses = {
     CommandPipe.Type.TIME: TimeResponse,
-    CommandPipe.Type.CREATE_FILE: CreateFileResponse}
+    CommandPipe.Type.CREATE_FILE: CreateFileResponse,
+}
 
 
 def parse(data):
@@ -211,4 +221,3 @@ def parse(data):
         if data[4] in _responses and len(data) > 8:
             commandpipe_type = _responses[data[4]]
     return commandpipe_type._parse(data)
-

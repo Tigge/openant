@@ -33,14 +33,20 @@ from ant.easy.channel import Channel
 
 
 class AntEasyTests(unittest.TestCase):
-    @unittest.skipUnless("ANT_TEST_USB_STICK" in os.environ, "Testing with USB stick not enabled")
+    @unittest.skipUnless(
+        "ANT_TEST_USB_STICK" in os.environ, "Testing with USB stick not enabled"
+    )
     def test_search(self):
 
         try:
             logger = logging.getLogger("ant")
             logger.setLevel(logging.DEBUG)
             handler = logging.StreamHandler()
-            handler.setFormatter(logging.Formatter(fmt='%(asctime)s  %(name)-15s  %(levelname)-8s  %(message)s'))
+            handler.setFormatter(
+                logging.Formatter(
+                    fmt="%(asctime)s  %(name)-15s  %(levelname)-8s  %(message)s"
+                )
+            )
             logger.addHandler(handler)
 
             self.node = Node()
@@ -54,7 +60,7 @@ class AntEasyTests(unittest.TestCase):
 
             print("Starting system...")
 
-            NETWORK_KEY = [0xa8, 0xa4, 0x23, 0xb9, 0xf5, 0x5e, 0x63, 0xc1]
+            NETWORK_KEY = [0xA8, 0xA4, 0x23, 0xB9, 0xF5, 0x5E, 0x63, 0xC1]
 
             # self.node.reset_system()
             self.node.set_network_key(0x00, NETWORK_KEY)

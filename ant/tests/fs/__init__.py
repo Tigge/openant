@@ -22,4 +22,4 @@
 
 from __future__ import absolute_import, print_function
 
-__all__ = ['test_beacon', 'test_command', 'test_commandpipe', 'test_file']
+__all__ = ["test_beacon", "test_command", "test_commandpipe", "test_file"]

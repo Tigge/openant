@@ -31,7 +31,7 @@ from ant.easy.filter import wait_for_event, wait_for_response, wait_for_special
 _logger = logging.getLogger("ant.easy.channel")
 
 
-class Channel():
+class Channel:
     class Type:
         BIDIRECTIONAL_RECEIVE = 0x00
         BIDIRECTIONAL_TRANSMIT = 0x10
@@ -51,10 +51,14 @@ class Channel():
         return wait_for_event(ok_codes, self._node._events, self._node._event_cond)
 
     def wait_for_response(self, event_id):
-        return wait_for_response(event_id, self._node._responses, self._node._responses_cond)
+        return wait_for_response(
+            event_id, self._node._responses, self._node._responses_cond
+        )
 
     def wait_for_special(self, event_id):
-        return wait_for_special(event_id, self._node._responses, self._node._responses_cond)
+        return wait_for_special(
+            event_id, self._node._responses, self._node._responses_cond
+        )
 
     def _assign(self, channelType, networkNumber, ext_assign):
         self._ant.assign_channel(self.id, channelType, networkNumber, ext_assign)

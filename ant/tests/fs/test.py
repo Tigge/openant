@@ -30,15 +30,17 @@ class App(Application):
     def on_authentication(self, beacon):
         print("on authentication")
         serial = self.authentication_serial()
-        #passkey = self.authentication_pair("Friendly little name")
-        passkey = array.array('B', [234, 85, 223, 166, 87, 48, 71, 153])
+        # passkey = self.authentication_pair("Friendly little name")
+        passkey = array.array("B", b"\xea\x55\xdf\xa6\x57\x30\x47\x99")
         self.authentication_passkey(passkey)
-        #print "Link", serial, "-", info, "-", beacon
+        # print "Link", serial, "-", info, "-", beacon
 
     def on_transport(self, beacon):
         print("on transport")
         d = self.download_directory()
-        print(d, d.get_version(), d._time_format, d._current_system_time, d._last_modified)
+        print(
+            d, d.get_version(), d._time_format, d._current_system_time, d._last_modified
+        )
         print(d._files)
 
 
@@ -48,9 +50,12 @@ def main():
         logger = logging.getLogger("ant")
         logger.setLevel(logging.DEBUG)
         handler = logging.FileHandler("test.log", "w")
-        #handler = logging.StreamHandler()
+        # handler = logging.StreamHandler()
         handler.setFormatter(
-            logging.Formatter(fmt='%(threadName)-10s %(asctime)s  %(name)-15s  %(levelname)-8s  %(message)s'))
+            logging.Formatter(
+                fmt="%(threadName)-10s %(asctime)s  %(name)-15s  %(levelname)-8s  %(message)s"
+            )
+        )
         logger.addHandler(handler)
 
         app = App()
@@ -60,4 +65,3 @@ def main():
         print("Interrupted")
         app.stop()
         sys.exit(1)
-

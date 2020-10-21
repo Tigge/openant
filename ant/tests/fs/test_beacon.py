@@ -30,7 +30,7 @@ from ant.fs.beacon import Beacon
 
 class BeaconParseTest(unittest.TestCase):
     def test_beacon_parse(self):
-        data = array.array('B', [0x43, 0x04, 0x00, 0x03, 0x41, 0x05, 0x01, 0x00])
+        data = array.array("B", b"\x43\x04\x00\x03\x41\x05\x01\x00")
 
         beacon = Beacon.parse(data)
         self.assertIsInstance(beacon, Beacon)
@@ -38,7 +38,8 @@ class BeaconParseTest(unittest.TestCase):
         self.assertFalse(beacon.is_upload_enabled())
         self.assertFalse(beacon.is_pairing_enabled())
         self.assertEqual(beacon.get_channel_period(), 4)
-        self.assertEqual(beacon.get_client_device_state(), Beacon.ClientDeviceState.LINK)
+        self.assertEqual(
+            beacon.get_client_device_state(), Beacon.ClientDeviceState.LINK
+        )
         self.assertEqual(beacon.get_serial(), 66881)
         self.assertEqual(beacon.get_descriptor(), (1345, 1))
-
