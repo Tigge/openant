@@ -20,19 +20,11 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function, division
-
 import array
 import datetime
 import logging
 import threading
-
-try:
-    # Python 3
-    import queue
-except ImportError:
-    # Python 2
-    import Queue as queue
+import queue
 
 from ant.easy.channel import Channel
 from ant.easy.node import Node, Message

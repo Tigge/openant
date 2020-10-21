@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import array
 import unittest
@@ -32,7 +31,8 @@ class AuthenticateCommandTest(unittest.TestCase):
     def test_serial(self):
         command = AuthenticateCommand(AuthenticateCommand.Request.SERIAL, 123456789)
         self.assertEqual(
-            command.get(), array.array("B", b"\x44\x04\x01\x00\x15\xCD\x5B\x07"),
+            command.get(),
+            array.array("B", b"\x44\x04\x01\x00\x15\xCD\x5B\x07"),
         )
 
     def test_pairing(self):

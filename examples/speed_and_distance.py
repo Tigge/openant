@@ -7,8 +7,6 @@
 #
 # For further details on Speed & Distance Sensor, check out the thisisant.com webpage
 
-from __future__ import absolute_import, print_function
-
 import array
 import threading
 import logging

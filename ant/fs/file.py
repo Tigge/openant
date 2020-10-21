@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import datetime
 import logging
@@ -195,12 +194,10 @@ class File:
         index, data_type, data_flags, flags, file_size, file_date = struct.unpack(
             "<HB3xBBII", data
         )
-        if sys.version_info >= (3, 3):
-            file_date = datetime.datetime.fromtimestamp(
-                file_date + 631065600, datetime.timezone.utc
-            )
-        else:
-            file_date = datetime.datetime.fromtimestamp(file_date + 631065600)
+
+        file_date = datetime.datetime.fromtimestamp(
+            file_date + 631065600, datetime.timezone.utc
+        )
         identifier = data[3:6]
 
         return File(

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function
-
 # from ant.base import Message
 import array
 import logging

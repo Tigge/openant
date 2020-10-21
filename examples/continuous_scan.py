@@ -3,8 +3,6 @@
 # Open Rx demo working with OpenAnt Library (https://github.com/Tigge/openant)
 # For further details on Open Rx Mode ("Continious Scann Mode"), check out the thisisant.com webpage
 
-from __future__ import absolute_import, print_function
-
 from ant.easy.node import Node
 from ant.easy.channel import Channel
 from ant.base.message import Message
