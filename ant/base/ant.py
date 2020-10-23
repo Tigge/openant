@@ -72,7 +72,7 @@ class Ant:
             self._running = False
             self._worker_thread.join()
 
-        #SDS - releasing resource (serial/usb)
+        # SDS - releasing resource (serial/usb)
         self._driver.close()
 
     def _on_broadcast(self, message):
@@ -132,11 +132,13 @@ class Ant:
 
                 # Only do callbacks for new data. Resent data only indicates
                 # a new channel timeslot.
-                #SDS : TODO : klopt enkel bij 1 channel!
-                # bij meerdere channels krijg je channel data door elkaar, en ga je dus toch 
+                # SDS : TODO : klopt enkel bij 1 channel!
+                # bij meerdere channels krijg je channel data door elkaar, en ga je dus toch
                 # per channel meerdere keren dezelfde data / events opslaan
-                if not (message._id == Message.ID.BROADCAST_DATA
-                        and message._data == self._last_data):
+                if not (
+                    message._id == Message.ID.BROADCAST_DATA
+                    and message._data == self._last_data
+                ):
 
                     # Notifications
                     if message._id in [
@@ -181,13 +183,13 @@ class Ant:
                     # Channel event
                     elif (
                         message._id == Message.ID.RESPONSE_CHANNEL
-                        and message.data[1] == 0x01
+                        and message._data[1] == 0x01
                     ):
                         _logger.debug("Got channel event, %r", message)
                         self._events.put(
                             (
                                 "event",
-                                (message._data[0], message._data[2], message._data[3:]),
+                                (message._data[0], message._data[1], message._data[2:]),
                             )
                         )
                     elif message._id == Message.ID.BROADCAST_DATA:
@@ -203,11 +205,13 @@ class Ant:
 
                 # Send messages in queue, on indicated time slot
                 if message._id == Message.ID.BROADCAST_DATA:
-                    #SDS TODO : na elke broadcast 100ms sleep??? 
+                    # SDS TODO : na elke broadcast 100ms sleep???
                     # geen wonder dat de input buffer fluctueert!!
                     # of dat er overflows komen als er meerdere channels open staan & broadcasten!
-                    #SDS time.sleep(0.1)
-                    _logger.debug("Got broadcast data, examine queue to see if we should send anything back")
+                    # SDS time.sleep(0.1)
+                    _logger.debug(
+                        "Got broadcast data, examine queue to see if we should send anything back"
+                    )
                     if self._message_queue_cond.acquire(blocking=False):
                         while len(self._message_queue) > 0:
                             m = self._message_queue.popleft()
@@ -231,16 +235,16 @@ class Ant:
         _logger.debug("ant.base stopped")
 
     def _main(self):
-        #TODO : beetje ongelukkig, want deze naam wordt in node.py gegeven, dit zou eigenlijk in ant.py moeten gebeuren
+        # TODO : beetje ongelukkig, want deze naam wordt in node.py gegeven, dit zou eigenlijk in ant.py moeten gebeuren
         _logger.debug("ant.easy started")
 
         while self._running:
-            #SDS : waarom een timeout als ge toch niets doet met de empty exception??
-            # anders werkt node.stop() soms niet -> self._running wordt false gezet, 
+            # SDS : waarom een timeout als ge toch niets doet met de empty exception??
+            # anders werkt node.stop() soms niet -> self._running wordt false gezet,
             # maar de loop zit vast, wachtend op een nieuw event dat nooit meer komt aangezien de usb aanvoer al is gestopt
             try:
                 (event_type, event) = self._events.get(True, 1.0)
-                #SDS (event_type, event) = self._events.get(True)
+                # SDS (event_type, event) = self._events.get(True)
                 self._events.task_done()
                 (channel, event, data) = event
 
@@ -306,7 +310,7 @@ class Ant:
         message = Message(Message.ID.OPEN_RX_SCAN_MODE, [0, 1])  # [0-Channel, 1-Enable]
         self.write_message(message)
 
-    #sds
+    # sds
     def close_channel(self, channel):
         _logger.debug("Closing channel %d", channel)
         message = Message(Message.ID.CLOSE_CHANNEL, [channel])

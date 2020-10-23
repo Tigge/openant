@@ -173,7 +173,7 @@ try:
             if dev is None:
                 raise ValueError("Device not found")
 
-            #SDS : add self._dev in order to dispose_resources at the close()
+            # SDS : add self._dev in order to dispose_resources at the close()
             self._dev = dev
 
             _logger.debug("USB Config values:")
@@ -245,7 +245,7 @@ try:
             assert self._out is not None and self._in is not None
 
         def close(self):
-            #SDS test
+            # SDS test
             usb.util.dispose_resources(self._dev)
             self._dev.attach_kernel_driver(0)
             _logger.debug("usbdriver.closed")

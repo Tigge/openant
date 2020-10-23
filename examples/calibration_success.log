@@ -1,0 +1,79 @@
+2020-10-18 18:59:47,919 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:48,922 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:49,923 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:50,925 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:51,926 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:52,927 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:53,929 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:54,930 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:55,931 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:56,933 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:57,934 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:58,936 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 18:59:59,937 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:00,938 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:01,939 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:02,940 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:03,941 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:04,942 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:05,943 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:06,944 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:07,946 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:09,620 <class 'usb.core.USBError'>, (110, 'Operation timed out')
+2020-10-18 19:00:09,637 6574/17 bc data : array('B', [16, 25, 139, 0, 0, 0, 255, 36])
+2020-10-18 19:00:24,359 sending request data : array('B', [70, 255, 255, 255, 255, 3, 55, 1])
+2020-10-18 19:00:24,386 6574/17 bc data : array('B', [25, 155, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:24,636 6574/17 bc data : array('B', [25, 156, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:24,886 6574/17 bc data : array('B', [16, 25, 200, 0, 0, 0, 255, 36])
+2020-10-18 19:00:25,136 USER_CONFIG data : array('B', [55, 76, 29, 255, 128, 12, 70, 0])
+2020-10-18 19:00:25,137 6574/17 bc data : array('B', [55, 76, 29, 255, 128, 12, 70, 0])
+2020-10-18 19:00:25,886 6574/17 bc data : array('B', [16, 25, 204, 0, 0, 0, 255, 36])
+2020-10-18 19:00:26,136 6574/17 bc data : array('B', [17, 255, 255, 219, 255, 127, 33, 32])
+2020-10-18 19:00:26,636 6574/17 bc data : array('B', [16, 25, 206, 0, 0, 0, 255, 36])
+2020-10-18 19:00:26,887 6574/17 bc data : array('B', [16, 25, 207, 0, 0, 0, 255, 36])
+2020-10-18 19:00:27,136 6574/17 bc data : array('B', [25, 157, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:27,386 6574/17 bc data : array('B', [25, 158, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:28,136 6574/17 bc data : array('B', [16, 25, 211, 0, 0, 0, 255, 36])
+2020-10-18 19:00:28,386 6574/17 bc data : array('B', [25, 159, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:28,636 6574/17 bc data : array('B', [25, 160, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:28,886 6574/17 bc data : array('B', [16, 25, 215, 0, 0, 0, 255, 36])
+2020-10-18 19:00:29,136 6574/17 bc data : array('B', [16, 25, 216, 0, 0, 0, 255, 36])
+2020-10-18 19:00:29,386 6574/17 bc data : array('B', [25, 161, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:29,636 6574/17 bc data : array('B', [25, 162, 0, 0, 0, 0, 0, 32])
+2020-10-18 19:00:29,886 6574/17 bc data : array('B', [16, 25, 219, 0, 0, 0, 255, 36])
+2020-10-18 19:00:30,136 6574/17 bc data : array('B', [16, 25, 220, 0, 0, 0, 255, 36])
+2020-10-18 19:00:30,386 6574/17 bc data : array('B', [17, 255, 255, 219, 255, 127, 33, 32])
+2020-10-18 19:00:42,889 FEC:set_resistance, send data : array('B', [48, 255, 255, 255, 255, 255, 255, 1])
+2020-10-18 19:01:23,638 FEC:start_calibration:sending request data : array('B', [1, 128, 0, 255, 255, 255, 255, 255])
+2020-10-18 19:02:08,637 stop_calibration:sending request data : array('B', [1, 0, 0, 255, 255, 255, 255, 255])
+2020-10-18 19:03:33,886 FEC:start_calibration:sending request data : array('B', [1, 64, 0, 255, 255, 255, 255, 255])
+2020-10-18 19:03:34,632 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:34,633 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:38,132 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:38,133 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:38,882 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:38,883 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:41,882 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:41,883 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:44,382 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:44,382 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:47,632 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:47,632 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:49,132 CALIBRATION_PROGRESS : array('B', [2, 64, 64, 255, 255, 255, 255, 255])
+2020-10-18 19:03:49,133 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : too low', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:49,882 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:03:49,883 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:50,632 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:03:50,633 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:53,382 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:03:53,382 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:56,631 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:03:56,632 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:58,131 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:03:58,132 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:03:59,882 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:03:59,883 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:04:03,381 CALIBRATION_PROGRESS : array('B', [2, 64, 128, 255, 255, 255, 255, 255])
+2020-10-18 19:04:03,381 FEC:calibration status : {'zero_offset_calibration_status_txt': 'Zero Offset Calibration :Pending', 'spindown_calibration_status_txt': 'Spin-down Calibration :Not Requested', 'temperature_condition_txt': 'Temperature : Not Applicable', 'speed_condition_txt': 'Speed : OK', 'temperature': 255, 'target_speed': 65535, 'target_spindown_time': 65535}
+2020-10-18 19:04:03,881 CALIBRATION_REQUEST_RESPONSE : array('B', [1, 64, 255, 255, 135, 24, 255, 255])
+2020-10-18 19:04:03,882 FEC:calibration status : {'zero_offset_calibration_success': 1, 'spindown_calibration_success': 0, 'temperature': 255, 'zero_offset': 6279, 'spindown_time': 65535}

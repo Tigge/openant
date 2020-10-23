@@ -49,7 +49,7 @@ def wait_for_message(match, process, queue, condition):
                 return process(message)
             # SDS BUG : need to check for actual channel number, but it's not passed in
             # SDS : original code temp disabled
-            '''
+            """
             elif message[1] == 1 and message[2][0] in [Message.Code.EVENT_TRANSFER_TX_FAILED,
                                                        Message.Code.EVENT_RX_FAIL_GO_TO_SEARCH]:
                 _logger.warning("Transfer send failed:")
@@ -57,17 +57,17 @@ def wait_for_message(match, process, queue, condition):
                 queue.remove(message)
                 condition.release()
                 raise TransferFailedException()
-            '''
+            """
         _logger.debug(" - could not find response matching %r", match)
         condition.wait(1.0)
     condition.release()
     raise AntException("Timed out while waiting for message")
 
 
-#sds enige functie die de node._events queue leest
-#BUG! klopt niet dat hier niet op chNum wordt gematched!!
+# sds enige functie die de node._events queue leest
+# BUG! klopt niet dat hier niet op chNum wordt gematched!!
 def wait_for_event(ok_codes, ch_num, queue, condition):
-#def wait_for_event(ok_codes, queue, condition):
+    # def wait_for_event(ok_codes, queue, condition):
     def match(params):
         channel, event, data = params
         return channel == ch_num and data[0] in ok_codes

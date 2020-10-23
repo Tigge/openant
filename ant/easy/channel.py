@@ -47,9 +47,11 @@ class Channel:
         self._ant = ant
 
     def wait_for_event(self, ok_codes):
-        #sds add chNum, so we can match events for a particular channel
-        return wait_for_event(ok_codes, self.id, self._node._events, self._node._event_cond)
-        #return wait_for_event(ok_codes, self._node._events, self._node._event_cond)
+        # sds add chNum, so we can match events for a particular channel
+        return wait_for_event(
+            ok_codes, self.id, self._node._events, self._node._event_cond
+        )
+        # return wait_for_event(ok_codes, self._node._events, self._node._event_cond)
 
     def wait_for_response(self, event_id):
         return wait_for_response(
@@ -76,7 +78,7 @@ class Channel:
         self._ant.open_rx_scan_mode()
         return self.wait_for_response(Message.ID.OPEN_RX_SCAN_MODE)
 
-    #sds - nog niet helemaal clean want de id blijft wel bezet, maar zo kunnen we al eens testen
+    # sds - nog niet helemaal clean want de id blijft wel bezet, maar zo kunnen we al eens testen
     def close(self):
         self._ant.close_channel(self.id)
         return self.wait_for_response(Message.ID.CLOSE_CHANNEL)
@@ -116,16 +118,20 @@ class Channel:
         self._ant.send_broadcast_data(self.id, data)
 
     def send_acknowledged_data(self, data):
-        #SDS WORKAROUND : eerst kijken of nog uitstaande TX_COMPLETED events in de node._events zitten voor dit channel
+        # SDS WORKAROUND : eerst kijken of nog uitstaande TX_COMPLETED events in de node._events zitten voor dit channel
         # voor het geval er nog een is aangekomen buiten timeout van een vorige send_acknowledged_data
         # momenteel verhindert niets om meerdere send_acknowledged_data op hetzelfde channel terzelfdertijd te starten vanuit <> threads
         # dus deze workaround kan deze events wel onterecht wissen!
         self._node._event_cond.acquire()
         msgs_to_delete = []
         for message in self._node._events:
-            if (message[0], message[1], message[2][0])== (self.id, 1, Message.Code.EVENT_TRANSFER_TX_COMPLETED):
+            if (message[0], message[1], message[2][0]) == (
+                self.id,
+                1,
+                Message.Code.EVENT_TRANSFER_TX_COMPLETED,
+            ):
                 msgs_to_delete.append(message)
-        
+
         for message in msgs_to_delete:
             self._node._events.remove(message)
 

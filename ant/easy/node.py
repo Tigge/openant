@@ -120,7 +120,7 @@ class Node:
         _logger.debug("node._main started")
 
         while self._running:
-            #SDS TODO : hier de self._events opkuisen/afhandelen
+            # SDS TODO : hier de self._events opkuisen/afhandelen
             # dan heeft die timeout op datas.get() nog zin
             # beter om dit per channel te doen ipv de volledige node?
             # SDS : voorlopige workaround
@@ -128,7 +128,7 @@ class Node:
             # TODO : nog niet ok, want als het [0] niet wordt gecleaned of gebruikt, stapelen de vuile events zich erachter op
             # hier moet een algo komen die systematisch alle events afhandelt!
             _logger.debug("SDS - cleaning node._events queue %r", self._events)
-            
+
             # sds de .acquire() is niet echt nodig als je events.remove(message) gebruikt ipv popleft
             # zonder de .acquire() zou de node._events queue kunnen wijzigen tussen message=... en node._events.popleft()
             # om dezelfde reden kan je ook geen for message in node._events loop doen zonder lock acquire
@@ -140,17 +140,27 @@ class Node:
             cleaning_done = False
             while cleaning_done == False and len(self._events) != 0:
                 message = self._events[0]
-                if message[1] == 1 and message[2][0] in [Message.Code.EVENT_RX_FAIL,
-                                                        Message.Code.EVENT_CHANNEL_COLLISION, 
-                                                        Message.Code.EVENT_QUE_OVERFLOW,
-                                                        Message.Code.EVENT_SERIAL_QUE_OVERFLOW]:
+                if message[1] == 1 and message[2][0] in [
+                    Message.Code.EVENT_RX_FAIL,
+                    Message.Code.EVENT_CHANNEL_COLLISION,
+                    Message.Code.EVENT_QUE_OVERFLOW,
+                    Message.Code.EVENT_SERIAL_QUE_OVERFLOW,
+                ]:
                     self._events.popleft()
-                elif message[1] == 1 and message[2][0] in [Message.Code.EVENT_TRANSFER_TX_FAILED]:
-                    _logger.warning(f"event cleanup(temp): TX_FAILED event on channel {message[0]}")
+                elif message[1] == 1 and message[2][0] in [
+                    Message.Code.EVENT_TRANSFER_TX_FAILED
+                ]:
+                    _logger.warning(
+                        f"event cleanup(temp): TX_FAILED event on channel {message[0]}"
+                    )
                     _logger.warning(message)
                     self._events.popleft()
-                elif message[1] == 1 and message[2][0] in [Message.Code.EVENT_RX_FAIL_GO_TO_SEARCH]:
-                    _logger.warning(f"event cleanup(temp):EVENT_RX_FAIL_GO_TO_SEARCH event on channel {message[0]}")
+                elif message[1] == 1 and message[2][0] in [
+                    Message.Code.EVENT_RX_FAIL_GO_TO_SEARCH
+                ]:
+                    _logger.warning(
+                        f"event cleanup(temp):EVENT_RX_FAIL_GO_TO_SEARCH event on channel {message[0]}"
+                    )
                     _logger.warning(message)
                     self._events.popleft()
                 else:
@@ -159,8 +169,8 @@ class Node:
             self._event_cond.release()
 
             try:
-                #SDS info : timeout 1.0s enkel nodig om deze thread te kunnen terminate door self._running = False te zetten
-                #zie ook ant.py
+                # SDS info : timeout 1.0s enkel nodig om deze thread te kunnen terminate door self._running = False te zetten
+                # zie ook ant.py
                 (data_type, channel, data) = self._datas.get(True, 1.0)
                 self._datas.task_done()
 
