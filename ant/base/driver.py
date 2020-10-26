@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import logging
 
@@ -68,7 +67,7 @@ try:
 
     class SerialDriver(Driver):
 
-        ID_VENDOR = 0x0fcf
+        ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1004
 
         @classmethod
@@ -78,13 +77,19 @@ try:
         @classmethod
         def get_url(cls):
             try:
-                path = '/sys/bus/usb-serial/devices'
+                path = "/sys/bus/usb-serial/devices"
                 for device in os.listdir(path):
                     try:
                         device_path = os.path.realpath(os.path.join(path, device))
                         device_path = os.path.join(device_path, "../../")
-                        ven = int(open(os.path.join(device_path, 'idVendor')).read().strip(), 16)
-                        pro = int(open(os.path.join(device_path, 'idProduct')).read().strip(), 16)
+                        ven = int(
+                            open(os.path.join(device_path, "idVendor")).read().strip(),
+                            16,
+                        )
+                        pro = int(
+                            open(os.path.join(device_path, "idProduct")).read().strip(),
+                            16,
+                        )
                         if ven == cls.ID_VENDOR or cls.ID_PRODUCT == pro:
                             return os.path.join("/dev", device)
                     except:
@@ -123,7 +128,7 @@ try:
         def read(self):
             data = self._serial.read(4096)
             # print "serial read", len(data), type(data), data
-            return array.array('B', data)
+            return array.array("B", data)
 
         def write(self, data):
             try:
@@ -145,28 +150,38 @@ try:
     import usb.util
 
     class USBDriver(Driver):
-
         def __init__(self):
             pass
 
         @classmethod
         def find(cls):
-            return usb.core.find(idVendor=cls.ID_VENDOR, idProduct=cls.ID_PRODUCT) is not None
+            return (
+                usb.core.find(idVendor=cls.ID_VENDOR, idProduct=cls.ID_PRODUCT)
+                is not None
+            )
 
         def open(self):
             # Find USB device
-            _logger.debug("USB Find device, vendor %#04x, product %#04x", self.ID_VENDOR, self.ID_PRODUCT)
+            _logger.debug(
+                "USB Find device, vendor %#04x, product %#04x",
+                self.ID_VENDOR,
+                self.ID_PRODUCT,
+            )
             dev = usb.core.find(idVendor=self.ID_VENDOR, idProduct=self.ID_PRODUCT)
 
             # was it found?
             if dev is None:
-                raise ValueError('Device not found')
+                raise ValueError("Device not found")
 
             _logger.debug("USB Config values:")
             for cfg in dev:
                 _logger.debug(" Config %s", cfg.bConfigurationValue)
                 for intf in cfg:
-                    _logger.debug("  Interface %s, Alt %s", str(intf.bInterfaceNumber), str(intf.bAlternateSetting))
+                    _logger.debug(
+                        "  Interface %s, Alt %s",
+                        str(intf.bInterfaceNumber),
+                        str(intf.bAlternateSetting),
+                    )
                     for ep in intf:
                         _logger.debug("   Endpoint %s", str(ep.bEndpointAddress))
 
@@ -178,7 +193,9 @@ try:
                 else:
                     _logger.debug("No kernel driver active")
             except NotImplementedError as e:
-                _logger.warning("Could not check if kernel driver was active, not implemented in usb backend")
+                _logger.warning(
+                    "Could not check if kernel driver was active, not implemented in usb backend"
+                )
 
             # set the active configuration. With no arguments, the first
             # configuration will be the active one
@@ -186,39 +203,41 @@ try:
             try:
                 dev.reset()
             except NotImplementedError as e:
-                _logger.warning("Could not reset the device, not implemented in usb backend")
-
+                _logger.warning(
+                    "Could not reset the device, not implemented in usb backend"
+                )
 
             # get an endpoint instance
             cfg = dev.get_active_configuration()
             interface_number = cfg[(0, 0)].bInterfaceNumber
             alternate_setting = usb.control.get_interface(dev, interface_number)
             intf = usb.util.find_descriptor(
-                cfg, bInterfaceNumber=interface_number,
-                bAlternateSetting=alternate_setting
+                cfg,
+                bInterfaceNumber=interface_number,
+                bAlternateSetting=alternate_setting,
             )
 
             self._out = usb.util.find_descriptor(
                 intf,
                 # match the first OUT endpoint
-                custom_match=
-                lambda e:
-                usb.util.endpoint_direction(e.bEndpointAddress) ==
-                usb.util.ENDPOINT_OUT
+                custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress)
+                == usb.util.ENDPOINT_OUT,
             )
 
-            _logger.debug("UBS Endpoint out: %s, %s", self._out, self._out.bEndpointAddress)
+            _logger.debug(
+                "UBS Endpoint out: %s, %s", self._out, self._out.bEndpointAddress
+            )
 
             self._in = usb.util.find_descriptor(
                 intf,
                 # match the first OUT endpoint
-                custom_match=
-                lambda e:
-                usb.util.endpoint_direction(e.bEndpointAddress) ==
-                usb.util.ENDPOINT_IN
+                custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress)
+                == usb.util.ENDPOINT_IN,
             )
 
-            _logger.debug("UBS Endpoint in: %s, %s", self._in, self._in.bEndpointAddress)
+            _logger.debug(
+                "UBS Endpoint in: %s, %s", self._in, self._in.bEndpointAddress
+            )
 
             assert self._out is not None and self._in is not None
 
@@ -232,11 +251,11 @@ try:
             self._out.write(data)
 
     class USB2Driver(USBDriver):
-        ID_VENDOR = 0x0fcf
+        ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1008
 
     class USB3Driver(USBDriver):
-        ID_VENDOR = 0x0fcf
+        ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1009
 
     drivers.append(USB2Driver)
@@ -254,4 +273,3 @@ def find_driver():
             print(" - Using:", driver)
             return driver()
     raise DriverNotFound
-

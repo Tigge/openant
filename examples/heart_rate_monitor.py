@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 from ant.easy.node import Node
 from ant.easy.channel import Channel
@@ -31,7 +30,7 @@ import struct
 import threading
 import sys
 
-NETWORK_KEY= [0xb9, 0xa5, 0x21, 0xfb, 0xbd, 0x72, 0xc3, 0x45]
+NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
 
 def on_data(data):
@@ -65,6 +64,6 @@ def main():
     finally:
         node.stop()
 
+
 if __name__ == "__main__":
     main()
-

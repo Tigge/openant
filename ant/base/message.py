@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import array
 import logging
@@ -36,7 +35,6 @@ _logger = logging.getLogger("ant.base.message")
 
 
 class Message:
-
     class ID:
         INVALID = 0x00
 
@@ -50,10 +48,10 @@ class Message:
         SET_NETWORK_KEY = 0x46
         SET_TRANSMIT_POWER = 0x47
         SET_SEARCH_WAVEFORM = 0x49
-        ADD_CHANNEL_ID = 0x59 # Only used for slave channels
-        ADD_ENCRYPTION_ID = 0x59 # Only used for encrypted ANT master channels
-        CONFIG_LIST = 0x5A # Only used for slave channels
-        CONFIG_ENCRYPTION_LIST = 0x5A # Only used for encrypted ANT master channels
+        ADD_CHANNEL_ID = 0x59  # Only used for slave channels
+        ADD_ENCRYPTION_ID = 0x59  # Only used for encrypted ANT master channels
+        CONFIG_LIST = 0x5A  # Only used for slave channels
+        CONFIG_ENCRYPTION_LIST = 0x5A  # Only used for encrypted ANT master channels
         SET_CHANNEL_TX_POWER = 0x60
         LOW_PRIORITY_CHANNEL_SEARCH_TIMEOUT = 0x63
         SERIAL_NUMBER_SET_CHANNEL = 0x65
@@ -108,20 +106,19 @@ class Message:
         RESPONSE_ANT_VERSION = 0x3E
         RESPONSE_CAPABILITIES = 0x54
         RESPONSE_SERIAL_NUMBER = 0x61
-        RESPONSE_EVENT_BUFFER_CONFIG = 0x74 # dupe
-        RESPONSE_ADVANCED_BURST_CAPABILITIES = 0x78 # dupe
+        RESPONSE_EVENT_BUFFER_CONFIG = 0x74  # dupe
+        RESPONSE_ADVANCED_BURST_CAPABILITIES = 0x78  # dupe
         # RESPONSE_ADVANCED_BURST_CURRENT_CONFIG = 0x78 # dupe
-        RESPONSE_EVENT_FILTER = 0x79 # dupe
+        RESPONSE_EVENT_FILTER = 0x79  # dupe
 
         # Test mode
         TEST_MODE_CW_INIT = 0x53
         TEST_MODE_CW_TEST = 0x48
 
         # Extended data messages (legacy)
-        LEGACY_EXTENDED_BROADCAST_DATA = 0x5d
-        LEGACY_EXTENDED_ACKNOWLEDGED_DATA = 0x5e
-        LEGACY_EXTENDED_BURST_DATA = 0x5f
-
+        LEGACY_EXTENDED_BROADCAST_DATA = 0x5D
+        LEGACY_EXTENDED_ACKNOWLEDGED_DATA = 0x5E
+        LEGACY_EXTENDED_BURST_DATA = 0x5F
 
     class Code:
         RESPONSE_NO_ERROR = 0
@@ -176,21 +173,26 @@ class Message:
                     return key
 
     def __init__(self, mId, data):
-        self._sync = 0xa4
+        self._sync = 0xA4
         self._length = len(data)
         self._id = mId
         self._data = data
-        self._checksum = (self._sync ^ self._length ^ self._id
-                          ^ reduce(lambda x, y: x ^ y, data))
+        self._checksum = (
+            self._sync ^ self._length ^ self._id ^ reduce(lambda x, y: x ^ y, data)
+        )
 
     def __repr__(self):
         return str.format(
             "<ant.base.Message {0:02x}:{1} (s:{2:02x}, l:{3}, c:{4:02x})>",
-            self._id, format_list(self._data), self._sync,
-            self._length, self._checksum)
+            self._id,
+            format_list(self._data),
+            self._sync,
+            self._length,
+            self._checksum,
+        )
 
     def get(self):
-        result = array.array('B', [self._sync, self._length, self._id])
+        result = array.array("B", [self._sync, self._length, self._id])
         result.extend(self._data)
         result.append(self._checksum)
         return result
@@ -206,7 +208,7 @@ class Message:
         data = buf[3:-1]
         checksum = buf[-1]
 
-        assert sync == 0xa4
+        assert sync == 0xA4
         assert length == len(data)
         assert checksum == reduce(lambda x, y: x ^ y, buf[:-1])
 

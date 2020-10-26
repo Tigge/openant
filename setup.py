@@ -22,8 +22,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
-
 import os
 import shutil
 
@@ -40,16 +38,24 @@ def udev_reload_rules():
 
 
 def udev_trigger():
-    call(["udevadm", "trigger", "--subsystem-match=usb",
-          "--attr-match=idVendor=0fcf", "--action=add"])
+    call(
+        [
+            "udevadm",
+            "trigger",
+            "--subsystem-match=usb",
+            "--attr-match=idVendor=0fcf",
+            "--action=add",
+        ]
+    )
+
 
 def install_udev_rules(raise_exception):
     if check_root():
-        shutil.copy('resources/42-ant-usb-sticks.rules', '/etc/udev/rules.d')
+        shutil.copy("resources/42-ant-usb-sticks.rules", "/etc/udev/rules.d")
         execute(udev_reload_rules, [], "Reloading udev rules")
         execute(udev_trigger, [], "Triggering udev rules")
     else:
-        msg = "You must have root privileges to install udev rules. Run \"sudo python setup.py udev_rules\""
+        msg = 'You must have root privileges to install udev rules. Run "sudo python setup.py udev_rules"'
         if raise_exception:
             raise OSError(msg)
         else:
@@ -85,41 +91,39 @@ class CustomDevelop(develop):
         develop.run(self)
         install_udev_rules(False)
 
+
 try:
-    with open('README.md') as file:
+    with open("README.md") as file:
         long_description = file.read()
 except IOError:
-    long_description = ''
+    long_description = ""
 
-setup(name='openant',
-      version='0.4',
-
-      description='ANT and ANT-FS Python Library',
-      long_description=long_description,
-
-      author='Gustav Tiger',
-      author_email='gustav@tiger.name',
-
-      url='https://github.com/Tigge/openant',
-
-      classifiers=['Development Status :: 4 - Beta',
-                   'Intended Audience :: Developers',
-                   'Intended Audience :: Healthcare Industry',
-                   'License :: OSI Approved :: MIT License',
-                   'Programming Language :: Python :: 2.7',
-                   'Programming Language :: Python :: 3.4',
-                   'Programming Language :: Python :: 3.5',
-                   'Programming Language :: Python :: 3.6',
-                   'Programming Language :: Python :: 3.7',
-                   'Programming Language :: Python :: 3.8',
-                   'Topic :: Software Development :: Libraries :: Python Modules'
-                  ],
-
-      packages=find_packages(),
-
-      install_requires=['pyusb>=1.0a2'],
-
-      cmdclass={'udev_rules': InstallUdevRules, 'install': CustomInstall, 'develop': CustomDevelop},
-
-      test_suite='ant.tests'
-     )
+setup(
+    name="openant",
+    version="0.4",
+    description="ANT and ANT-FS Python Library",
+    long_description=long_description,
+    author="Gustav Tiger",
+    author_email="gustav@tiger.name",
+    url="https://github.com/Tigge/openant",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Healthcare Industry",
+        "Intended Audience :: Science/Research"
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
+    packages=find_packages(),
+    install_requires=["pyusb>=1.0a2"],
+    cmdclass={
+        "udev_rules": InstallUdevRules,
+        "install": CustomInstall,
+        "develop": CustomDevelop,
+    },
+    test_suite="ant.tests",
+)

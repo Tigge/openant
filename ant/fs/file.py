@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import datetime
 import logging
@@ -31,8 +30,7 @@ _logger = logging.getLogger("ant.fs.file")
 
 
 class Directory:
-    def __init__(self, version, time_format, current_system_time,
-                 last_modified, files):
+    def __init__(self, version, time_format, current_system_time, last_modified, files):
         self._version = version
         self._time_format = time_format
         self._current_system_time = current_system_time
@@ -57,29 +55,54 @@ class Directory:
     def print_list(self):
         print("Index\tType\tFIT Type\tFIT Number\tSize\tDate\tFIT Flags\tFlags")
         for f in self.get_files():
-            print(f.get_index(), "\t", f.get_type(), "\t",
-                  f.get_fit_sub_type(), "\t", f.get_fit_file_number(), "\t",
-                  f.get_size(), "\t", f.get_date(), "\t", f._typ_flags, "\t",
-                  f.get_flags_string())
+            print(
+                f.get_index(),
+                "\t",
+                f.get_type(),
+                "\t",
+                f.get_fit_sub_type(),
+                "\t",
+                f.get_fit_file_number(),
+                "\t",
+                f.get_size(),
+                "\t",
+                f.get_date(),
+                "\t",
+                f._typ_flags,
+                "\t",
+                f.get_flags_string(),
+            )
 
     @staticmethod
     def parse(data):
         _logger.debug("Parse '%s' as directory", data)
 
         # Header
-        version, structure_length, time_format, current_system_time, last_modified = struct.unpack("<BBB5xII",
-                                                                                                   data[:16])
+        (
+            version,
+            structure_length,
+            time_format,
+            current_system_time,
+            last_modified,
+        ) = struct.unpack("<BBB5xII", data[:16])
 
-        version_major = (version & 0xf0) >> 4
-        version_minor = (version & 0x0f)
+        version_major = (version & 0xF0) >> 4
+        version_minor = version & 0x0F
 
         files = []
         for offset in range(16, len(data), 16):
-            item_data = data[offset:offset + 16]
-            _logger.debug(" - (%d - %d) %d, %s", offset, offset + 16, len(item_data), item_data)
+            item_data = data[offset : offset + 16]
+            _logger.debug(
+                " - (%d - %d) %d, %s", offset, offset + 16, len(item_data), item_data
+            )
             files.append(File.parse(item_data))
-        return Directory((version_major, version_minor), time_format,
-                         current_system_time, last_modified, files)
+        return Directory(
+            (version_major, version_minor),
+            time_format,
+            current_system_time,
+            last_modified,
+            files,
+        )
 
 
 class File:
@@ -168,13 +191,15 @@ class File:
         _logger.debug("Parse '%s' (%d) as file %s", data, len(data), type(data))
 
         # i1, i2, i3 -> three byte integer, not supported by struct
-        index, data_type, data_flags, flags, file_size, file_date = struct.unpack("<HB3xBBII", data)
-        if sys.version_info >= (3,3):
-           file_date = datetime.datetime.fromtimestamp(file_date + 631065600, datetime.timezone.utc)
-        else:
-           file_date = datetime.datetime.fromtimestamp(file_date + 631065600)
+        index, data_type, data_flags, flags, file_size, file_date = struct.unpack(
+            "<HB3xBBII", data
+        )
+
+        file_date = datetime.datetime.fromtimestamp(
+            file_date + 631065600, datetime.timezone.utc
+        )
         identifier = data[3:6]
 
-        return File(index, data_type, identifier, data_flags, flags, file_size, file_date)
-
-
+        return File(
+            index, data_type, identifier, data_flags, flags, file_size, file_date
+        )

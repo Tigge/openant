@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import logging
 
@@ -48,8 +47,10 @@ def wait_for_message(match, process, queue, condition):
                 queue.remove(message)
                 condition.release()
                 return process(message)
-            elif message[1] == 1 and message[2][0] in [Message.Code.EVENT_TRANSFER_TX_FAILED,
-                                                       Message.Code.EVENT_RX_FAIL_GO_TO_SEARCH]:
+            elif message[1] == 1 and message[2][0] in [
+                Message.Code.EVENT_TRANSFER_TX_FAILED,
+                Message.Code.EVENT_RX_FAIL_GO_TO_SEARCH,
+            ]:
                 _logger.warning("Transfer send failed:")
                 _logger.warning(message)
                 queue.remove(message)
@@ -87,8 +88,12 @@ def wait_for_response(event_id, queue, condition):
         if data[0] == Message.Code.RESPONSE_NO_ERROR:
             return params
         else:
-            raise Exception("Responded with error " + str(data[0])
-                            + ":" + Message.Code.lookup(data[0]))
+            raise Exception(
+                "Responded with error "
+                + str(data[0])
+                + ":"
+                + Message.Code.lookup(data[0])
+            )
 
     return wait_for_message(match, process, queue, condition)
 

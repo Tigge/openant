@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import array
 import unittest
@@ -30,25 +29,30 @@ from ant.fs.command import parse, DownloadRequest, DownloadResponse, Authenticat
 
 class AuthenticateCommandTest(unittest.TestCase):
     def test_serial(self):
-        command = AuthenticateCommand(
-            AuthenticateCommand.Request.SERIAL, 123456789)
-        self.assertEqual(command.get(), array.array('B',
-                                                    [0x44, 0x04, 0x01, 0x00, 0x15, 0xcd, 0x5b, 0x7]))
+        command = AuthenticateCommand(AuthenticateCommand.Request.SERIAL, 123456789)
+        self.assertEqual(
+            command.get(),
+            array.array("B", b"\x44\x04\x01\x00\x15\xCD\x5B\x07"),
+        )
 
     def test_pairing(self):
         command = AuthenticateCommand(
-            AuthenticateCommand.Request.PAIRING, 987654321,
-            map(ord, 'hello'))
-        self.assertEqual(command.get(), array.array('B',
-                                                    [0x44, 0x04, 0x02, 0x05, 0xb1, 0x68, 0xde, 0x3a,
-                                                     0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00]))
+            AuthenticateCommand.Request.PAIRING, 987654321, map(ord, "hello")
+        )
+        self.assertEqual(
+            command.get(),
+            array.array(
+                "B", b"\x44\x04\x02\x05\xB1\x68\xDE\x3A\x68\x65\x6C\x6C\x6F\x00\x00\x00"
+            ),
+        )
 
 
 class DownloadRequestTest(unittest.TestCase):
     def test(self):
         # Download request
-        data = array.array('B', [0x44, 0x09, 0x5f, 0x00, 0x00, 0xba, 0x00,
-                                 0x00, 0x00, 0x00, 0x9e, 0xc2, 0x00, 0x00, 0x00, 0x00])
+        data = array.array(
+            "B", b"\x44\x09\x5F\x00\x00\xBA\x00\x00\x00\x00\x9E\xC2\x00\x00\x00\x00"
+        )
 
         request = parse(data)
         self.assertIsInstance(request, DownloadRequest)
@@ -57,29 +61,37 @@ class DownloadRequestTest(unittest.TestCase):
 class DownloadResponseTest(unittest.TestCase):
     def test_ok(self):
         # Download response, ok
-        data = array.array('B', [68, 137, 0, 0, 8, 0, 0, 0,
-                                 0, 0, 0, 0, 8, 0, 0, 0,
-                                 2, 0, 0, 1, 3, 0, 3, 0,
-                                 0, 0, 0, 0, 0, 0, 188, 173])
+        data = array.array(
+            "B",
+            b"\x44\x89\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x02"
+            b"\x00\x00\x01\x03\x00\x03\x00\x00\x00\x00\x00\x00\x00\xBC\xAD",
+        )
 
         response = parse(data)
         self.assertIsInstance(response, DownloadResponse)
-        self.assertEqual(response._get_argument("response"), DownloadResponse.Response.OK)
+        self.assertEqual(
+            response._get_argument("response"), DownloadResponse.Response.OK
+        )
         self.assertEqual(response._get_argument("remaining"), 8)
         self.assertEqual(response._get_argument("offset"), 0)
         self.assertEqual(response._get_argument("size"), 8)
-        self.assertEqual(response._get_argument("data"), array.array('B', [2, 0, 0, 1, 3, 0, 3, 0]))
+        self.assertEqual(
+            response._get_argument("data"),
+            array.array("B", b"\x02\x00\x00\x01\x03\x00\x03\x00"),
+        )
         self.assertEqual(response._get_argument("crc"), 44476)
 
     def test_not_readable(self):
 
         # Download response, failed
-        data = array.array('B', [68, 137, 2, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 119, 239, 36, 174])
+        data = array.array(
+            "B", b"\x44\x89\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x77\xef\x24\xae"
+        )
         response = parse(data)
         self.assertIsInstance(response, DownloadResponse)
-        self.assertEqual(response._get_argument("response"), DownloadResponse.Response.NOT_READABLE)
+        self.assertEqual(
+            response._get_argument("response"), DownloadResponse.Response.NOT_READABLE
+        )
         self.assertEqual(response._get_argument("remaining"), 0)
-        self.assertEqual(response._get_argument("data"), array.array('B', []))
+        self.assertEqual(response._get_argument("data"), array.array("B", []))
         self.assertEqual(response._get_argument("crc"), 0)
-

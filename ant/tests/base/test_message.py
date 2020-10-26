@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import array
 import unittest
@@ -29,21 +28,23 @@ from ant.base.message import Message
 
 
 class MessageParse(unittest.TestCase):
-
     def test_message_parse(self):
-        data = array.array('B', [0xa4, 0x03, 0x40, 0x00, 0x46, 0x00, 0xa1])
+        data = array.array("B", [0xA4, 0x03, 0x40, 0x00, 0x46, 0x00, 0xA1])
         message = Message.parse(data)
         self.assertIsInstance(message, Message)
 
     # Add known != 0xa4 assert
-    #def test_bad_sync_message_parse(self):
+    # def test_bad_sync_message_parse(self):
     #    data = array.array('B', [0x00, 0x03, 0x40, 0x00, 0x46, 0x00, 0xa1])
     #    self.assertIsInstance(Message.parse(data), None)
 
-    # Add known invalid checksum assert    
+    # Add known invalid checksum assert
 
     def test_message_code_lookup(self):
-        self.assertEqual(Message.Code.lookup(Message.Code.EVENT_RX_SEARCH_TIMEOUT), "EVENT_RX_SEARCH_TIMEOUT")
+        self.assertEqual(
+            Message.Code.lookup(Message.Code.EVENT_RX_SEARCH_TIMEOUT),
+            "EVENT_RX_SEARCH_TIMEOUT",
+        )
         self.assertEqual(Message.Code.lookup(1), "EVENT_RX_SEARCH_TIMEOUT")
 
     def test_message_code_lookup_fail(self):

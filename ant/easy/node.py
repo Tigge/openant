@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import collections
 import threading
@@ -41,7 +40,7 @@ from ant.easy.filter import wait_for_event, wait_for_response, wait_for_special
 _logger = logging.getLogger("ant.easy.node")
 
 
-class Node():
+class Node:
     def __init__(self):
 
         self._responses_cond = threading.Condition()
@@ -60,7 +59,7 @@ class Node():
         self._worker_thread = threading.Thread(target=self._worker, name="ant.easy")
         self._worker_thread.start()
 
-    def new_channel(self, ctype, network_number=0x00, ext_assign = None):
+    def new_channel(self, ctype, network_number=0x00, ext_assign=None):
         size = len(self.channels)
         channel = Channel(size, self, self.ant)
         self.channels[size] = channel
@@ -94,13 +93,13 @@ class Node():
 
     def _worker_event(self, channel, event, data):
         if event == Message.Code.EVENT_RX_BURST_PACKET:
-            self._datas.put(('burst', channel, data))
+            self._datas.put(("burst", channel, data))
         elif event == Message.Code.EVENT_RX_BROADCAST:
-            self._datas.put(('broadcast', channel, data))
+            self._datas.put(("broadcast", channel, data))
         elif event == Message.Code.EVENT_TX:
-            self._datas.put(('broadcast_tx', channel, data))
+            self._datas.put(("broadcast_tx", channel, data))
         elif event == Message.Code.EVENT_RX_ACKNOWLEDGED:
-            self._datas.put(('acknowledge', channel, data))
+            self._datas.put(("acknowledge", channel, data))
         else:
             self._event_cond.acquire()
             self._events.append((channel, event, data))
@@ -120,13 +119,13 @@ class Node():
                 (data_type, channel, data) = self._datas.get(True, 1.0)
                 self._datas.task_done()
 
-                if data_type == 'broadcast':
+                if data_type == "broadcast":
                     self.channels[channel].on_broadcast_data(data)
-                elif data_type == 'burst':
+                elif data_type == "burst":
                     self.channels[channel].on_burst_data(data)
-                elif data_type == 'broadcast_tx':
+                elif data_type == "broadcast_tx":
                     self.channels[channel].on_broadcast_tx_data(data)
-                elif data_type == 'acknowledge':
+                elif data_type == "acknowledge":
                     self.channels[channel].on_acknowledge_data(data)
                 else:
                     _logger.warning("Unknown data type '%s': %r", data_type, data)

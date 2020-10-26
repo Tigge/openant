@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 import array
 from collections import OrderedDict
@@ -57,8 +56,8 @@ class Command:
 
     def __init__(self):
         self._arguments = OrderedDict()
-        self._add_argument('x', 0x44)
-        self._add_argument('id', self._id)
+        self._add_argument("x", 0x44)
+        self._add_argument("id", self._id)
 
     def _add_argument(self, name, value):
         self._arguments[name] = value
@@ -75,7 +74,7 @@ class Command:
     def get(self):
         arguments = list(self._get_arguments())
         data = struct.pack(self._format, *arguments)
-        lst = array.array('B', data)
+        lst = array.array("B", data)
         _logger.debug("packing %r in %r,%s", data, lst, type(lst))
         return lst
 
@@ -127,7 +126,9 @@ class DisconnectCommand(Command):
         Command.__init__(self)
         self._add_argument("command_type", command_type)
         self._add_argument("time_duration", time_duration)
-        self._add_argument("application_specific_duration", application_specific_duration)
+        self._add_argument(
+            "application_specific_duration", application_specific_duration
+        )
 
 
 class AuthenticateBase(Command):
@@ -161,18 +162,26 @@ class AuthenticateBase(Command):
     def get(self):
         arguments = list(self._get_arguments())
         data = list(self._get_argument("data"))
-        lst = array.array('B', struct.pack("<BBBBI", arguments[0],
-                                           arguments[1], arguments[2],
-                                           len(data), arguments[3]))
+        lst = array.array(
+            "B",
+            struct.pack(
+                "<BBBBI",
+                arguments[0],
+                arguments[1],
+                arguments[2],
+                len(data),
+                arguments[3],
+            ),
+        )
         padded = self._pad(data)
-        lst.extend(array.array('B', padded))
+        lst.extend(array.array("B", padded))
         return lst
 
     @classmethod
     def _parse_args(cls, data):
         header = struct.unpack("<BBBxI", data[0:8])
         data_length = data[3]
-        return header + (data[8:8 + data_length],)
+        return header + (data[8 : 8 + data_length],)
 
 
 class AuthenticateCommand(AuthenticateBase):
@@ -208,8 +217,9 @@ class DownloadRequest(Command):
     _id = Command.Type.DOWNLOAD_REQUEST
     _format = Command._format + "HIx?HI"
 
-    def __init__(self, data_index, data_offset, initial_request, crc_seed,
-                 maximum_block_size=0):
+    def __init__(
+        self, data_index, data_offset, initial_request, crc_seed, maximum_block_size=0
+    ):
         Command.__init__(self)
         self._add_argument("data_index", data_index)
         self._add_argument("data_offset", data_offset)
@@ -242,9 +252,15 @@ class DownloadResponse(Command):
     @classmethod
     def _parse_args(cls, data):
         if data[2] == DownloadResponse.Response.OK:
-            return struct.unpack("<BBBxIII", data[0:16]) + (data[16:-8],) + struct.unpack("<6xH", data[-8:])
+            return (
+                struct.unpack("<BBBxIII", data[0:16])
+                + (data[16:-8],)
+                + struct.unpack("<6xH", data[-8:])
+            )
         else:
-            return struct.unpack("<BBBxIII", data[0:16]) + (array.array('B', []),) + (0,)
+            return (
+                struct.unpack("<BBBxIII", data[0:16]) + (array.array("B", []),) + (0,)
+            )
 
 
 class UploadRequest(Command):
@@ -270,8 +286,9 @@ class UploadResponse(Command):
     _id = Command.Type.UPLOAD_RESPONSE
     _format = Command._format + "BxIII6xH"
 
-    def __init__(self, response, last_data_offset, maximum_file_size,
-                 maximum_block_size, crc):
+    def __init__(
+        self, response, last_data_offset, maximum_file_size, maximum_block_size, crc
+    ):
         Command.__init__(self)
         self._add_argument("response", response)
         self._add_argument("last_data_offset", last_data_offset)
@@ -295,14 +312,18 @@ class UploadDataCommand(Command):
         arguments = list(self._get_arguments())
         header = struct.pack("<BBHI", *arguments[:4])
         footer = struct.pack("<6xH", self._get_argument("crc"))
-        data = array.array('B', header)
+        data = array.array("B", header)
         data.extend(self._get_argument("data"))
-        data.extend(array.array('B', footer))
+        data.extend(array.array("B", footer))
         return data
 
     @classmethod
     def _parse_args(cls, data):
-        return struct.unpack("<BBHI", data[0:8]) + (data[8:-8],) + struct.unpack("<6xH", data[-8:])
+        return (
+            struct.unpack("<BBHI", data[0:8])
+            + (data[8:-8],)
+            + struct.unpack("<6xH", data[-8:])
+        )
 
 
 class UploadDataResponse(Command):
@@ -347,18 +368,17 @@ _classes = {
     Command.Type.DISCONNECT: DisconnectCommand,
     Command.Type.AUTHENTICATE: AuthenticateCommand,
     Command.Type.PING: PingCommand,
-
     Command.Type.DOWNLOAD_REQUEST: DownloadRequest,
     Command.Type.UPLOAD_REQUEST: UploadRequest,
     Command.Type.ERASE_REQUEST: EraseRequestCommand,
     Command.Type.UPLOAD_DATA: UploadDataCommand,
-
     # Responses
     Command.Type.AUTHENTICATE_RESPONSE: AuthenticateResponse,
     Command.Type.DOWNLOAD_RESPONSE: DownloadResponse,
     Command.Type.UPLOAD_RESPONSE: UploadResponse,
     Command.Type.ERASE_RESPONSE: EraseResponse,
-    Command.Type.UPLOAD_DATA_RESPONSE: UploadDataResponse}
+    Command.Type.UPLOAD_DATA_RESPONSE: UploadDataResponse,
+}
 
 
 def parse(data):
@@ -368,4 +388,3 @@ def parse(data):
     command_class = _classes[command_type]
 
     return command_class._parse(data)
-

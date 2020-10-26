@@ -20,6 +20,5 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
-__all__ = ['command', 'file', 'manager']
+__all__ = ["command", "file", "manager"]

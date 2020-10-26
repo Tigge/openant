@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import absolute_import, print_function
 
 from ant.easy.node import Node
 from ant.easy.channel import Channel
@@ -31,7 +30,7 @@ import struct
 import threading
 import sys
 
-NETWORK_KEY= [0xb9, 0xa5, 0x21, 0xfb, 0xbd, 0x72, 0xc3, 0x45]
+NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
 
 def on_data(data):
@@ -41,22 +40,22 @@ def on_data(data):
     sys.stdout.write(string)
     sys.stdout.flush()
     sys.stdout.write("\b" * len(string))
-    if len(data)>8:
+    if len(data) > 8:
         print(data)
         deviceNumberLSB = data[9]
         deviceNumberMSB = data[10]
-        deviceNumber = "{}".format(deviceNumberLSB + (deviceNumberMSB<<8))
+        deviceNumber = "{}".format(deviceNumberLSB + (deviceNumberMSB << 8))
         deviceType = "{}".format(data[11])
-        print('New Device Found: %s of type %s' % (deviceNumber,deviceType))
+        print("New Device Found: %s of type %s" % (deviceNumber, deviceType))
 
 
 def main():
-    logging.basicConfig(filename='example.log',level=logging.DEBUG)
+    logging.basicConfig(filename="example.log", level=logging.DEBUG)
 
     node = Node()
     node.set_network_key(0x00, NETWORK_KEY)
 
-    channel = node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE,0x00,0x01)
+    channel = node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01)
 
     channel.on_broadcast_data = on_data
     channel.on_burst_data = on_data
@@ -73,6 +72,7 @@ def main():
         node.start()
     finally:
         node.stop()
+
 
 if __name__ == "__main__":
     main()
