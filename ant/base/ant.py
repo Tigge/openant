@@ -55,6 +55,7 @@ class Ant:
         self._last_data = array.array("B", [])
 
         self._running = True
+        self._RxScanMode = False
 
         self._driver.open()
 
@@ -177,7 +178,7 @@ class Ant:
                     # Channel event
                     elif (
                         message._id == Message.ID.RESPONSE_CHANNEL
-                        and message.data[1] == 0x01
+                        and message._data[1] == 0x01
                     ):
                         _logger.debug("Got channel event, %r", message)
                         self._events.put(
@@ -198,7 +199,10 @@ class Ant:
                     _logger.debug("No new data this period")
 
                 # Send messages in queue, on indicated time slot
-                if message._id == Message.ID.BROADCAST_DATA:
+                if (
+                    message._id == Message.ID.BROADCAST_DATA
+                    and self._RxScanMode == False
+                ):
                     time.sleep(0.1)
                     _logger.debug(
                         "Got broadcast data, examine queue to see if we should send anything back"
@@ -289,6 +293,7 @@ class Ant:
         self.write_message(message)
 
     def open_rx_scan_mode(self):
+        self._RxScanMode = True
         message = Message(Message.ID.OPEN_RX_SCAN_MODE, [0, 1])  # [0-Channel, 1-Enable]
         self.write_message(message)
 
