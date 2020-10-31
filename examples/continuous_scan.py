@@ -16,7 +16,7 @@ import time
 
 # Definition of Variables
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
-
+TimeProgramStart = time.time()  # get start time
 
 def on_data_scan(data):
     deviceNumber = data[10] * 256 + data[9]
@@ -35,8 +35,6 @@ def on_data_ack_scan(data):
 def main():
     print("ANT+ Open Rx Scan Mode Demo")
     logging.basicConfig(filename="example.log", level=logging.DEBUG)
-
-    TimeProgramStart = time.time()  # get start time
 
     node = Node()
     node.set_network_key(0x00, NETWORK_KEY)  # 1. Set Network Key
