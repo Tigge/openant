@@ -177,7 +177,7 @@ class Ant:
                     # Channel event
                     elif (
                         message._id == Message.ID.RESPONSE_CHANNEL
-                        and message.data[1] == 0x01
+                        and message._data[1] == 0x01
                     ):
                         _logger.debug("Got channel event, %r", message)
                         self._events.put(
