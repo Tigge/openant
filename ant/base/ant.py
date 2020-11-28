@@ -183,7 +183,7 @@ class Ant:
                         self._events.put(
                             (
                                 "event",
-                                (message._data[0], message._data[2], message._data[3:]),
+                                (message._data[0], message._data[1], message._data[2:]),
                             )
                         )
                     elif message._id == Message.ID.BROADCAST_DATA:
