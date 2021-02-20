@@ -74,5 +74,6 @@ Any compliant ANT-FS device should in theory work, but those specific devices ha
  - Garmin Forerunner 910XT
  - Garmin FR70
  - Garmin Swim
+ - Garmin vívoactive HR
 
 Please let me know if you have any success with devices that are not listed here.
