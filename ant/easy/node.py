@@ -47,10 +47,9 @@ class Node:
         self._responses = collections.deque()
         self._event_cond = threading.Condition()
         self._events = collections.deque()
+        self._main_thread = None
 
         self._datas = queue.Queue()
-
-        self.channels = {}
 
         self.ant = Ant()
 
@@ -58,13 +57,89 @@ class Node:
 
         self._worker_thread = threading.Thread(target=self._worker, name="ant.easy")
         self._worker_thread.start()
+        
+        self.capabilities = self.get_capabilities()
+        
+        self.channels = [None]*self.capabilities["max_channels"]
 
     def new_channel(self, ctype, network_number=0x00, ext_assign=None):
-        size = len(self.channels)
-        channel = Channel(size, self, self.ant)
-        self.channels[size] = channel
-        channel._assign(ctype, network_number, ext_assign)
-        return channel
+        for i in range(len(self.channels)):
+            if self.channels[i] is None:
+                channel = Channel(i, self, self.ant)
+                self.channels[i] = channel
+                channel._assign(ctype, network_number, ext_assign)
+                return channel
+        _logger.debug("No free channel available")
+        return None
+
+    def remove_channel(self, channel_id):
+        for i in range(len(self.channels)):
+            try:
+                if self.channels[i].id == channel_id:
+                    self.channels[i].close()
+                    self.channels[i]._unassign()
+                    self.channels[i] = None
+            except:
+                pass
+
+    def get_capabilities(self):
+        data = self.request_message(Message.ID.RESPONSE_CAPABILITIES)
+        if data[1] == Message.ID.RESPONSE_CAPABILITIES:
+            #The Standard Options bit field is encoded as follows: 
+            #   Bit 0 - CAPABILITIES_NO_RECEIVE_CHANNELS
+            #   Bit 1 - CAPABILITIES_NO_TRANSMIT_CHANNELS
+            #   Bit 2 - CAPABILITIES_NO_RECEIVE_MESSAGES
+            #   Bit 3 - CAPABILITIES_NO_TRANSMIT_MESSAGES
+            #   Bit 4 - CAPABILITIES_NO_ACKD_MESSAGES
+            #   Bit 5 - CAPABILITIES_NO_BURST_MESSAGES
+            #   Other bits are reserved
+            #The Advanced Options bit field is encoded as follows: 
+            #   Bit 1 - CAPABILITIES_NETWORK_ENABLED 
+            #   Bit 3 - CAPABILITIES_SERIAL_NUMBER_ENABLED 
+            #   Bit 4 - CAPABILITIES_PER_CHANNEL_TX_POWER_ENABLED 
+            #   Bit 5 - CAPABILITIES_LOW_PRIORITY_SEARCH_ENABLED 
+            #   Bit 6 - CAPABILITIES_SCRIPT_ENABLED 
+            #   Bit 7 - CAPABILITIES_SEARCH_LIST_ENABLED 
+            #   Other bits are reserved
+            #The Advanced Options 2 bit field is encoded as follows: 
+            #   Bit 0 - CAPABILITIES_LED_ENABLED 
+            #   Bit 1 - CAPABILITIES_EXT_MESSAGE_ENABLED 
+            #   Bit 2 - CAPABILITIES_SCAN_MODE_ENABLED 
+            #   Bit 3 - Reserved 
+            #   Bit 4 - CAPABILITIES_PROX_SEARCH_ENABLED 
+            #   Bit 5 - CAPABILITIES_EXT_ASSIGN_ENABLED 
+            #   Bit 6 - CAPABILITIES_FS_ANTFS_ENABLED 
+            #   Bit 7 - CAPABILITIES_FIT1_ENABLED
+            #   Other bits are reserved
+            #The Advanced Options 3 bit field is encoded as follows: 
+            #   Bit 0 - CAPABILITIES_ADVANCED_BURST_ENABLED
+            #   Bit 1 - CAPABILITIES_EVENT_BUFFERING_ENABLED 
+            #   Bit 2 - CAPABILITIES_EVENT_FILTERING_ENABLED 
+            #   Bit 3 - CAPABILITIES_HIGH_DUTY_SEARCH_ENABLED 
+            #   Bit 4 - CAPABILITIES_SEARCH_SHARING_ENABLED 
+            #   Bit 5 - Reserved. 
+            #   Bit 6 - CAPABILITIES_SELECTIVE_DATA_UPDATES_ENABLED 
+            #   Bit 7 - CAPABILITIES_ENCRYPTED_CHANNEL_ENABLED
+            #The Advanced Options 4 bit field is encoded as follows: 
+            #   Bit 0 - CAPABILITIES_RFACTIVE_NOTIFICATION_ENABLED
+            #   Other bits are reserved
+            result = {
+                "max_channels" : data[2][0],
+                "max_networks" : data[2][1],
+                "standard_options" : data[2][2],
+                "advanced_options" : data[2][3],
+                "advanced_options2" : data[2][4],
+                "max_sensrcore_channels": data[2][5],
+            }
+            if len(data[2])>=7:
+                result["advanced_options3"] = data[2][6]
+            if len(data[2])>=8:
+                result["advanced_options4"] = data[2][7]
+            return result
+        else:
+            _logger.debug(
+                "capabilities requested and not received (message id 0x{:02x} , but should be 0x{:02x})".format(data[2][4],Message.ID.RESPONSE_CAPABILITIES))
+            return
 
     def request_message(self, messageId):
         _logger.debug("requesting message %#02x", messageId)
@@ -133,7 +208,8 @@ class Node:
                 pass
 
     def start(self):
-        self._main()
+        self._main_thread = threading.Thread(target=self._main, name="_main")
+        self._main_thread.start()
 
     def stop(self):
         if self._running:
@@ -141,3 +217,5 @@ class Node:
             self._running = False
             self.ant.stop()
             self._worker_thread.join()
+            self._main_thread.join()
+            self._main_thread = None
