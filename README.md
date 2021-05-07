@@ -43,11 +43,11 @@ Manual install
 
 These should only be necessary to install manually, if you don't want to use the Automatic installation script.
 
-- Install [PyUSB](https://github.com/walac/pyusb).
+- Install [PyUSB](https://github.com/pyusb/pyusb).
 
         pip install pyusb
 
-    *(Or alternatively from [sources available on GitHub](https://github.com/walac/pyusb))*
+    *(Or alternatively from [sources available on GitHub](https://github.com/pyusb/pyusb))*
 
 - Install [udev](http://en.wikipedia.org/wiki/Udev) rules (Only required to avoid running the program as root).
 

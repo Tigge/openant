@@ -10,3 +10,5 @@ dist/
 .eggs/
 .env/
 .coverage
+venv/
+settings.json
