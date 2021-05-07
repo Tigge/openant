@@ -66,6 +66,10 @@ def check_root():
     return os.geteuid() == 0
 
 
+def is_windows():
+    return os.name == "nt"
+
+
 class InstallUdevRules(Command):
     description = "install udev rules (requires root privileges)"
     user_options = []
@@ -83,13 +87,15 @@ class InstallUdevRules(Command):
 class CustomInstall(install):
     def run(self):
         install.run(self)
-        install_udev_rules(True)
+        if not is_windows():
+            install_udev_rules(True)
 
 
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
-        install_udev_rules(False)
+        if not is_windows():
+            install_udev_rules(False)
 
 
 try:
