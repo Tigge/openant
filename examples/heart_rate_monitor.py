@@ -29,6 +29,8 @@ import logging
 import struct
 import threading
 import sys
+import pages
+import time
 
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
@@ -50,18 +52,25 @@ def main():
 
     channel = node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE)
 
-    channel.on_broadcast_data = on_data
+    on_data2 = pages.pages(120).on_data
+
+    channel.on_broadcast_data = on_data2
     channel.on_burst_data = on_data
 
-    channel.set_period(8070)
+    channel.set_period(32280)
     channel.set_search_timeout(12)
     channel.set_rf_freq(57)
     channel.set_id(0, 120, 0)
+    channel.enable_extended_messages(1)
 
     try:
-        channel.open()
         node.start()
+        channel.open()
+        time.sleep(200)
     finally:
+        channel.close()
+        time.sleep(0.5)
+        channel._unassign()
         node.stop()
 
 
