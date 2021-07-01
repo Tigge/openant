@@ -332,6 +332,10 @@ class Ant:
         message = Message(Message.ID.SET_SEARCH_WAVEFORM, [channel] + waveform)
         self.write_message(message)
 
+    def set_led(self, enabled):
+        message = Message(Message.ID.ENABLE_LED, [0x00, enabled])
+        self.write_message(message)
+
     def reset_system(self):
         message = Message(Message.ID.RESET_SYSTEM, [0x00])
         self.write_message(message)

@@ -76,6 +76,10 @@ class Node:
         self.ant.set_network_key(network, key)
         return self.wait_for_response(Message.ID.SET_NETWORK_KEY)
 
+    def set_led(self, enabled):
+        self.ant.set_led(enabled)
+        return self.wait_for_response(Message.ID.ENABLE_LED)
+
     def wait_for_event(self, ok_codes):
         return wait_for_event(ok_codes, self._events, self._event_cond)
 
