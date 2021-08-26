@@ -209,7 +209,7 @@ try:
                     "Could not reset the device, not implemented in usb backend"
                 )
             if is_windows:
-                time.sleep(2)            
+                time.sleep(2)
 
             # get an endpoint instance
             cfg = dev.get_active_configuration()
