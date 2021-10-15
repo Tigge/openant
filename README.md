@@ -53,6 +53,24 @@ These should only be necessary to install manually, if you don't want to use the
 
         sudo python setup.py udev_rules
 
+
+Windows install
+--------------
+Windows does not use udev_rules and therefore does not need to be installed. The installation of udev_rules is
+bypassed for Windows. libusb is supported by Windows. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. 
+
+- Install [PyUSB](https://github.com/pyusb/pyusb).
+
+        pip install pyusb
+
+    *(Or alternatively from [sources available on GitHub](https://github.com/pyusb/pyusb))*
+
+- Install [libusb](https://github.com/karpierz/libusb).
+
+        pip install libusb
+
+    *(Or alternatively from [sources available on GitHub](https://github.com/karpierz/libusb))*
+
 Supported devices
 -----------------
 
@@ -74,5 +92,6 @@ Any compliant ANT-FS device should in theory work, but those specific devices ha
  - Garmin Forerunner 910XT
  - Garmin FR70
  - Garmin Swim
+ - Garmin vívoactive HR
 
 Please let me know if you have any success with devices that are not listed here.

@@ -148,6 +148,8 @@ except ImportError:
 try:
     import usb.core
     import usb.util
+    from .commons import is_windows
+    import time
 
     class USBDriver(Driver):
         def __init__(self):
@@ -206,6 +208,8 @@ try:
                 _logger.warning(
                     "Could not reset the device, not implemented in usb backend"
                 )
+            if is_windows:
+                time.sleep(2)
 
             # get an endpoint instance
             cfg = dev.get_active_configuration()
