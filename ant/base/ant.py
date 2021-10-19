@@ -139,6 +139,7 @@ class Ant:
                         Message.ID.STARTUP_MESSAGE,
                         Message.ID.SERIAL_ERROR_MESSAGE,
                     ]:
+                        _logger.debug("Got response start-up, %r", message)
                         self._events.put(
                             ("response", (None, message._id, message._data))
                         )
@@ -149,6 +150,7 @@ class Ant:
                         Message.ID.RESPONSE_SERIAL_NUMBER,
                         Message.ID.ENABLE_EXT_RX_MESGS,
                     ]:
+                        _logger.debug("Got response general, %r", message)
                         self._events.put(
                             ("response", (None, message._id, message._data))
                         )
@@ -157,6 +159,7 @@ class Ant:
                         Message.ID.RESPONSE_CHANNEL_STATUS,
                         Message.ID.RESPONSE_CHANNEL_ID,
                     ]:
+                        _logger.debug("Got response channel, %r", message)
                         self._events.put(
                             (
                                 "response",
@@ -168,6 +171,7 @@ class Ant:
                         message._id == Message.ID.RESPONSE_CHANNEL
                         and message._data[1] != 0x01
                     ):
+                        _logger.debug("Got channel response other, %r", message)
                         self._events.put(
                             (
                                 "response",
@@ -199,7 +203,6 @@ class Ant:
 
                 # Send messages in queue, on indicated time slot
                 if message._id == Message.ID.BROADCAST_DATA:
-                    time.sleep(0.1)
                     _logger.debug(
                         "Got broadcast data, examine queue to see if we should send anything back"
                     )
