@@ -16,6 +16,19 @@ class DeviceType(Enum):
     Unknown = 255
     PowerMeter = 11
     FitnessEquipment = 17
+    ControllableDevice = 16
+    BloodPressure = 18
+    Geocache = 19
+    Environment = 25
+    WeightScale = 119
+    Heartrate = 120
+    BikeSpeedCadence = 121
+    BikeCadence = 122
+    BikeSpeed = 123
+    StrideSpeed = 124
+    Lev = 20
+    Radar = 40
+    Shifting = 34
 
     @classmethod
     def _missing_(cls, _):
