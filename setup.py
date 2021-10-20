@@ -24,6 +24,7 @@
 
 import os
 import shutil
+import platform
 
 from distutils.util import execute
 from distutils.cmd import Command
@@ -65,10 +66,8 @@ def install_udev_rules(raise_exception):
 def check_root():
     return os.geteuid() == 0
 
-
-def is_windows():
-    return os.name == "nt"
-
+def is_linux():
+    return platform.system() == "Linux"
 
 class InstallUdevRules(Command):
     description = "install udev rules (requires root privileges)"
@@ -87,14 +86,14 @@ class InstallUdevRules(Command):
 class CustomInstall(install):
     def run(self):
         install.run(self)
-        if not is_windows():
+        if is_linux():
             install_udev_rules(True)
 
 
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
-        if not is_windows():
+        if is_linux():
             install_udev_rules(False)
 
 
