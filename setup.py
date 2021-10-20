@@ -87,7 +87,7 @@ class CustomInstall(install):
     def run(self):
         install.run(self)
         if is_linux():
-            install_udev_rules(True)
+            install_udev_rules(False)
 
 
 class CustomDevelop(develop):
