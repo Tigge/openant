@@ -1,6 +1,7 @@
 import dataclasses
 import logging
 import json
+from typing import Tuple
 
 from ant.easy.node import Node
 from .common import AntPlusDevice, CommonData, DeviceType
@@ -25,6 +26,9 @@ class Scanner(AntPlusDevice):
         self.common = {}
 
     def _on_data(self, data):
+        """
+        Overloads _on_data for scanning of devices. Will not attach to single device but keep track of all devices found in the area
+        """
 
         # extended (> 8) has the device number and id beyond page
         if len(data) > 8:
@@ -42,7 +46,6 @@ class Scanner(AntPlusDevice):
 
                 self.on_found(tuple_device)
 
-            # % Common Pages %
             common = {}
             device_key = f"{device_id}:{device_type}"
 
@@ -52,8 +55,10 @@ class Scanner(AntPlusDevice):
                 common['manufacturer_id'] = data[4] + (data[5] << 8)
                 common['model_no'] = data[6] + (data[7] << 8)
 
+                # make an updated dataclass using current and new dict data
                 updated = dataclasses.replace(self.common[device_key], **common)
 
+                # only fire callback if the dataclass has changed
                 if updated != self.common[device_key]:
                     self.common[device_key] = updated
                     _logger.info(f"Manufacturer info {device_id}: HW Rev: {self.common[device_key].hardware_rev}; ID: {self.common[device_key].manufacturer_id}; Model: {self.common[device_key].model_no}")
@@ -71,14 +76,21 @@ class Scanner(AntPlusDevice):
 
                 common['serial_no'] = int.from_bytes(data[4:], byteorder='little')
 
+                # make an updated dataclass using current and new dict data
                 updated = dataclasses.replace(self.common[device_key], **common)
 
+                # only fire callback if the dataclass has changed
                 if updated != self.common[device_key]:
                     self.common[device_key] = updated
                     _logger.info(f"Product info {device_id}: Software: {updated.software_ver}; Serial Number: {updated.serial_no}")
                     self.on_update(tuple_device, self.common[device_key])
 
-    def save(self, file_path):
+    def save(self, file_path: str):
+        """
+        Save the devices found in session to a file_path in json format
+
+        :param file_path str: path to .json file to save
+        """
         jdata = read_json(file_path)
 
         if jdata:
@@ -107,8 +119,19 @@ class Scanner(AntPlusDevice):
         with open(file_path, "w") as fh:
             json.dump(jdata, fh, indent=4, sort_keys=True)
 
-    def on_found(self, _):
+    def on_found(self, _: Tuple[int, int, int]):
+        """
+        Callback when a new device is found
+
+        :param _ Tuple[int, int, int]: (device_id, device_type, transmission_type) of found device
+        """
         pass
 
-    def on_update(self, *_):
+    def on_update(self, dev: Tuple[int, int, int], common: CommonData):
+        """
+        Callback when a device updates it's common date pages
+
+        :param dev Tuple[int, int, int]: (device_id, device_type, transmission_type) of found device
+        :param common CommonData: common page data of device
+        """
         pass

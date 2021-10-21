@@ -105,7 +105,7 @@ except IOError:
 
 setup(
     name="openant",
-    version="0.4",
+    version="0.5",
     description="ANT and ANT-FS Python Library",
     long_description=long_description,
     author="Gustav Tiger",

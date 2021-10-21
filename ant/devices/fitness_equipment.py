@@ -120,7 +120,7 @@ class Workout():
 
 class FitnessEquipment(AntPlusDevice):
 
-    def __init__(self, node: Node, device_id=0, name="fitness_equipment", trans_type=0):
+    def __init__(self, node: Node, device_id:int=0, name:str="fitness_equipment", trans_type:int=0):
         # fitness equipment is 17 so make ANT+ device with that device type
         super().__init__(node, device_type=17, device_id=device_id, period=8192, name=name, trans_type=trans_type)
 
@@ -147,14 +147,14 @@ class FitnessEquipment(AntPlusDevice):
                 'fe': FitnessEquipmentData()
         }
 
-    def start_workouts(self, workouts: list):
+    def start_workouts(self, workouts: List[Workout]):
         for w in workouts:
             self._workout_queue.put(w)
 
         if not self._worker_thread.is_alive():
             self._worker_thread.start()
 
-    def run_workout(self, workout):
+    def run_workout(self, workout: Workout):
         intervals = workout.intervals
 
         for x in range(workout.cycles):
@@ -176,7 +176,7 @@ class FitnessEquipment(AntPlusDevice):
             else:
                 self.run_workout(workout)
 
-    def on_data(self, data):
+    def on_data(self, data: array.array):
         page = data[0]
 
         _logger.debug(f"{self} on_data: {data}")

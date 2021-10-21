@@ -23,7 +23,7 @@ class PowerData(DeviceData):
 
 class PowerMeter(AntPlusDevice):
 
-    def __init__(self, node: Node, device_id=0, name="power_meter", trans_type=0):
+    def __init__(self, node: Node, device_id:int=0, name:str="power_meter", trans_type:int=0):
         # power meter is 11 so make ANT+ device with that device type
         super().__init__(node, device_type=11, device_id=device_id, period=8182, name=name, trans_type=trans_type)
 

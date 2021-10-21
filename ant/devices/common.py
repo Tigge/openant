@@ -13,6 +13,9 @@ from enum import Enum
 _logger = logging.getLogger(__name__)
 
 class DeviceType(Enum):
+    """
+    ANT+ device profile identifiers
+    """
     Unknown = 255
     PowerMeter = 11
     FitnessEquipment = 17
@@ -36,6 +39,10 @@ class DeviceType(Enum):
 
 @dataclass
 class DeviceData:
+    """
+    The base class for device data page dataclasses
+    """
+
     def to_influx_json(self, tags: dict):
         fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
 
@@ -63,6 +70,13 @@ class CommonData(DeviceData):
 
 
 class AntPlusDevice(object):
+    """
+    Base class to create ANT+ devices with. Handles attached state and common data pages in `_on_data`.
+
+    When creating a class that inherits this, one should overload the `on_data` method for device specific data RX.
+
+    Use `on_found` callback to do stuff when first found and `on_update` to act whenever new data arrives.
+    """
 
     def __init__(self, node: Node, device_type:int, device_id:int=0, period:int=8070, rf_freq:int=57, name:str="unknown", trans_type:int=0):
         self.device_id = device_id
@@ -128,7 +142,7 @@ class AntPlusDevice(object):
 
         self.send_acknowledged_data(data)
 
-    def send_acknowledged_data(self, data):
+    def send_acknowledged_data(self, data: array.array):
         """
         Attempt ack send but catches exception if fails: wrapper for send_acknowledged_data
         """
@@ -199,4 +213,3 @@ class AntPlusDevice(object):
         # run user on_update after sub-class pages read
         if self.on_update:
             self.on_update(self)
-

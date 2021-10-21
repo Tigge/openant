@@ -224,7 +224,10 @@ class Ant:
                 self._last_data = message._data
 
             except usb.USBError as e:
-                _logger.warning("%s, %r", type(e), e.args)
+                if not isinstance(e, usb.core.USBTimeoutError):
+                    _logger.warning("%s, %r", type(e), e.args)
+                else:
+                    _logger.debug(f"Timeout waiting for message: {e.args}")
 
         _logger.debug("Ant runner stopped")
 
