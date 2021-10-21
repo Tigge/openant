@@ -156,12 +156,6 @@ class AntPlusDevice(object):
 
     def _on_data(self, data):
 
-        if not self._found:
-            self._found = True
-
-            if self.on_found:
-                self.on_found()
-
         # extended (> 8) has the device number and id beyond page
         if len(data) > 8 and not self._attached:
             device_id = data[9] + (data[10] << 8)
@@ -172,7 +166,6 @@ class AntPlusDevice(object):
             if self.device_id == 0:
                 self.device_id = device_id
                 self.trans_type = trans_type
-                print(f"Device ID #{device_id:05} of type {device_type}:{trans_type} attached: {self}")
 
                 # set channel to this id
                 self.channel.close()
@@ -182,8 +175,17 @@ class AntPlusDevice(object):
             elif self.device_id != device_id:
                 raise RuntimeError("Device ID #{device_id} does not match ID channel was set to #{self.device_id}!")
 
+            _logger.info(f"Device ID #{device_id:05} of type {device_type}:{trans_type} attached: {self}")
+
             # else device id was set and device is found so attached
             self._attached = True
+
+        # fire on_found after we could have obtained ext device data
+        if not self._found:
+            self._found = True
+
+            if self.on_found:
+                self.on_found(self)
 
         # % Common Pages %
         # manufacturer info
