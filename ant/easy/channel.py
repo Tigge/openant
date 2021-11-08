@@ -76,7 +76,11 @@ class Channel:
 
     def close(self):
         self._ant.close_channel(self.id)
-        return self.wait_for_response(Message.ID.CLOSE_CHANNEL)
+        # only wait for close if we think it's running
+        if self._ant._running:
+            return self.wait_for_response(Message.ID.CLOSE_CHANNEL)
+        else:
+            return False
 
     def set_id(self, deviceNum, deviceType, transmissionType):
         self._ant.set_channel_id(self.id, deviceNum, deviceType, transmissionType)
