@@ -74,7 +74,7 @@ class Scanner(AntPlusDevice):
                 else:
                     common['software_ver'] = str((sw_main * 100 + sw_rev) / 1000)
 
-                common['serial_no'] = int.from_bytes(data[4:], byteorder='little')
+                common['serial_no'] = int.from_bytes(data[4:8], byteorder='little')
 
                 # make an updated dataclass using current and new dict data
                 updated = dataclasses.replace(self.common[device_key], **common)
