@@ -71,6 +71,7 @@ class Ant:
             _logger.debug("Stoping ant.base")
             self._running = False
             self._worker_thread.join()
+            self._driver.close()
 
     def _on_broadcast(self, message):
         self._events.put(
