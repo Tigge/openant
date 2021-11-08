@@ -205,7 +205,7 @@ class AntPlusDevice(object):
             else:
                 self.data['common'].software_ver = str((sw_main * 100 + sw_rev) / 1000)
 
-            self.data['common'].serial_no = int.from_bytes(data[4:], byteorder='little')
+            self.data['common'].serial_no = int.from_bytes(data[4:8], byteorder='little')
 
             _logger.info(f"Product info {self}: Software: {self.data['common'].software_ver}; Serial Number: {self.data['common'].serial_no}")
 
