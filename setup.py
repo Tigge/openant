@@ -66,8 +66,10 @@ def install_udev_rules(raise_exception):
 def check_root():
     return os.geteuid() == 0
 
+
 def is_linux():
     return platform.system() == "Linux"
+
 
 class InstallUdevRules(Command):
     description = "install udev rules (requires root privileges)"
