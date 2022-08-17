@@ -92,7 +92,7 @@ try:
                         )
                         if ven == cls.ID_VENDOR or cls.ID_PRODUCT == pro:
                             return os.path.join("/dev", device)
-                    except:
+                    except Exception:
                         continue
                 return None
             except OSError:
@@ -109,19 +109,19 @@ try:
             except serial.SerialException as e:
                 raise DriverException(e)
 
-            print("Serial information:")
-            print("name:            ", self._serial.name)
-            print("port:            ", self._serial.port)
-            print("baudrate:        ", self._serial.baudrate)
-            print("bytesize:        ", self._serial.bytesize)
-            print("parity:          ", self._serial.parity)
-            print("stopbits:        ", self._serial.stopbits)
-            print("timeout:         ", self._serial.timeout)
-            print("writeTimeout:    ", self._serial.writeTimeout)
-            print("xonxoff:         ", self._serial.xonxoff)
-            print("rtscts:          ", self._serial.rtscts)
-            print("dsrdtr:          ", self._serial.dsrdtr)
-            print("interCharTimeout:", self._serial.interCharTimeout)
+            _logger.debug("Serial information:")
+            _logger.debug("name:            ", self._serial.name)
+            _logger.debug("port:            ", self._serial.port)
+            _logger.debug("baudrate:        ", self._serial.baudrate)
+            _logger.debug("bytesize:        ", self._serial.bytesize)
+            _logger.debug("parity:          ", self._serial.parity)
+            _logger.debug("stopbits:        ", self._serial.stopbits)
+            _logger.debug("timeout:         ", self._serial.timeout)
+            _logger.debug("writeTimeout:    ", self._serial.writeTimeout)
+            _logger.debug("xonxoff:         ", self._serial.xonxoff)
+            _logger.debug("rtscts:          ", self._serial.rtscts)
+            _logger.debug("dsrdtr:          ", self._serial.dsrdtr)
+            _logger.debug("interCharTimeout:", self._serial.interCharTimeout)
 
             self._serial.timeout = 0
 
@@ -194,7 +194,7 @@ try:
                     dev.detach_kernel_driver(0)
                 else:
                     _logger.debug("No kernel driver active")
-            except NotImplementedError as e:
+            except NotImplementedError:
                 _logger.warning(
                     "Could not check if kernel driver was active, not implemented in usb backend"
                 )
@@ -204,7 +204,7 @@ try:
             dev.set_configuration()
             try:
                 dev.reset()
-            except NotImplementedError as e:
+            except NotImplementedError:
                 _logger.warning(
                     "Could not reset the device, not implemented in usb backend"
                 )
@@ -264,10 +264,10 @@ except ImportError:
 
 
 def find_driver():
-    print("Driver available:", drivers)
+    _logger.debug("Driver available:", drivers)
 
     for driver in reversed(drivers):
         if driver.find():
-            print(" - Using:", driver)
+            _logger.debug(" - Using:", driver)
             return driver()
     raise DriverNotFound
