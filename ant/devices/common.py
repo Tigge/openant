@@ -2,12 +2,13 @@ import datetime
 import array
 import datetime
 import logging
+from typing import Optional
 
 from ant.easy.node import Node
 from ant.easy.channel import Channel
 from ant.easy.exception import AntException
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 _logger = logging.getLogger(__name__)
@@ -37,6 +38,23 @@ class DeviceType(Enum):
     def _missing_(cls, _):
         return DeviceType.Unknown
 
+class BatteryStatus(Enum):
+    """
+    ANT+ battery status
+    """
+    Unknown = 0
+    New = 1
+    Good = 2
+    Ok = 3
+    Low = 4
+    Critical = 5
+    Charging = 6
+    Invalid = 7
+
+    @classmethod
+    def _missing_(cls, _):
+        return BatteryStatus.Unknown
+
 @dataclass
 class DeviceData:
     """
@@ -58,6 +76,14 @@ class DeviceData:
         }
 
 @dataclass
+class BatteryData():
+    voltage_fractional: float = field(default=0.0, metadata={"unit": "V"})
+    voltage_coarse: int = field(default=0, metadata={"unit": "V"})
+    status: BatteryStatus = BatteryStatus.Unknown
+    operating_time: int = field(default=0, metadata={"unit": "seconds"})
+
+
+@dataclass
 class CommonData(DeviceData):
     """
     ANT+ common device data
@@ -67,7 +93,9 @@ class CommonData(DeviceData):
     software_ver: str = ''
     hardware_rev: int = 0xFF
     model_no: int = 0xFFFF
-
+    last_battery_id: int = 0xFF
+    last_battery_data: BatteryData = BatteryData()
+    timedate: Optional[datetime.datetime] = None
 
 class AntPlusDevice(object):
     """
@@ -92,9 +120,11 @@ class AntPlusDevice(object):
         # callbacks
         self.on_found = None
         self.on_update = None
+        self.on_battery = None
 
         self.data = {
-            'common': CommonData()
+            'common': CommonData(),
+            'batteries': [BatteryData() for _ in range(15)] # multi battery systems will update list with battery ID as index
         }
 
         self.node = node
@@ -208,6 +238,45 @@ class AntPlusDevice(object):
             self.data['common'].serial_no = int.from_bytes(data[4:8], byteorder='little')
 
             _logger.info(f"Product info {self}: Software: {self.data['common'].software_ver}; Serial Number: {self.data['common'].serial_no}")
+        # battery status
+        elif data[0] == 82:
+            self.data['common'].last_battery_data.voltage_fractional = data[6] / 256
+            self.data['common'].last_battery_data.voltage_coarse = data[7] & 0x0F
+            self.data['common'].last_battery_data.status = BatteryStatus(data[7] & 0x70)
+
+            cumulative_resolution_bit = (data[7] & 0x80) == 0x80
+
+            if cumulative_resolution_bit:
+                self.data['common'].last_battery_data.operating_time = int.from_bytes(data[3:5], byteorder='little') * 2
+            else:
+                self.data['common'].last_battery_data.operating_time = int.from_bytes(data[3:5], byteorder='little') * 16
+
+            # if system has multiple batteries to report, assign to index in batteries list
+            if (data[2] != 0xFF):
+                self.data['common'].battery_number = data[2] & 0x0F
+                self.data['common'].last_battery_id = data[2] & 0xF0
+                self.data['batteries'][self.data['common'].last_battery_id] = self.data['common'].last_battery_data.copy()
+            # else not using ID so just report that as invalid and 1 battery
+            else:
+                self.data['common'].battery_number = 1
+                self.data['common'].last_battery_id = data[2]
+
+            _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
+
+            # fire callback if child class defined it - useful to decimate updates into each battery within system
+            if self.on_battery:
+                self.on_battery(self)
+        # date and time
+        elif data[0] == 83:
+            second = data[2]
+            minute = data[3]
+            hour = data[4]
+            # day_of_month = (data[5] & 0xE0) >> 4 # bits 5-7
+            day = data[5] & 0x1F # bits 4-0
+            month = data[6]
+            year = data[7] + 2000
+
+            self.data['common'].timedate = datetime.datetime(year, month, day, hour, minute, second)
 
         # run other pages for sub-classes
         self.on_data(data)
