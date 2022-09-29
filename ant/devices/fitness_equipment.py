@@ -134,9 +134,6 @@ class FitnessEquipment(AntPlusDevice):
 
         self.resistance_mode = ResistenceMode.Unknown
 
-        self.on_standard_power = None
-        self.on_standard_torque = None
-
         self._stopper = threading.Event()
         self._worker_thread = threading.Thread(target=self._worker, name="fe_workout", daemon=True)
         self._workout_queue = queue.Queue()
@@ -199,9 +196,7 @@ class FitnessEquipment(AntPlusDevice):
 
                 _logger.info(f"Standard power update {self}: {self.data['power'].instantaneous_power} W; Average Power: {self.data['power'].average_power} W; Cadence {self.data['power'].cadence} rpm")
 
-                if self.on_standard_power:
-                    self.on_standard_power(self.data['power'], str(self))
-
+                self.on_device_data(page, 'standard_power', self.data['power'])
         # standard torque
         elif page == 0x1A:
             self._torque_update_event_count[0] = self._torque_update_event_count[1]
@@ -236,9 +231,7 @@ class FitnessEquipment(AntPlusDevice):
 
                 _logger.info(f"Standard torque update {self}: {self.data['power'].average_power} W; Angular Velocity {self.data['power'].angular_velocity} rad/s; Average Torque: {self.data['power'].torque} Nm")
 
-                if self.on_standard_torque:
-                    self.on_standard_torque(self.data['power'], str(self))
-
+                self.on_device_data(page, 'standard_torque', self.data['power'])
         # general FE data
         elif page == 0x10:
             self.data['fe'].type = data[1]
@@ -248,6 +241,7 @@ class FitnessEquipment(AntPlusDevice):
 
             _logger.info(f"General FE {self}: Type: {self.data['fe'].type}; State: {self.data['fe'].state}")
 
+            self.on_device_data(page, 'general_fe', self.data['fe'])
         # general settings
         elif page == 0x11:
             self.data['fe'].type = data[1]
@@ -258,6 +252,7 @@ class FitnessEquipment(AntPlusDevice):
 
             _logger.info(f"General settings {self}: Type: {self.data['fe'].type}; Resistence: {self.data['fe'].resistance}")
 
+            self.on_device_data(page, 'general_settings', self.data['fe'])
         # datapage reply 71
         elif page == 0x47:
             self.data['fe'].resistance_mode = ResistenceMode(data[1])

@@ -49,7 +49,6 @@ class Shifting(AntPlusDevice):
         super().__init__(node, device_type=34, device_id=device_id, period=8192, name=name, trans_type=trans_type)
 
         self._event_count = [0, 0]
-        self.on_status_update = None
 
         self.data = {
                 **self.data,
@@ -71,16 +70,16 @@ class Shifting(AntPlusDevice):
             self._event_count[0] = self._event_count[1]
             self._event_count[1] = data[1]
 
-            self.data['tpms'].gear_rear = data[3] & 0x1F
-            self.data['tpms'].gear_front = data[3] & 0xE0
-            self.data['tpms'].total_rear = data[4] & 0x1F
-            self.data['tpms'].total_front = data[4] & 0xE0
-            self.data['tpms'].invalid_inboard_rear = data[5] & 0x0F
-            self.data['tpms'].invalid_outboard_rear = data[5] & 0xF0
-            self.data['tpms'].invalid_inboard_front = data[6] & 0x0F
-            self.data['tpms'].invalid_outboard_front = data[6] & 0xF0
-            self.data['tpms'].shift_failure_rear = data[7] & 0x0F
-            self.data['tpms'].shift_failure_front = data[7] & 0xF0
+            self.data['shift'].gear_rear = data[3] & 0x1F
+            self.data['shift'].gear_front = data[3] & 0xE0
+            self.data['shift'].total_rear = data[4] & 0x1F
+            self.data['shift'].total_front = data[4] & 0xE0
+            self.data['shift'].invalid_inboard_rear = data[5] & 0x0F
+            self.data['shift'].invalid_outboard_rear = data[5] & 0xF0
+            self.data['shift'].invalid_inboard_front = data[6] & 0x0F
+            self.data['shift'].invalid_outboard_front = data[6] & 0xF0
+            self.data['shift'].shift_failure_rear = data[7] & 0x0F
+            self.data['shift'].shift_failure_front = data[7] & 0xF0
 
 
             delta_update_count = (self._event_count[1] + 256 - self._event_count[0]) % 256
@@ -88,5 +87,4 @@ class Shifting(AntPlusDevice):
             # if it's a new event (count change)
             if delta_update_count:
                 _logger.info(f"Shifting status update {self}: {self.data['shifting']}")
-                if self.on_status_update:
-                    self.on_status_update(self.data['shifting'], str(self))
+                self.on_device_data(page, 'shift_system_status', self.data['shift'])

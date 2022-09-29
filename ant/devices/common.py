@@ -24,6 +24,7 @@ class DeviceType(Enum):
     BloodPressure = 18
     Geocache = 19
     Environment = 25
+    TirePressureMonitor = 48
     WeightScale = 119
     Heartrate = 120
     BikeSpeedCadence = 121
@@ -77,6 +78,9 @@ class DeviceData:
 
 @dataclass
 class BatteryData():
+    """
+    Has it's own dataclass because there can be multiple instances of this in one device
+    """
     voltage_fractional: float = field(default=0.0, metadata={"unit": "V"})
     voltage_coarse: int = field(default=0, metadata={"unit": "V"})
     status: BatteryStatus = BatteryStatus.Unknown
@@ -93,8 +97,8 @@ class CommonData(DeviceData):
     software_ver: str = ''
     hardware_rev: int = 0xFF
     model_no: int = 0xFFFF
-    last_battery_id: int = 0xFF
-    last_battery_data: BatteryData = BatteryData()
+    last_battery_id: int = 0xFF # 0xFF is not used, otherwise 0:3 is battery number, 4:7 is ID
+    last_battery_data: BatteryData = BatteryData() # the last one recieved or only if last_battery_id = 0xFF
     timedate: Optional[datetime.datetime] = None
 
 class AntPlusDevice(object):
@@ -117,11 +121,6 @@ class AntPlusDevice(object):
         self._found = False
         self._attached = False
 
-        # callbacks
-        self.on_found = None
-        self.on_update = None
-        self.on_battery = None
-
         self.data = {
             'common': CommonData(),
             'batteries': [BatteryData() for _ in range(15)] # multi battery systems will update list with battery ID as index
@@ -133,6 +132,31 @@ class AntPlusDevice(object):
 
     def __str__(self):
         return f"{self.name}_{self.device_id:05}"
+
+    @staticmethod
+    def on_device_data(page: int, page_name: str, data: dict):
+        """Override this to capture device specific page data updates"""
+        assert page
+        assert page_name
+        assert data
+        pass
+
+    @staticmethod
+    def on_update(data: list):
+        """Override this to capture raw data when recieved"""
+        assert data
+        pass
+
+    @staticmethod
+    def on_found():
+        """Override this to do things when device is first found"""
+        pass
+
+    @staticmethod
+    def on_battery(data: BatteryData):
+        """Override for updates of common battery page"""
+        assert data
+        pass
 
     def open_channel(self):
         self.channel = self.node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01)
@@ -214,8 +238,7 @@ class AntPlusDevice(object):
         if not self._found:
             self._found = True
 
-            if self.on_found:
-                self.on_found(self)
+            self.on_found()
 
         # % Common Pages %
         # manufacturer info
@@ -263,9 +286,7 @@ class AntPlusDevice(object):
 
             _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
 
-            # fire callback if child class defined it - useful to decimate updates into each battery within system
-            if self.on_battery:
-                self.on_battery(self)
+            self.on_battery(self.data['common'].last_battery_data)
         # date and time
         elif data[0] == 83:
             second = data[2]
@@ -282,5 +303,4 @@ class AntPlusDevice(object):
         self.on_data(data)
 
         # run user on_update after sub-class pages read
-        if self.on_update:
-            self.on_update(self)
+        self.on_update(data)

@@ -35,9 +35,6 @@ class PowerMeter(AntPlusDevice):
         self._accumulated_torque = [0, 0]
         self._crank_period = [0, 0]
 
-        self.on_standard_power = None
-        self.on_standard_torque = None
-
         self.data = {
                 **self.data,
                 'power': PowerData()
@@ -72,8 +69,7 @@ class PowerMeter(AntPlusDevice):
 
                 _logger.info(f"Standard power update {self}: {self.data['power'].instantaneous_power} W; Average Power: {self.data['power'].average_power} W; Cadence {self.data['power'].cadence} rpm")
 
-                if self.on_standard_power:
-                    self.on_standard_power(self.data['power'], str(self))
+                self.on_device_data(page, 'standard_power', self.data['power'])
 
         # standard torque
         elif page == 0x12:
@@ -111,6 +107,5 @@ class PowerMeter(AntPlusDevice):
                 self.data['power'].average_power = int(self.data['power'].torque * self.data['power'].angular_velocity)
 
                 _logger.info(f"Standard torque update {self}: {self.data['power'].average_power} W; Angular Velocity {self.data['power'].angular_velocity} rad/s; Average Torque: {self.data['power'].torque} Nm")
-                if self.on_standard_torque:
-                    self.on_standard_torque(self.data['power'], str(self))
 
+                self.on_device_data(page, 'standard_torque', self.data['power'])

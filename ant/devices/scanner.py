@@ -119,19 +119,24 @@ class Scanner(AntPlusDevice):
         with open(file_path, "w") as fh:
             json.dump(jdata, fh, indent=4, sort_keys=True)
 
-    def on_found(self, _: Tuple[int, int, int]):
+    @staticmethod
+    def on_found(device_tuple: Tuple[int, int, int]):
         """
         Callback when a new device is found
 
         :param _ Tuple[int, int, int]: (device_id, device_type, transmission_type) of found device
         """
+        assert device_tuple # type: ignore
         pass
 
-    def on_update(self, dev: Tuple[int, int, int], common: CommonData):
+    @staticmethod
+    def on_update(device_tuple: Tuple[int, int, int], common: CommonData):
         """
         Callback when a device updates it's common date pages
 
         :param dev Tuple[int, int, int]: (device_id, device_type, transmission_type) of found device
         :param common CommonData: common page data of device
         """
+        assert device_tuple # type: ignore
+        assert common
         pass

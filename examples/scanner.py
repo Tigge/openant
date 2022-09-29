@@ -6,12 +6,12 @@ from ant.devices.scanner import Scanner
 # standard ANT+ network key
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
-def on_found(device):
-    device_id, device_type, device_trans = device
+def on_found(device_tuple):
+    device_id, device_type, device_trans = device_tuple
     print(f"Found new device #{device_id} {DeviceType(device_type)}; device_type: {device_type}, transmission_type: {device_trans}")
 
-def on_update(device, common):
-    device_id = device[0]
+def on_update(device_tuple, common):
+    device_id = device_tuple[0]
     print(f"Device #{device_id} commond data update: {common}")
 
 def main(file_path=None):
