@@ -53,8 +53,8 @@ def udev_trigger():
 def install_udev_rules(raise_exception):
     if check_root():
         shutil.copy("resources/42-ant-usb-sticks.rules", "/etc/udev/rules.d")
-        execute(udev_reload_rules, [], "Reloading udev rules")
-        execute(udev_trigger, [], "Triggering udev rules")
+        execute(udev_reload_rules, (), "Reloading udev rules")
+        execute(udev_trigger, (), "Triggering udev rules")
     else:
         msg = 'You must have root privileges to install udev rules. Run "sudo python setup.py udev_rules"'
         if raise_exception:
@@ -86,15 +86,11 @@ class InstallUdevRules(Command):
 class CustomInstall(install):
     def run(self):
         install.run(self)
-        # if is_linux():
-        #     install_udev_rules(False)
 
 
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
-        # if is_linux():
-        #     install_udev_rules(False)
 
 
 try:
@@ -105,17 +101,18 @@ except IOError:
 
 setup(
     name="openant",
-    version="0.6",
-    description="ANT and ANT-FS Python Library",
+    version="1.0",
+    description="ANT, ANT-FS and ANT+ Python Library",
     long_description=long_description,
-    author="Gustav Tiger",
-    author_email="gustav@tiger.name",
-    url="https://github.com/Tigge/openant",
+    author="Gustav Tiger, John Whittington",
+    author_email="gustav@tiger.name, git@jbrengineering.co.uk",
+    url="https://github.com/tuna-f1sh/openant",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
         "Intended Audience :: Science/Research"
+        "Intended Audience :: Sport/Recreation Industry"
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",

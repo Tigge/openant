@@ -24,13 +24,7 @@
 import collections
 import threading
 import logging
-
-try:
-    # Python 3
-    import queue
-except ImportError:
-    # Python 2
-    import Queue as queue
+import queue
 
 from ant.base.ant import Ant
 from ant.base.message import Message
@@ -133,7 +127,7 @@ class Node:
                     self.channels[channel].on_acknowledge_data(data)
                 else:
                     _logger.warning("Unknown data type '%s': %r", data_type, data)
-            except queue.Empty as e:
+            except queue.Empty as _:
                 pass
 
     def start(self):
