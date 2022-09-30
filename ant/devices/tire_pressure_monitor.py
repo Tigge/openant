@@ -59,7 +59,7 @@ class TirePressureMonitor(AntPlusDevice):
         # main page
         if page == 0x01:
             self.data['tpms'].position = PressureSensorPosition(data[1] & 0x0F)
-            self.data['tpms'].alarm_state = PressureSensorAlarm(data[1] & 0xF0)
+            self.data['tpms'].alarm_state = PressureSensorAlarm((data[1] & 0xF0) >> 4)
             self.data['tpms'].capabilities = data[2]
 
             self.data['tpms'].pressure = int.from_bytes(data[6:7], byteorder='little')
@@ -70,7 +70,7 @@ class TirePressureMonitor(AntPlusDevice):
         # get/set parameters
         if page == 0x10:
             self.data['tpms'].position = PressureSensorPosition(data[1] & 0x0F)
-            self.data['tpms'].alarm_state = PressureSensorAlarm(data[1] & 0xF0)
+            self.data['tpms'].alarm_state = PressureSensorAlarm((data[1] & 0xF0) >> 4)
             self.data['tpms'].barometric_pressure = int.from_bytes(data[2:3], byteorder='little')
             self.data['tpms'].low_pressure_alarm = int.from_bytes(data[4:5], byteorder='little')
             self.data['tpms'].high_pressure_alarm = int.from_bytes(data[6:7], byteorder='little')

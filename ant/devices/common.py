@@ -8,6 +8,7 @@ from ant.easy.node import Node
 from ant.easy.channel import Channel
 from ant.easy.exception import AntException
 
+import dataclasses
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -141,16 +142,25 @@ class AntPlusDevice(object):
         assert data
         pass
 
+    def _on_update(self, data: list):
+        self.on_update(data)
+
     @staticmethod
     def on_update(data: list):
         """Override this to capture raw data when recieved"""
         assert data
         pass
 
+    def _on_found(self):
+        self.on_found()
+
     @staticmethod
     def on_found():
         """Override this to do things when device is first found"""
         pass
+
+    def _on_battery(self, data: BatteryData):
+        self.on_battery(data)
 
     @staticmethod
     def on_battery(data: BatteryData):
@@ -265,7 +275,7 @@ class AntPlusDevice(object):
         elif data[0] == 82:
             self.data['common'].last_battery_data.voltage_fractional = data[6] / 256
             self.data['common'].last_battery_data.voltage_coarse = data[7] & 0x0F
-            self.data['common'].last_battery_data.status = BatteryStatus(data[7] & 0x70)
+            self.data['common'].last_battery_data.status = BatteryStatus((data[7] & 0x70) >> 4)
 
             cumulative_resolution_bit = (data[7] & 0x80) == 0x80
 
@@ -277,8 +287,9 @@ class AntPlusDevice(object):
             # if system has multiple batteries to report, assign to index in batteries list
             if (data[2] != 0xFF):
                 self.data['common'].battery_number = data[2] & 0x0F
-                self.data['common'].last_battery_id = data[2] & 0xF0
-                self.data['batteries'][self.data['common'].last_battery_id] = self.data['common'].last_battery_data.copy()
+                self.data['common'].last_battery_id = (data[2] & 0xF0) >> 4
+                # copy the dataclass to batteries list
+                self.data['batteries'][self.data['common'].last_battery_id] = dataclasses.replace(self.data['common'].last_battery_data)
             # else not using ID so just report that as invalid and 1 battery
             else:
                 self.data['common'].battery_number = 1
@@ -286,14 +297,14 @@ class AntPlusDevice(object):
 
             _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
 
-            self.on_battery(self.data['common'].last_battery_data)
+            self._on_battery(self.data['common'].last_battery_data)
         # date and time
         elif data[0] == 83:
             second = data[2]
             minute = data[3]
             hour = data[4]
-            # day_of_month = (data[5] & 0xE0) >> 4 # bits 5-7
-            day = data[5] & 0x1F # bits 4-0
+            # day_of_month = (data[5] & 0xE0) >> 5 # bits 5-7
+            day = data[5] & 0x1F # bits 0-4
             month = data[6]
             year = data[7] + 2000
 
@@ -303,4 +314,4 @@ class AntPlusDevice(object):
         self.on_data(data)
 
         # run user on_update after sub-class pages read
-        self.on_update(data)
+        self._on_update(data)

@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 
 from ant.easy.node import Node
-from .common import DeviceData, AntPlusDevice
+from .common import BatteryData, DeviceData, AntPlusDevice
 
 _logger = logging.getLogger(__name__)
 
@@ -55,10 +55,10 @@ class Shifting(AntPlusDevice):
                 'shift': ShiftData()
         }
 
-    def on_battery(self):
+    def on_battery(self, data: BatteryData):
         if self.data['common'].last_battery_id != 0xFF:
             battery_id = ShiftingSystemID(self.data['common'].last_battery_id)
-            _logger.debug(f"Shifting {battery_id.name} battery update ${self.data['batteries'][battery_id.value]}")
+            _logger.info(f"Shifting {battery_id.name} battery update ${data}")
 
     def on_data(self, data):
         page = data[0]
@@ -71,20 +71,20 @@ class Shifting(AntPlusDevice):
             self._event_count[1] = data[1]
 
             self.data['shift'].gear_rear = data[3] & 0x1F
-            self.data['shift'].gear_front = data[3] & 0xE0
+            self.data['shift'].gear_front = (data[3] & 0xE0) >> 5
             self.data['shift'].total_rear = data[4] & 0x1F
-            self.data['shift'].total_front = data[4] & 0xE0
+            self.data['shift'].total_front = (data[4] & 0xE0) >> 5
             self.data['shift'].invalid_inboard_rear = data[5] & 0x0F
-            self.data['shift'].invalid_outboard_rear = data[5] & 0xF0
+            self.data['shift'].invalid_outboard_rear = (data[5] & 0xF0) >> 4
             self.data['shift'].invalid_inboard_front = data[6] & 0x0F
-            self.data['shift'].invalid_outboard_front = data[6] & 0xF0
+            self.data['shift'].invalid_outboard_front = (data[6] & 0xF0) >> 4
             self.data['shift'].shift_failure_rear = data[7] & 0x0F
-            self.data['shift'].shift_failure_front = data[7] & 0xF0
+            self.data['shift'].shift_failure_front = (data[7] & 0xF0) >> 4
 
 
             delta_update_count = (self._event_count[1] + 256 - self._event_count[0]) % 256
 
             # if it's a new event (count change)
             if delta_update_count:
-                _logger.info(f"Shifting status update {self}: {self.data['shifting']}")
+                _logger.info(f"Shifting status update {self}: {self.data['shift']}")
                 self.on_device_data(page, 'shift_system_status', self.data['shift'])
