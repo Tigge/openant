@@ -56,7 +56,7 @@ class Listener(Application):
         try:
             self.authentication_pair("ANT-FS List")
             return True
-        except AntFSAuthenticationException as e:
+        except AntFSAuthenticationException as _:
             return False
 
     def on_transport(self, beacon):

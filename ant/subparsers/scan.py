@@ -7,8 +7,7 @@ from ant.devices.utilities import auto_create_device
 # standard ANT+ network key
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
-# also see `auto_scanner` in ant/subparsers/scan.py
-def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
+def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
     # list of auto created devices
     devices = []
 
@@ -63,5 +62,48 @@ def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
 
         node.stop()
 
-if __name__ == "__main__":
-    example_scan()
+def _run(args):
+    if (args.device_type == DeviceType.Unknown.name):
+        device_type = 0
+    else:
+        device_type = DeviceType[args.device_type].value
+
+    auto_scanner(file_path=args.outfile, device_id=args.device_id, device_type=device_type, auto_create=args.auto_create)
+
+def add_subparser(subparsers):
+    parser = subparsers.add_parser(
+        name="scan",
+        description="Scan for ANT+ devices and print information to terminal/save to file"
+    )
+    parser.add_argument(
+        "--logging",
+        dest="logLevel",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Set the logging level",
+    )
+    parser.add_argument(
+        "--outfile",
+        "-o",
+        type=str,
+        help=".json file to save found device info",
+    )
+    parser.add_argument(
+        "--device_type",
+        "-t",
+        type=str,
+        default=DeviceType.Unknown.name,
+        choices=[x.name for x in DeviceType],
+        help="Device type to scan for, default Unknown is all",
+    )
+    parser.add_argument(
+        "--device_id",
+        "-i",
+        type=int,
+        default=0,
+        help="Device ID to scan for, default 0 is all",
+    )
+    parser.add_argument(
+        "--auto_create", "-a", action="store_true", help="Auto-create device profile object and print device page data updates"
+    )
+
+    parser.set_defaults(func=_run)

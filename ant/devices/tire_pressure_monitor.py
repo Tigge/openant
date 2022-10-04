@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 
 from ant.easy.node import Node
-from .common import DeviceData, AntPlusDevice
+from .common import DeviceData, AntPlusDevice, DeviceType
 
 _logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class TirePressureMonitor(AntPlusDevice):
 
     def __init__(self, node: Node, device_id:int=0, name:str="tire_pressure_monitor", trans_type:int=0):
         # device 48 so make ANT+ device with that device type, period switches between 4 Hz (8192) when pumping and 1 Hz (32768) during normal use
-        super().__init__(node, device_type=48, device_id=device_id, period=8192, name=name, trans_type=trans_type)
+        super().__init__(node, device_type=DeviceType.TirePressureMonitor.value, device_id=device_id, period=8192, name=name, trans_type=trans_type)
 
         self.data = {
                 **self.data,
@@ -62,18 +62,18 @@ class TirePressureMonitor(AntPlusDevice):
             self.data['tpms'].alarm_state = PressureSensorAlarm((data[1] & 0xF0) >> 4)
             self.data['tpms'].capabilities = data[2]
 
-            self.data['tpms'].pressure = int.from_bytes(data[6:7], byteorder='little')
+            self.data['tpms'].pressure = int.from_bytes(data[6:8], byteorder='little')
 
-            _logger.info(f"Tire pressure main update {self}: {self.data['tmps']}")
+            _logger.info(f"Tire pressure main update {self}: {self.data['tpms']}")
 
             self.on_device_data(page, 'tire_pressure', self.data['tpms'])
         # get/set parameters
         if page == 0x10:
             self.data['tpms'].position = PressureSensorPosition(data[1] & 0x0F)
             self.data['tpms'].alarm_state = PressureSensorAlarm((data[1] & 0xF0) >> 4)
-            self.data['tpms'].barometric_pressure = int.from_bytes(data[2:3], byteorder='little')
-            self.data['tpms'].low_pressure_alarm = int.from_bytes(data[4:5], byteorder='little')
-            self.data['tpms'].high_pressure_alarm = int.from_bytes(data[6:7], byteorder='little')
+            self.data['tpms'].barometric_pressure = int.from_bytes(data[2:4], byteorder='little')
+            self.data['tpms'].low_pressure_alarm = int.from_bytes(data[4:6], byteorder='little')
+            self.data['tpms'].high_pressure_alarm = int.from_bytes(data[6:8], byteorder='little')
 
             self.on_device_data(page, 'get_set', self.data['tpms'])
 

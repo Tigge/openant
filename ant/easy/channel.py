@@ -58,6 +58,10 @@ class Channel:
         assert data
         pass
 
+    def on_acknowledge_data(self, data):
+        assert data
+        pass
+
     def wait_for_event(self, ok_codes):
         return wait_for_event(ok_codes, self._node._events, self._node._event_cond)
 

@@ -27,7 +27,7 @@ class DeviceType(Enum):
     Environment = 25
     TirePressureMonitor = 48
     WeightScale = 119
-    Heartrate = 120
+    HeartRate = 120
     BikeSpeedCadence = 121
     BikeCadence = 122
     BikeSpeed = 123
@@ -135,7 +135,8 @@ class AntPlusDevice(object):
         return f"{self.name}_{self.device_id:05}"
 
     @staticmethod
-    def on_device_data(page: int, page_name: str, data: dict):
+    def on_device_data(page: int, page_name: str, data: DeviceData):
+
         """Override this to capture device specific page data updates"""
         assert page
         assert page_name
@@ -160,6 +161,7 @@ class AntPlusDevice(object):
         pass
 
     def _on_battery(self, data: BatteryData):
+        _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
         self.on_battery(data)
 
     @staticmethod
@@ -294,8 +296,6 @@ class AntPlusDevice(object):
             else:
                 self.data['common'].battery_number = 1
                 self.data['common'].last_battery_id = data[2]
-
-            _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
 
             self._on_battery(self.data['common'].last_battery_data)
         # date and time

@@ -25,6 +25,7 @@
 import os
 import shutil
 import platform
+import codecs
 
 from distutils.util import execute
 from distutils.cmd import Command
@@ -87,23 +88,28 @@ class CustomInstall(install):
     def run(self):
         install.run(self)
 
-
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
 
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
 
-try:
-    with open("README.md") as file:
-        long_description = file.read()
-except IOError:
-    long_description = ""
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 setup(
     name="openant",
-    version="1.0",
+    version=get_version('ant/__init__.py'),
     description="ANT, ANT-FS and ANT+ Python Library",
-    long_description=long_description,
+    long_description=open('README.md', 'r').read(),
     author="Gustav Tiger, John Whittington",
     author_email="gustav@tiger.name, git@jbrengineering.co.uk",
     url="https://github.com/tuna-f1sh/openant",
@@ -120,7 +126,11 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=find_packages(),
+    entry_points = {
+        'console_scripts': ['openant=ant.__init__:main']
+    },
+    packages=find_packages(exclude=['test']),
+    python_requires='>=3.7',
     install_requires=["pyusb>=1.0a2"],
     cmdclass={
         "udev_rules": InstallUdevRules,

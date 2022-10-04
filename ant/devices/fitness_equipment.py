@@ -11,7 +11,7 @@ from enum import Enum
 
 from ant.easy.node import Node
 
-from .common import DeviceData, AntPlusDevice
+from .common import DeviceData, AntPlusDevice, DeviceType
 from .power_meter import PowerData
 
 _logger = logging.getLogger(__name__)
@@ -122,7 +122,7 @@ class FitnessEquipment(AntPlusDevice):
 
     def __init__(self, node: Node, device_id:int=0, name:str="fitness_equipment", trans_type:int=0):
         # fitness equipment is 17 so make ANT+ device with that device type
-        super().__init__(node, device_type=17, device_id=device_id, period=8192, name=name, trans_type=trans_type)
+        super().__init__(node, device_type=DeviceType.FitnessEquipment.value, device_id=device_id, period=8192, name=name, trans_type=trans_type)
 
         self._power_update_event_count = [0, 0]
         self._accumulated_power = [0, 0]

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7c9220efccf6bf633ac7713c109ffac270a275f8b7e4525a8934292849e89781"
+            "sha256": "0cd3b2d638560b89c6e158e13e70127a34e89e7e70ae59e5eb25d6ea0afa8b60"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -15,7 +15,20 @@
             }
         ]
     },
-    "default": {},
+    "default": {
+        "openant": {
+            "editable": true,
+            "path": "."
+        },
+        "pyusb": {
+            "hashes": [
+                "sha256:2b4c7cb86dbadf044dfb9d3a4ff69fd217013dbe78a792177a3feb172449ea36",
+                "sha256:a4cc7404a203144754164b8b40994e2849fde1cfff06b08492f12fff9d9de7b9"
+            ],
+            "markers": "python_full_version >= '3.6.0'",
+            "version": "==1.2.1"
+        }
+    },
     "develop": {
         "appnope": {
             "hashes": [

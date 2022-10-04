@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 
 from ant.easy.node import Node
-from .common import BatteryData, DeviceData, AntPlusDevice
+from .common import BatteryData, DeviceData, AntPlusDevice, DeviceType
 
 _logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class ShiftData(DeviceData):
 class Shifting(AntPlusDevice):
 
     def __init__(self, node: Node, device_id:int=0, name:str="shifting", trans_type:int=0):
-        super().__init__(node, device_type=34, device_id=device_id, period=8192, name=name, trans_type=trans_type)
+        super().__init__(node, device_type=DeviceType.Shifting, device_id=device_id, period=8192, name=name, trans_type=trans_type)
 
         self._event_count = [0, 0]
 
@@ -55,10 +55,14 @@ class Shifting(AntPlusDevice):
                 'shift': ShiftData()
         }
 
-    def on_battery(self, data: BatteryData):
+    def _on_battery(self, data: BatteryData):
         if self.data['common'].last_battery_id != 0xFF:
             battery_id = ShiftingSystemID(self.data['common'].last_battery_id)
             _logger.info(f"Shifting {battery_id.name} battery update ${data}")
+        else:
+            _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
+
+        self.on_battery(data)
 
     def on_data(self, data):
         page = data[0]

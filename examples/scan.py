@@ -23,11 +23,8 @@
 
 from ant.easy.node import Node
 from ant.easy.channel import Channel
-from ant.base.message import Message
 
 import logging
-import struct
-import threading
 import sys
 
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
