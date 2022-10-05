@@ -14,10 +14,12 @@ from enum import Enum
 
 _logger = logging.getLogger(__name__)
 
+
 class DeviceType(Enum):
     """
     ANT+ device profile identifiers
     """
+
     Unknown = 255
     PowerMeter = 11
     FitnessEquipment = 17
@@ -40,10 +42,12 @@ class DeviceType(Enum):
     def _missing_(cls, _):
         return DeviceType.Unknown
 
+
 class BatteryStatus(Enum):
     """
     ANT+ battery status
     """
+
     Unknown = 0
     New = 1
     Good = 2
@@ -56,6 +60,7 @@ class BatteryStatus(Enum):
     @classmethod
     def _missing_(cls, _):
         return BatteryStatus.Unknown
+
 
 @dataclass
 class DeviceData:
@@ -73,15 +78,22 @@ class DeviceData:
         return {
             "measurement": type(self).__name__,
             "tags": tags,
-            "time": int(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).timestamp() * 1e9),
+            "time": int(
+                datetime.datetime.utcnow()
+                .replace(tzinfo=datetime.timezone.utc)
+                .timestamp()
+                * 1e9
+            ),
             "fields": fields,
         }
 
+
 @dataclass
-class BatteryData():
+class BatteryData:
     """
     Has it's own dataclass because there can be multiple instances of this in one device
     """
+
     voltage_fractional: float = field(default=0.0, metadata={"unit": "V"})
     voltage_coarse: int = field(default=0, metadata={"unit": "V"})
     status: BatteryStatus = BatteryStatus.Unknown
@@ -93,14 +105,20 @@ class CommonData(DeviceData):
     """
     ANT+ common device data
     """
+
     manufacturer_id: int = 0xFFFF
     serial_no: int = 0xFFFF
-    software_ver: str = ''
+    software_ver: str = ""
     hardware_rev: int = 0xFF
     model_no: int = 0xFFFF
-    last_battery_id: int = 0xFF # 0xFF is not used, otherwise 0:3 is battery number, 4:7 is ID
-    last_battery_data: BatteryData = BatteryData() # the last one recieved or only if last_battery_id = 0xFF
+    last_battery_id: int = (
+        0xFF  # 0xFF is not used, otherwise 0:3 is battery number, 4:7 is ID
+    )
+    last_battery_data: BatteryData = (
+        BatteryData()
+    )  # the last one recieved or only if last_battery_id = 0xFF
     timedate: Optional[datetime.datetime] = None
+
 
 class AntPlusDevice(object):
     """
@@ -111,7 +129,16 @@ class AntPlusDevice(object):
     Use `on_found` callback to do stuff when first found and `on_update` to act whenever new data arrives.
     """
 
-    def __init__(self, node: Node, device_type:int, device_id:int=0, period:int=8070, rf_freq:int=57, name:str="unknown", trans_type:int=0):
+    def __init__(
+        self,
+        node: Node,
+        device_type: int,
+        device_id: int = 0,
+        period: int = 8070,
+        rf_freq: int = 57,
+        name: str = "unknown",
+        trans_type: int = 0,
+    ):
         self.device_id = device_id
         self.device_type = device_type
         self.period = period
@@ -123,8 +150,10 @@ class AntPlusDevice(object):
         self._attached = False
 
         self.data = {
-            'common': CommonData(),
-            'batteries': [BatteryData() for _ in range(15)] # multi battery systems will update list with battery ID as index
+            "common": CommonData(),
+            "batteries": [
+                BatteryData() for _ in range(15)
+            ],  # multi battery systems will update list with battery ID as index
         }
 
         self.node = node
@@ -161,7 +190,9 @@ class AntPlusDevice(object):
         pass
 
     def _on_battery(self, data: BatteryData):
-        _logger.info(f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}")
+        _logger.info(
+            f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}"
+        )
         self.on_battery(data)
 
     @staticmethod
@@ -171,7 +202,9 @@ class AntPlusDevice(object):
         pass
 
     def open_channel(self):
-        self.channel = self.node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01)
+        self.channel = self.node.new_channel(
+            Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01
+        )
 
         self.channel.on_broadcast_data = self._on_data
         self.channel.on_burst_data = self._on_data
@@ -239,9 +272,13 @@ class AntPlusDevice(object):
                 self.channel.open()
 
             elif self.device_id != device_id:
-                raise RuntimeError("Device ID #{device_id} does not match ID channel was set to #{self.device_id}!")
+                raise RuntimeError(
+                    "Device ID #{device_id} does not match ID channel was set to #{self.device_id}!"
+                )
 
-            _logger.info(f"Device ID #{device_id:05} of type {device_type}:{trans_type} attached: {self}")
+            _logger.info(
+                f"Device ID #{device_id:05} of type {device_type}:{trans_type} attached: {self}"
+            )
 
             # else device id was set and device is found so attached
             self._attached = True
@@ -255,60 +292,76 @@ class AntPlusDevice(object):
         # % Common Pages %
         # manufacturer info
         if data[0] == 80:
-            self.data['common'].hardware_rev = data[3]
-            self.data['common'].manufacturer_id = data[4] + (data[5] << 8)
-            self.data['common'].model_no = data[6] + (data[7] << 8)
+            self.data["common"].hardware_rev = data[3]
+            self.data["common"].manufacturer_id = data[4] + (data[5] << 8)
+            self.data["common"].model_no = data[6] + (data[7] << 8)
 
-            _logger.info(f"Manufacturer info {self}: HW Rev: {self.data['common'].hardware_rev}; ID: {self.data['common'].manufacturer_id}; Model: {self.data['common'].model_no}")
+            _logger.info(
+                f"Manufacturer info {self}: HW Rev: {self.data['common'].hardware_rev}; ID: {self.data['common'].manufacturer_id}; Model: {self.data['common'].model_no}"
+            )
         # product info
         elif data[0] == 81:
             sw_rev = data[2]
             sw_main = data[3]
 
             if sw_rev == 0xFF:
-                self.data['common'].software_ver = str(sw_main / 10)
+                self.data["common"].software_ver = str(sw_main / 10)
             else:
-                self.data['common'].software_ver = str((sw_main * 100 + sw_rev) / 1000)
+                self.data["common"].software_ver = str((sw_main * 100 + sw_rev) / 1000)
 
-            self.data['common'].serial_no = int.from_bytes(data[4:8], byteorder='little')
+            self.data["common"].serial_no = int.from_bytes(
+                data[4:8], byteorder="little"
+            )
 
-            _logger.info(f"Product info {self}: Software: {self.data['common'].software_ver}; Serial Number: {self.data['common'].serial_no}")
+            _logger.info(
+                f"Product info {self}: Software: {self.data['common'].software_ver}; Serial Number: {self.data['common'].serial_no}"
+            )
         # battery status
         elif data[0] == 82:
-            self.data['common'].last_battery_data.voltage_fractional = data[6] / 256
-            self.data['common'].last_battery_data.voltage_coarse = data[7] & 0x0F
-            self.data['common'].last_battery_data.status = BatteryStatus((data[7] & 0x70) >> 4)
+            self.data["common"].last_battery_data.voltage_fractional = data[6] / 256
+            self.data["common"].last_battery_data.voltage_coarse = data[7] & 0x0F
+            self.data["common"].last_battery_data.status = BatteryStatus(
+                (data[7] & 0x70) >> 4
+            )
 
             cumulative_resolution_bit = (data[7] & 0x80) == 0x80
 
             if cumulative_resolution_bit:
-                self.data['common'].last_battery_data.operating_time = int.from_bytes(data[3:5], byteorder='little') * 2
+                self.data["common"].last_battery_data.operating_time = (
+                    int.from_bytes(data[3:5], byteorder="little") * 2
+                )
             else:
-                self.data['common'].last_battery_data.operating_time = int.from_bytes(data[3:5], byteorder='little') * 16
+                self.data["common"].last_battery_data.operating_time = (
+                    int.from_bytes(data[3:5], byteorder="little") * 16
+                )
 
             # if system has multiple batteries to report, assign to index in batteries list
-            if (data[2] != 0xFF):
-                self.data['common'].battery_number = data[2] & 0x0F
-                self.data['common'].last_battery_id = (data[2] & 0xF0) >> 4
+            if data[2] != 0xFF:
+                self.data["common"].battery_number = data[2] & 0x0F
+                self.data["common"].last_battery_id = (data[2] & 0xF0) >> 4
                 # copy the dataclass to batteries list
-                self.data['batteries'][self.data['common'].last_battery_id] = dataclasses.replace(self.data['common'].last_battery_data)
+                self.data["batteries"][
+                    self.data["common"].last_battery_id
+                ] = dataclasses.replace(self.data["common"].last_battery_data)
             # else not using ID so just report that as invalid and 1 battery
             else:
-                self.data['common'].battery_number = 1
-                self.data['common'].last_battery_id = data[2]
+                self.data["common"].battery_number = 1
+                self.data["common"].last_battery_id = data[2]
 
-            self._on_battery(self.data['common'].last_battery_data)
+            self._on_battery(self.data["common"].last_battery_data)
         # date and time
         elif data[0] == 83:
             second = data[2]
             minute = data[3]
             hour = data[4]
             # day_of_month = (data[5] & 0xE0) >> 5 # bits 5-7
-            day = data[5] & 0x1F # bits 0-4
+            day = data[5] & 0x1F  # bits 0-4
             month = data[6]
             year = data[7] + 2000
 
-            self.data['common'].timedate = datetime.datetime(year, month, day, hour, minute, second)
+            self.data["common"].timedate = datetime.datetime(
+                year, month, day, hour, minute, second
+            )
 
         # run other pages for sub-classes
         self.on_data(data)

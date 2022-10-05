@@ -7,6 +7,7 @@ from ant.devices.utilities import auto_create_device
 # standard ANT+ network key
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
+
 def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
     # list of auto created devices
     devices = []
@@ -30,13 +31,17 @@ def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
     # local function to call when a device is found - also does the auto-create if enabled
     def on_found(device_tuple):
         device_id, device_type, device_trans = device_tuple
-        print(f"Found new device #{device_id} {DeviceType(device_type)}; device_type: {device_type}, transmission_type: {device_trans}")
+        print(
+            f"Found new device #{device_id} {DeviceType(device_type)}; device_type: {device_type}, transmission_type: {device_trans}"
+        )
 
         if auto_create and len(devices) < 16:
             try:
                 dev = auto_create_device(node, device_id, device_type, device_trans)
                 # closure callback of on_device_data with device
-                dev.on_device_data = lambda _, page_name, data: on_device_data(dev, page_name, data)
+                dev.on_device_data = lambda _, page_name, data: on_device_data(
+                    dev, page_name, data
+                )
                 devices.append(dev)
             except Exception as e:
                 print(f"Could not auto create device: {e}")
@@ -47,7 +52,9 @@ def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
 
     # start scanner, exit on keyboard and clean up USB device on exit
     try:
-        print(f"Starting scanner for #{device_id}, type {device_type}, press Ctrl-C to finish")
+        print(
+            f"Starting scanner for #{device_id}, type {device_type}, press Ctrl-C to finish"
+        )
         node.start()
     except KeyboardInterrupt:
         print(f"Closing ANT+ node...")
@@ -62,18 +69,25 @@ def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
 
         node.stop()
 
+
 def _run(args):
-    if (args.device_type == DeviceType.Unknown.name):
+    if args.device_type == DeviceType.Unknown.name:
         device_type = 0
     else:
         device_type = DeviceType[args.device_type].value
 
-    auto_scanner(file_path=args.outfile, device_id=args.device_id, device_type=device_type, auto_create=args.auto_create)
+    auto_scanner(
+        file_path=args.outfile,
+        device_id=args.device_id,
+        device_type=device_type,
+        auto_create=args.auto_create,
+    )
+
 
 def add_subparser(subparsers):
     parser = subparsers.add_parser(
         name="scan",
-        description="Scan for ANT+ devices and print information to terminal/save to file"
+        description="Scan for ANT+ devices and print information to terminal/save to file",
     )
     parser.add_argument(
         "--logging",
@@ -103,7 +117,10 @@ def add_subparser(subparsers):
         help="Device ID to scan for, default 0 is all",
     )
     parser.add_argument(
-        "--auto_create", "-a", action="store_true", help="Auto-create device profile object and print device page data updates"
+        "--auto_create",
+        "-a",
+        action="store_true",
+        help="Auto-create device profile object and print device page data updates",
     )
 
     parser.set_defaults(func=_run)

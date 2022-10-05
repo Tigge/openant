@@ -28,10 +28,9 @@ import argparse, logging
 __all__ = ["base", "easy", "fs"]
 __version__ = "1.0.0"
 
+
 def _main(args=None):
-    parser = argparse.ArgumentParser(
-        description="ANT, ANT-FS and ANT+ Python Library"
-    )
+    parser = argparse.ArgumentParser(description="ANT, ANT-FS and ANT+ Python Library")
     parser.add_argument(
         "--logging",
         dest="logLevel",

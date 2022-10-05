@@ -16,6 +16,7 @@ from .power_meter import PowerData
 
 _logger = logging.getLogger(__name__)
 
+
 class ResistenceMode(Enum):
     Basic = 0x30
     TargetPower = 0x31
@@ -27,19 +28,21 @@ class ResistenceMode(Enum):
     def _missing_(cls, _):
         return ResistenceMode.Unknown
 
+
 class CommandStatus(Enum):
     Pass = 0
     Fail = 1
     NotSupported = 2
     Rejected = 3
     Pending = 4
-    Unknown = 'null'
+    Unknown = "null"
     Unitialised = 0xFF
 
     # between 5-254
     @classmethod
     def _missing_(cls, _):
         return CommandStatus.Unknown
+
 
 class FitnessEquipmentState(Enum):
     Unknown = 0
@@ -51,6 +54,7 @@ class FitnessEquipmentState(Enum):
     @classmethod
     def _missing_(cls, _):
         return FitnessEquipmentState.Unknown
+
 
 class FitnessEquipmentType(Enum):
     Treadmill = 19
@@ -65,11 +69,13 @@ class FitnessEquipmentType(Enum):
     def _missing_(cls, _):
         return FitnessEquipmentType.Reserved
 
+
 @dataclass
 class FitnessEquipmentData(DeviceData):
     """
     ANT+ FE data
     """
+
     resistance_mode: ResistenceMode = ResistenceMode.Unknown
     resistance: float = 255.0
     state: FitnessEquipmentState = FitnessEquipmentState.Unknown
@@ -79,11 +85,13 @@ class FitnessEquipmentData(DeviceData):
     incline: float = 32767.0
     target_resistance: float = 255.0
 
+
 @dataclass
-class Workout():
+class Workout:
     """
     Workout to use with FE device
     """
+
     intervals: List[Tuple]
     cycles: int = 1
     loop: bool = False
@@ -107,7 +115,9 @@ class Workout():
             raise ValueError("Step or period cannot be zero")
 
         if peak and (peak < stop or peak < start):
-            raise ValueError("Peak value if used must be greater than start and stop value")
+            raise ValueError(
+                "Peak value if used must be greater than start and stop value"
+            )
 
         if peak:
             intervals = [(power, period) for power in range(start, peak, step)]
@@ -119,10 +129,22 @@ class Workout():
 
 
 class FitnessEquipment(AntPlusDevice):
-
-    def __init__(self, node: Node, device_id:int=0, name:str="fitness_equipment", trans_type:int=0):
+    def __init__(
+        self,
+        node: Node,
+        device_id: int = 0,
+        name: str = "fitness_equipment",
+        trans_type: int = 0,
+    ):
         # fitness equipment is 17 so make ANT+ device with that device type
-        super().__init__(node, device_type=DeviceType.FitnessEquipment.value, device_id=device_id, period=8192, name=name, trans_type=trans_type)
+        super().__init__(
+            node,
+            device_type=DeviceType.FitnessEquipment.value,
+            device_id=device_id,
+            period=8192,
+            name=name,
+            trans_type=trans_type,
+        )
 
         self._power_update_event_count = [0, 0]
         self._accumulated_power = [0, 0]
@@ -135,14 +157,12 @@ class FitnessEquipment(AntPlusDevice):
         self.resistance_mode = ResistenceMode.Unknown
 
         self._stopper = threading.Event()
-        self._worker_thread = threading.Thread(target=self._worker, name="fe_workout", daemon=True)
+        self._worker_thread = threading.Thread(
+            target=self._worker, name="fe_workout", daemon=True
+        )
         self._workout_queue = queue.Queue()
 
-        self.data = {
-                **self.data,
-                'power': PowerData(),
-                'fe': FitnessEquipmentData()
-        }
+        self.data = {**self.data, "power": PowerData(), "fe": FitnessEquipmentData()}
 
     def start_workouts(self, workouts: List[Workout]):
         for w in workouts:
@@ -158,7 +178,9 @@ class FitnessEquipment(AntPlusDevice):
             i = 0
 
             for power, t in intervals:
-                _logger.info(f"{'Looping' if workout.loop else 'Non-looping'} workout cycle {x} of {workout.cycles}, interval {i} of {len(intervals)}: {power} W for {t} seconds")
+                _logger.info(
+                    f"{'Looping' if workout.loop else 'Non-looping'} workout cycle {x} of {workout.cycles}, interval {i} of {len(intervals)}: {power} W for {t} seconds"
+                )
                 self.set_target_power(power)
                 i += 1
                 time.sleep(t)
@@ -169,7 +191,7 @@ class FitnessEquipment(AntPlusDevice):
             workout = self._workout_queue.get()
 
             while workout.loop:
-                    self.run_workout(workout)
+                self.run_workout(workout)
             else:
                 self.run_workout(workout)
 
@@ -186,17 +208,33 @@ class FitnessEquipment(AntPlusDevice):
             self._accumulated_power[0] = self._accumulated_power[1]
             self._accumulated_power[1] = data[3] + (data[4] << 8)
 
-            self.data['power'].cadence = data[2]
-            self.data['power'].instantaneous_power = data[5] + ((data[6] & 0x0F) << 8)
+            self.data["power"].cadence = data[2]
+            self.data["power"].instantaneous_power = data[5] + ((data[6] & 0x0F) << 8)
 
-            delta_update_count = (self._power_update_event_count[1] + 256 - self._power_update_event_count[0]) % 256
+            delta_update_count = (
+                self._power_update_event_count[1]
+                + 256
+                - self._power_update_event_count[0]
+            ) % 256
             # if it's a new event (count change)
             if delta_update_count:
-                self.data['power'].average_power = int(((self._accumulated_power[1] + 65536 - self._accumulated_power[0]) % 65536) / delta_update_count)
+                self.data["power"].average_power = int(
+                    (
+                        (
+                            self._accumulated_power[1]
+                            + 65536
+                            - self._accumulated_power[0]
+                        )
+                        % 65536
+                    )
+                    / delta_update_count
+                )
 
-                _logger.info(f"Standard power update {self}: {self.data['power'].instantaneous_power} W; Average Power: {self.data['power'].average_power} W; Cadence {self.data['power'].cadence} rpm")
+                _logger.info(
+                    f"Standard power update {self}: {self.data['power'].instantaneous_power} W; Average Power: {self.data['power'].average_power} W; Cadence {self.data['power'].cadence} rpm"
+                )
 
-                self.on_device_data(page, 'standard_power', self.data['power'])
+                self.on_device_data(page, "standard_power", self.data["power"])
         # standard torque
         elif page == 0x1A:
             self._torque_update_event_count[0] = self._torque_update_event_count[1]
@@ -212,63 +250,91 @@ class FitnessEquipment(AntPlusDevice):
             self._accumulated_torque[1] = data[6] + (data[7] << 8)
 
             # do the maths on new data
-            delta_update_count = ((self._torque_update_event_count[1] + 256 - self._torque_update_event_count[0]) % 256)
-            delta_torque = ((self._accumulated_torque[1] + 65536 - self._accumulated_torque[0]) % 65536)
-            delta_wheel_period = (self._wheel_period[1] + 65536 - self._wheel_period[0] % 65536)
+            delta_update_count = (
+                self._torque_update_event_count[1]
+                + 256
+                - self._torque_update_event_count[0]
+            ) % 256
+            delta_torque = (
+                self._accumulated_torque[1] + 65536 - self._accumulated_torque[0]
+            ) % 65536
+            delta_wheel_period = (
+                self._wheel_period[1] + 65536 - self._wheel_period[0] % 65536
+            )
 
-            self.data['fe'].state = FitnessEquipmentState(data[7] & 0x70 >> 4)
+            self.data["fe"].state = FitnessEquipmentState(data[7] & 0x70 >> 4)
 
             # if it's a new event (count change)
             if delta_update_count:
-                self.data['power'].torque = round(delta_torque / (32 * (delta_update_count)), 2)
+                self.data["power"].torque = round(
+                    delta_torque / (32 * (delta_update_count)), 2
+                )
 
                 if delta_wheel_period:
-                    self.data['power'].angular_velocity = round((2 * math.pi * delta_update_count) / (delta_wheel_period / 2048), 2)
+                    self.data["power"].angular_velocity = round(
+                        (2 * math.pi * delta_update_count)
+                        / (delta_wheel_period / 2048),
+                        2,
+                    )
                 else:
-                    self.data['power'].angular_velocity = 0
+                    self.data["power"].angular_velocity = 0
 
-                self.data['power'].average_power = int(self.data['power'].torque * self.data['power'].angular_velocity)
+                self.data["power"].average_power = int(
+                    self.data["power"].torque * self.data["power"].angular_velocity
+                )
 
-                _logger.info(f"Standard torque update {self}: {self.data['power'].average_power} W; Angular Velocity {self.data['power'].angular_velocity} rad/s; Average Torque: {self.data['power'].torque} Nm")
+                _logger.info(
+                    f"Standard torque update {self}: {self.data['power'].average_power} W; Angular Velocity {self.data['power'].angular_velocity} rad/s; Average Torque: {self.data['power'].torque} Nm"
+                )
 
-                self.on_device_data(page, 'standard_torque', self.data['power'])
+                self.on_device_data(page, "standard_torque", self.data["power"])
         # general FE data
         elif page == 0x10:
-            self.data['fe'].type = data[1]
-            self.data['fe'].capabilities = data[2] & 0x0F
-            self.data['fe'].speed = round((data[4] + (data[5] << 8)) / 1000, 3)
-            self.data['fe'].state = FitnessEquipmentState(data[7] & 0x70 >> 4)
+            self.data["fe"].type = data[1]
+            self.data["fe"].capabilities = data[2] & 0x0F
+            self.data["fe"].speed = round((data[4] + (data[5] << 8)) / 1000, 3)
+            self.data["fe"].state = FitnessEquipmentState(data[7] & 0x70 >> 4)
 
-            _logger.info(f"General FE {self}: Type: {self.data['fe'].type}; State: {self.data['fe'].state}")
+            _logger.info(
+                f"General FE {self}: Type: {self.data['fe'].type}; State: {self.data['fe'].state}"
+            )
 
-            self.on_device_data(page, 'general_fe', self.data['fe'])
+            self.on_device_data(page, "general_fe", self.data["fe"])
         # general settings
         elif page == 0x11:
-            self.data['fe'].type = data[1]
-            self.data['fe'].resistance = round(data[6] / 2, 1)
+            self.data["fe"].type = data[1]
+            self.data["fe"].resistance = round(data[6] / 2, 1)
             incline = data[4] + (data[5] << 8)
             if incline != 0x7FFF:
-                self.data['fe'].incline = round(incline / 100, 2) # 0.01 %
+                self.data["fe"].incline = round(incline / 100, 2)  # 0.01 %
 
-            _logger.info(f"General settings {self}: Type: {self.data['fe'].type}; Resistence: {self.data['fe'].resistance}")
+            _logger.info(
+                f"General settings {self}: Type: {self.data['fe'].type}; Resistence: {self.data['fe'].resistance}"
+            )
 
-            self.on_device_data(page, 'general_settings', self.data['fe'])
+            self.on_device_data(page, "general_settings", self.data["fe"])
         # datapage reply 71
         elif page == 0x47:
-            self.data['fe'].resistance_mode = ResistenceMode(data[1])
+            self.data["fe"].resistance_mode = ResistenceMode(data[1])
 
-            if self.data['fe'].resistance_mode == ResistenceMode.Basic:
-                self.data['fe'].resistance = round(data[7] / 2, 1)
-            elif self.data['fe'].resistance_mode == ResistenceMode.TargetPower:
-                self.data['fe'].resistance = round((data[6] + (data[7] << 8)) / 4, 2)
+            if self.data["fe"].resistance_mode == ResistenceMode.Basic:
+                self.data["fe"].resistance = round(data[7] / 2, 1)
+            elif self.data["fe"].resistance_mode == ResistenceMode.TargetPower:
+                self.data["fe"].resistance = round((data[6] + (data[7] << 8)) / 4, 2)
             # not bothered about the others
 
             self.command_status = CommandStatus(data[3])
 
-            if self.command_status != CommandStatus.Pass and self.command_status != CommandStatus.Unitialised and self.command_status != CommandStatus.Pending:
+            if (
+                self.command_status != CommandStatus.Pass
+                and self.command_status != CommandStatus.Unitialised
+                and self.command_status != CommandStatus.Pending
+            ):
                 _logger.warning("Last command went wrong: {self.command_status.name}")
 
-            _logger.info(f"Command page {self}: {self.command_status}; {self.data['fe'].resistance_mode.name}: {self.data['fe'].resistance}")
+            _logger.info(
+                f"Command page {self}: {self.command_status}; {self.data['fe'].resistance_mode.name}: {self.data['fe'].resistance}"
+            )
 
     def set_target_power(self, power: int):
         data = array.array("B", [0x31, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0])
@@ -276,7 +342,7 @@ class FitnessEquipment(AntPlusDevice):
         if power > 4000:
             raise ValueError("Target power cannot exceed 4000 W")
 
-        self.data['fe'].target_resistance = power
+        self.data["fe"].target_resistance = power
 
         # convert to units of 0.25 W
         power *= 4
@@ -296,7 +362,7 @@ class FitnessEquipment(AntPlusDevice):
         if resistance > 100.0:
             raise ValueError("Target resistance cannot exceed 100%")
 
-        self.data['fe'].target_resistance = resistance
+        self.data["fe"].target_resistance = resistance
 
         # convert to units of 0.5%
         resistance *= 2
@@ -315,5 +381,3 @@ class FitnessEquipment(AntPlusDevice):
             self._stopper.set()
 
         super().close_channel()
-
-
