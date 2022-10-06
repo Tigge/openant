@@ -1,3 +1,5 @@
+.env
+.startup.py
 *.pyc
 *.orig
 *.iml

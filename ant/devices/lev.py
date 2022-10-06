@@ -104,7 +104,7 @@ class LevDisplayCommand(DeviceData):
 
     @staticmethod
     def to_bytes(dc):
-        i = dc.to_int()
+        i = LevDisplayCommand.to_int(dc)
         return i.to_bytes(2, byteorder='little')
 
 class Lev(AntPlusDevice):
@@ -229,10 +229,11 @@ class Lev(AntPlusDevice):
         page[1] = wheel_circumference & 0xFF
         page[2] = wheel_circumference & 0x0F
         if assist_level != 0xFF or regenerative_level != 0xFF:
-            page[3] = (assist_level & 0x07) << 3 | (regenerative_level & 0x07)
+            page[3] |= (assist_level & 0x07) << 3 if assist_level != 0xFF else 0
+            page[3] |= regenerative_level & 0x07 if regenerative_level != 0xFF else 0
         else:
             page[3] = 0xFF
-        page[4:5] = LevDisplayCommand.to_bytes(display_command)
-        page[6:7] = manufacturer_id.to_bytes(2, byteorder='little')
+        page[4:6] = LevDisplayCommand.to_bytes(display_command)
+        page[6:8] = manufacturer_id.to_bytes(2, byteorder='little')
 
         self.channel.send_acknowledged_data(page)
