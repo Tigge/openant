@@ -67,9 +67,9 @@ class Shifting(AntPlusDevice):
         self.data = {**self.data, "shift": ShiftData()}
 
     def _on_battery(self, data: BatteryData):
-        if self.data["common"].last_battery_id != 0xFF:
-            battery_id = ShiftingSystemID(self.data["common"].last_battery_id)
-            _logger.info(f"Shifting {battery_id.name} battery update ${data}")
+        if data.battery_id != 0xFF:
+            battery_id = ShiftingSystemID(data.battery_id)
+            _logger.info(f"Shifting {battery_id.name} battery update {data}")
         else:
             _logger.info(
                 f"Battery info {self}: ID: {self.data['common'].last_battery_id}; Fractional V: {self.data['common'].last_battery_data.voltage_fractional} V; Coarse V: {self.data['common'].last_battery_data.voltage_coarse} V; Status: {self.data['common'].last_battery_data.status}"

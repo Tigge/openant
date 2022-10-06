@@ -105,7 +105,7 @@ class TirePressureMonitor(AntPlusDevice):
         set_high_pressure=False,
         set_low_pressure=False,
     ):
-        page = bytearray(8)
+        page = [0x00] * 8
         page[0] = 0x10
         page[1] = data.position.value | (
             (
@@ -123,4 +123,4 @@ class TirePressureMonitor(AntPlusDevice):
         page[6] = data.high_pressure_alarm & 0xFF
         page[7] = (data.high_pressure_alarm >> 8) & 0xFF
 
-        self.channel.send_broadcast_data(page)
+        self.channel.send_acknowledged_data(page)

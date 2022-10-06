@@ -37,6 +37,7 @@ class DeviceType(Enum):
     Lev = 20
     Radar = 40
     Shifting = 34
+    DropperSeatpost = 115
 
     @classmethod
     def _missing_(cls, _):
@@ -90,10 +91,9 @@ class DeviceData:
 
 @dataclass
 class BatteryData:
-    """
-    Has it's own dataclass because there can be multiple instances of this in one device
-    """
+    """Has it's own dataclass because there can be multiple instances of this in one device"""
 
+    battery_id: int = 0
     voltage_fractional: float = field(default=0.0, metadata={"unit": "V"})
     voltage_coarse: int = field(default=0, metadata={"unit": "V"})
     status: BatteryStatus = BatteryStatus.Unknown
@@ -323,6 +323,7 @@ class AntPlusDevice(object):
             self.data["common"].last_battery_data.status = BatteryStatus(
                 (data[7] & 0x70) >> 4
             )
+            self.data["common"].last_battery_data.battery_id = (data[2] & 0xF0) >> 4
 
             cumulative_resolution_bit = (data[7] & 0x80) == 0x80
 

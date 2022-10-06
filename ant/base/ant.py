@@ -360,14 +360,14 @@ class Ant:
     def send_acknowledged_data(self, channel, data):
         assert len(data) == 8
         message = Message(
-            Message.ID.ACKNOWLEDGED_DATA, array.array("B", [channel]) + data
+            Message.ID.ACKNOWLEDGED_DATA, array.array("B", [channel] + data)
         )
         self.write_message_timeslot(message)
 
     def send_burst_transfer_packet(self, channel_seq, data, first):
         assert len(data) == 8
         message = Message(
-            Message.ID.BURST_TRANSFER_DATA, array.array("B", [channel_seq]) + data
+            Message.ID.BURST_TRANSFER_DATA, array.array("B", [channel_seq] + data)
         )
         self.write_message_timeslot(message)
 
