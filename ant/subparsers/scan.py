@@ -84,9 +84,9 @@ def _run(args):
     )
 
 
-def add_subparser(subparsers):
+def add_subparser(subparsers, name="scan"):
     parser = subparsers.add_parser(
-        name="scan",
+        name=name,
         description="Scan for ANT+ devices and print information to terminal/save to file",
     )
     parser.add_argument(

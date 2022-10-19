@@ -26,7 +26,7 @@ from . import fs
 import argparse, logging
 
 __all__ = ["base", "easy", "fs"]
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 def _main(args=None):
