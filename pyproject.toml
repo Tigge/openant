@@ -5,3 +5,6 @@ build-backend = "setuptools.build_meta"
 [tool.black]
 line-length = 88
 target-version = ['py37']
+
+[tool.pytest.ini_options]
+addopts = "--ignore=ant"  # don't repeat tests in symbolic link

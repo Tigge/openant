@@ -1,5 +1,5 @@
-from ant.easy.node import Node
-from ant.devices.dropper_seatpost import (
+from openant.easy.node import Node
+from openant.devices.dropper_seatpost import (
     DropperSeatpost,
     DropperSeatpostData,
     ValveState,

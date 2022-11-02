@@ -22,12 +22,12 @@
 """
 Example shows how to use `on_data` callback to capture and act on raw data from a device - an ANT+ heart rate monitor in this example.
 
-If actually developing a ANT+ device, it's probably better to use the AntPlusDevice parent class in ant.devices.common; refer to how the HeartRate device has been inplemnented.
+If actually developing a ANT+ device, it's probably better to use the AntPlusDevice parent class in openant.devices.common; refer to how the HeartRate device has been inplemnented.
 """
 
 
-from ant.easy.node import Node
-from ant.easy.channel import Channel
+from openant.easy.node import Node
+from openant.easy.channel import Channel
 
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 

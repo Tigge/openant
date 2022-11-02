@@ -107,7 +107,7 @@ def get_version(rel_path):
 
 setup(
     name="openant",
-    version=get_version('ant/__init__.py'),
+    version=get_version('openant/__init__.py'),
     description="ANT, ANT-FS and ANT+ Python Library",
     long_description=open('README.md', 'r').read(),
     author="Gustav Tiger, John Whittington",
@@ -127,9 +127,9 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     entry_points = {
-        'console_scripts': ['openant=ant.__init__:_main']
+        'console_scripts': ['openant=openant.__init__:_main']
     },
-    packages=find_packages(exclude=['test']),
+    packages=find_packages(exclude=['test', 'tests']),
     python_requires='>=3.7',
     install_requires=[
         "pyusb>=1.0a2"
@@ -142,5 +142,5 @@ setup(
         "install": CustomInstall,
         "develop": CustomDevelop,
     },
-    test_suite="ant.tests",
+    test_suite="openant.tests",
 )

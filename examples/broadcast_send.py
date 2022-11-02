@@ -8,17 +8,12 @@
 # For further details on Speed & Distance Sensor, check out the thisisant.com webpage
 
 import array
-import threading
 import logging
 import time
 
-from ant.easy.node import Node
-from ant.easy.channel import Channel
-from ant.base.message import Message
-from ant.base.commons import format_list
-
-import struct
-import sys
+from openant.easy.node import Node
+from openant.easy.channel import Channel
+from openant.base.commons import format_list
 
 # Definition of Variables
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]

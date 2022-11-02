@@ -3,10 +3,10 @@
 # Open Rx demo working with OpenAnt Library (https://github.com/Tigge/openant)
 # For further details on Open Rx Mode ("Continious Scann Mode"), check out the thisisant.com webpage
 
-from ant.easy.node import Node
-from ant.easy.channel import Channel
-from ant.base.commons import format_list
-from ant.devices import ANTPLUS_NETWORK_KEY
+from openant.easy.node import Node
+from openant.easy.channel import Channel
+from openant.base.commons import format_list
+from openant.devices import ANTPLUS_NETWORK_KEY
 
 import logging
 import time

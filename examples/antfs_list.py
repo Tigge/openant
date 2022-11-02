@@ -22,7 +22,7 @@
 
 
 import logging
-from ant.fs.manager import (
+from openant.fs.manager import (
     Application,
     AntFSAuthenticationException,
     AntFSTimeException,
