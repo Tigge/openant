@@ -1,4 +1,4 @@
-Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device support, new CLI tools and generally brings upto date. There some major changes to be this to 1.0.0:
+Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device support, new CLI tools and generally brings upto date. There some major changes to bring this to 1.0.0:
 
 * Python 2 support is dropped in favour of fully supporting Python 3.
 * Module folder name changed to match module name 'ant' -> 'openant' in order to be more Pythonic. Symbolic link remains for legacy but should use `import openant`/`from openant.` from now on.
@@ -13,7 +13,7 @@ Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device supp
     * openant.easy blocking version using openant.base.
     * openant.fs ANT-FS library.
     * openant.device ANT+ like devices.
-* CLI `openant`:
+* Command-line tool `openant`:
     * `openant scan`: Scan for nearby devices and optionally print device data.
     * `openant influx`: Stream device data to InfluxDB instance.
 
