@@ -33,7 +33,7 @@ from openant.easy.channel import Channel
 
 class AntEasyTests(unittest.TestCase):
     @unittest.skipIf(
-        os.environ.get("ANT_TEST_USB_STICK", False), "Testing with USB stick not enabled"
+        os.environ.get("ANT_TEST_USB_STICK", True), "Testing with USB stick not enabled"
     )
     def test_search(self):
 

@@ -24,7 +24,12 @@
 import array
 import unittest
 
-from openant.fs.command import parse, DownloadRequest, DownloadResponse, AuthenticateCommand
+from openant.fs.command import (
+    parse,
+    DownloadRequest,
+    DownloadResponse,
+    AuthenticateCommand,
+)
 
 
 class AuthenticateCommandTest(unittest.TestCase):
