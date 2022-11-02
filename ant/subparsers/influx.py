@@ -1,5 +1,6 @@
 import os
 import uuid
+from typing import List, Optional
 
 from ..easy.node import Node
 
@@ -14,7 +15,12 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 
 def write_device_data_influx(
-        data: DeviceData, client: idb.InfluxDBClient, bucket: str, wuuid: str, device_name: str, verbose=True
+    data: DeviceData,
+    client: idb.InfluxDBClient,
+    bucket: str,
+    wuuid: str,
+    device_name: str,
+    verbose=True,
 ):
     host = os.uname().nodename
 
@@ -43,7 +49,11 @@ def write_device_data_influx(
 
 
 def write_all_device_data_influx(
-        device: AntPlusDevice, client: idb.InfluxDBClient, bucket: str, wuuid: str, verbose=True
+    device: AntPlusDevice,
+    client: idb.InfluxDBClient,
+    bucket: str,
+    wuuid: str,
+    verbose=True,
 ):
     host = os.uname().nodename
 
@@ -73,14 +83,27 @@ def write_all_device_data_influx(
         print(f"Exception during influx write: {e}")
 
 
-def device_data_importer(node: Node, client: idb.InfluxDBClient, bucket: str, devices: list, session_uuid: str=str(uuid.uuid4()), verbose: bool=False, workouts=None):
+def device_data_influx_importer(
+    node: Node,
+    client: idb.InfluxDBClient,
+    bucket: str,
+    devices: List[AntPlusDevice],
+    session_uuid: str = str(uuid.uuid4()),
+    verbose: bool = False,
+    workouts: Optional[List[Workout]] = None,
+):
     print(f"Starting device data importer UUID {session_uuid} for {devices}")
 
     # method with args saved to pass to device page update callback - could pass args list with callback instead if this gets messsy...
     def write_device_data(device, page_name, data):
         print(f"Device {device} broadcast {page_name} data: {data}")
         write_device_data_influx(
-            data, client, bucket=bucket, wuuid=session_uuid, device_name=str(device), verbose=verbose
+            data,
+            client,
+            bucket=bucket,
+            wuuid=session_uuid,
+            device_name=str(device),
+            verbose=verbose,
         )
 
     def on_found(device):
@@ -91,7 +114,9 @@ def device_data_importer(node: Node, client: idb.InfluxDBClient, bucket: str, de
 
     for dev in devices:
         dev.on_found = lambda: on_found(dev)
-        dev.on_device_data = lambda _, page_name, data: write_device_data(dev, page_name, data)
+        dev.on_device_data = lambda page, page_name, data: write_device_data(
+            dev, page_name, data
+        )
 
     try:
         print(f"Starting {devices}, press Ctrl-C to finish")
@@ -137,7 +162,10 @@ def _run(args):
                         trans_type = dev["transmission_type"]
                         devices.append(
                             auto_create_device(
-                                node, device_id=device_id, device_type=class_name, trans_type=trans_type
+                                node,
+                                device_id=device_id,
+                                device_type=class_name,
+                                trans_type=trans_type,
                             )
                         )
                     except Exception as e:
@@ -179,19 +207,27 @@ def _run(args):
     else:
         devices.append(
             auto_create_device(
-                node, device_id=args.id, device_type=args.device, trans_type=args.transtype
+                node,
+                device_id=args.id,
+                device_type=args.device,
+                trans_type=args.transtype,
             )
         )
 
-    device_data_importer(node=node, client=client, bucket=args.bucket, devices=devices, verbose=args.verbose, workouts=workouts)
+    device_data_influx_importer(
+        node=node,
+        client=client,
+        bucket=args.bucket,
+        devices=devices,
+        verbose=args.verbose,
+        workouts=workouts,
+    )
 
 
 def add_subparser(subparsers, name="influx"):
     antinflux = subparsers.add_parser(
         name,
-        description=(
-            "Capture DeviceData from an ANT+ device and import to InfluxDB"
-        ),
+        description=("Capture DeviceData from an ANT+ device and import to InfluxDB"),
     )
     antinflux.add_argument(
         "device",

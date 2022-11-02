@@ -4,6 +4,7 @@ from ant.devices.lev import Lev, LevData
 # standard ANT+ network key
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
+
 def main(device_id=0):
     node = Node()
     node.set_network_key(0x00, NETWORK_KEY)
@@ -28,6 +29,7 @@ def main(device_id=0):
     finally:
         device.close_channel()
         node.stop()
+
 
 if __name__ == "__main__":
     main()

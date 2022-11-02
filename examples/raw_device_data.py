@@ -19,40 +19,45 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+"""
+Example shows how to use `on_data` callback to capture and act on raw data from a device - an ANT+ heart rate monitor in this example.
+
+If actually developing a ANT+ device, it's probably better to use the AntPlusDevice parent class in ant.devices.common; refer to how the HeartRate device has been inplemnented.
+"""
 
 
 from ant.easy.node import Node
 from ant.easy.channel import Channel
-from ant.base.message import Message
-
-import logging
-import struct
-import threading
-import sys
 
 NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
 
 def on_data(data):
-    heartrate = data[7]
-    string = "Heartrate: " + str(heartrate) + " [BPM]"
+    page = data[0]
+    if (page & 0x0F) <= 7:
+        heartrate = data[7]
+        print(f"heart rate: {heartrate} BPM")
 
-    sys.stdout.write(string)
-    sys.stdout.flush()
-    sys.stdout.write("\b" * len(string))
+    print(f"on_data: {data}")
 
 
 def main():
-    # logging.basicConfig()
+    # uncomment to show verbose module logging
+    # import logging
+    # logging.basicConfig(level=logging.DEBUG)
 
+    # create the network node with key
     node = Node()
     node.set_network_key(0x00, NETWORK_KEY)
 
+    # create channel
     channel = node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE)
 
+    # setup callbacks
     channel.on_broadcast_data = on_data
     channel.on_burst_data = on_data
 
+    # setup slave channel
     channel.set_period(8070)
     channel.set_search_timeout(12)
     channel.set_rf_freq(57)

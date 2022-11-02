@@ -8,14 +8,15 @@ from .common import DeviceData, AntPlusDevice, DeviceType
 
 _logger = logging.getLogger(__name__)
 
+
 class LevErrorMessage(Enum):
     NoError = 0
     BatteryError = 1
     DriveTrainError = 2
     BatteryEOL = 3
     Overheating = 4
-    Unknown = 5 # 5-15 reserved
-    ManufacturerSpecific = 16 # 16-255
+    Unknown = 5  # 5-15 reserved
+    ManufacturerSpecific = 16  # 16-255
 
     @classmethod
     def _missing_(cls, v):
@@ -23,6 +24,7 @@ class LevErrorMessage(Enum):
             return LevErrorMessage.Unknown
         else:
             return LevErrorMessage.ManufacturerSpecific
+
 
 class GearState(Enum):
     Automatic = 0
@@ -32,6 +34,7 @@ class GearState(Enum):
     @classmethod
     def _missing_(cls, _):
         return GearState.Unknown
+
 
 class TemperatureState(Enum):
     Unknown = 0
@@ -45,6 +48,7 @@ class TemperatureState(Enum):
     def _missing_(cls, _):
         return TemperatureState.Unknown
 
+
 class TemperatureAlert(Enum):
     NoAlert = 0
     Overheating = 1
@@ -53,10 +57,10 @@ class TemperatureAlert(Enum):
     def _missing_(cls, _):
         return TemperatureAlert.NoAlert
 
+
 @dataclass
 class LevData(DeviceData):
     """ANT+ light electric vehicle (LEV) data"""
-
 
     motor_temperature: TemperatureState = TemperatureState.Unknown
     motor_alert: TemperatureAlert = TemperatureAlert.NoAlert
@@ -88,9 +92,11 @@ class LevData(DeviceData):
     supported_assist_levels: int = 0
     supported_regenerative_levels: int = 0
 
+
 @dataclass
 class LevDisplayCommand(DeviceData):
     """ANT+ light electric vehicle (LEV) data"""
+
     gear_rear: int = 0
     gear_front: int = 0
     lights: bool = False
@@ -100,12 +106,20 @@ class LevDisplayCommand(DeviceData):
 
     @staticmethod
     def to_int(dc):
-        return (dc.gear_rear << 6) | (dc.gear_front << 4) | (dc.lights << 3) | (dc.light_high_beam << 2) | (dc.turn_signal_left << 1) | (dc.turn_signal_right)
+        return (
+            (dc.gear_rear << 6)
+            | (dc.gear_front << 4)
+            | (dc.lights << 3)
+            | (dc.light_high_beam << 2)
+            | (dc.turn_signal_left << 1)
+            | (dc.turn_signal_right)
+        )
 
     @staticmethod
     def to_bytes(dc):
         i = LevDisplayCommand.to_int(dc)
-        return i.to_bytes(2, byteorder='little')
+        return i.to_bytes(2, byteorder="little")
+
 
 class Lev(AntPlusDevice):
     def __init__(
@@ -163,23 +177,33 @@ class Lev(AntPlusDevice):
 
             self.data["lev"].error_message = LevErrorMessage(data[5])
             # only first 4 bits of byte 7 for speed
-            self.data["lev"].speed = (data[6] + ((data[7] & 0x0F) << 8)) * 0.1 # 0.1 km/h units
+            self.data["lev"].speed = (
+                data[6] + ((data[7] & 0x0F) << 8)
+            ) * 0.1  # 0.1 km/h units
 
             _logger.info(f"Lev {page} update {self}: {self.data['lev']}")
             self.on_device_data(page, "speed_system", self.data["lev"])
         # speed and distance
         elif page == 0x02:
-            self.data["lev"].odometer = int.from_bytes(data[1:4], byteorder='little') * 0.01 # 0.01 km units
+            self.data["lev"].odometer = (
+                int.from_bytes(data[1:4], byteorder="little") * 0.01
+            )  # 0.01 km units
             self.data["lev"].remaining_range = data[4] + ((data[5] & 0x0F) << 8)
-            self.data["lev"].speed = (data[6] + ((data[7] & 0x0F) << 8)) * 0.1 # 0.1 km/h units
+            self.data["lev"].speed = (
+                data[6] + ((data[7] & 0x0F) << 8)
+            ) * 0.1  # 0.1 km/h units
 
             _logger.info(f"Lev {page} update {self}: {self.data['lev']}")
             self.on_device_data(page, "speed_distance", self.data["lev"])
         # alternative speed and distance
         elif page == 0x22:
-            self.data["lev"].odometer = int.from_bytes(data[1:4], byteorder='little') * 0.01 # 0.01 km units
+            self.data["lev"].odometer = (
+                int.from_bytes(data[1:4], byteorder="little") * 0.01
+            )  # 0.01 km units
             self.data["lev"].fuel_consumption = data[4] + ((data[5] & 0x0F) << 8) * 0.1
-            self.data["lev"].speed = (data[6] + ((data[7] & 0x0F) << 8)) * 0.1 # 0.1 km/h units
+            self.data["lev"].speed = (
+                data[6] + ((data[7] & 0x0F) << 8)
+            ) * 0.1  # 0.1 km/h units
 
             _logger.info(f"Lev {page} update {self}: {self.data['lev']}")
             self.on_device_data(page, "alt_speed_distance", self.data["lev"])
@@ -194,7 +218,9 @@ class Lev(AntPlusDevice):
             self.update_gear_state(data[4])
 
             self.data["lev"].assist = data[5]
-            self.data["lev"].speed = (data[6] + ((data[7] & 0x0F) << 8)) * 0.1 # 0.1 km/h units
+            self.data["lev"].speed = (
+                data[6] + ((data[7] & 0x0F) << 8)
+            ) * 0.1  # 0.1 km/h units
 
             _logger.info(f"Lev {page} update {self}: {self.data['lev']}")
             self.on_device_data(page, "system_speed_2", self.data["lev"])
@@ -203,7 +229,9 @@ class Lev(AntPlusDevice):
             self.data["lev"].battery_cycles = data[2] + ((data[3] & 0x0F) << 8) * 0.1
             self.data["lev"].fuel_consumption = data[4] + ((data[3] & 0xF0) << 8) * 0.1
             self.data["lev"].battery_voltage = data[5] / 4
-            self.data["lev"].battery_distance_charge = int.from_bytes(data[6:8], byteorder='little')
+            self.data["lev"].battery_distance_charge = int.from_bytes(
+                data[6:8], byteorder="little"
+            )
 
             _logger.info(f"Lev {page} update {self}: {self.data['lev']}")
             self.on_device_data(page, "battery", self.data["lev"])
@@ -211,7 +239,7 @@ class Lev(AntPlusDevice):
         elif page == 0x05:
             self.data["lev"].supported_assist_levels = (data[2] >> 3) & 0x07
             self.data["lev"].supported_regenerative_levels = data[2] & 0x07
-            self.data["lev"].wheel_circumference = (data[3] + ((data[4] & 0x0F) << 8))
+            self.data["lev"].wheel_circumference = data[3] + ((data[4] & 0x0F) << 8)
 
             _logger.info(f"Lev {page} update {self}: {self.data['lev']}")
             self.on_device_data(page, "capabilities", self.data["lev"])
@@ -234,6 +262,6 @@ class Lev(AntPlusDevice):
         else:
             page[3] = 0xFF
         page[4:6] = LevDisplayCommand.to_bytes(display_command)
-        page[6:8] = manufacturer_id.to_bytes(2, byteorder='little')
+        page[6:8] = manufacturer_id.to_bytes(2, byteorder="little")
 
         self.channel.send_acknowledged_data(page)

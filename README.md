@@ -1,15 +1,27 @@
+Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device support, new CLI tools and generally brings upto date. Python 2 support is dropped in favour of Python 3.
+
 # Features
 
 * ANT base interface.
 * ANT-FS (with command pipe, file listings, downloading, uploading, etc).
-* ANT+ device profiles (ant.devices).
-* Three libs (ant.base basic ANT library, ant.easy blocking version using ant.base, ant.fs ANT-FS library).
+* ANT+ device profiles and base class for custom ones (ant.devices).
+* Four libs:
+    * ant.base basic ANT library.
+    * ant.easy blocking version using ant.base.
+    * ant.fs ANT-FS library.
+    * ant.device ANT+ like devices.
+* CLI `openant`:
+    * `openant scan`: Scan for nearby devices and optionally print device data.
+    * `openant influx`: Stream device data to InfluxDB instance.
 
-# Requirements
+# Installation
+
+## Requirements
 
 * Python >= 3.6
+* libusb 1.0 (for pyusb)
 
-## ANT USB Stick
+### ANT USB Stick
 
 * [ANTUSB2 Stick](http://www.thisisant.com/developer/components/antusb2/) (0fcf:1008: Dynastream Innovations, Inc.)
 * [ANTUSB-m Stick](http://www.thisisant.com/developer/components/antusb-m/) (0fcf:1009: Dynastream Innovations, Inc.)

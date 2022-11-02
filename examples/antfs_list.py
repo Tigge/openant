@@ -52,6 +52,7 @@ class Listener(Application):
         return True
 
     def on_authentication(self, beacon):
+        assert beacon
         print("Lister: Auth", self.authentication_serial())
         try:
             self.authentication_pair("ANT-FS List")
@@ -60,6 +61,7 @@ class Listener(Application):
             return False
 
     def on_transport(self, beacon):
+        assert beacon
         try:
             self.set_time()
         except (AntFSTimeException, AntFSDownloadException, AntFSUploadException):

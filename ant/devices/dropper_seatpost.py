@@ -15,10 +15,12 @@ class ValveState(Enum):
     Unlocked = 1
     Unknown = 2
 
+
 class DelayIndicator(Enum):
     Configurable = 0
     NotConfigurable = 1
     Unknown = 2
+
 
 @dataclass
 class DropperSeatpostData(DeviceData):
@@ -30,6 +32,7 @@ class DropperSeatpostData(DeviceData):
     lock_setting: ValveState = ValveState.Unknown
     slave_serial: int = 0xFFFF
     command_sequence: int = 0
+
 
 class DropperSeatpost(AntPlusDevice):
     def __init__(
@@ -71,12 +74,18 @@ class DropperSeatpost(AntPlusDevice):
         # main page
         if page == 0x01:
             self._event_count[0] = self._event_count[1]
-            self._event_count[1] = int.from_bytes(data[4:6], byteorder='little')
+            self._event_count[1] = int.from_bytes(data[4:6], byteorder="little")
 
             delay = data[6] & 0x7F
-            self.data["dropper_seatpost"].configured_unlock_delay = 0x00 if delay == 0x7F else delay * 1e-2 # in 100 ms
-            self.data["dropper_seatpost"].delay_indicator = DelayIndicator((data[6] & 0x80 >> 7))
-            self.data["dropper_seatpost"].valve_state = ValveState((data[7] & 0x80) >> 7)
+            self.data["dropper_seatpost"].configured_unlock_delay = (
+                0x00 if delay == 0x7F else delay * 1e-2
+            )  # in 100 ms
+            self.data["dropper_seatpost"].delay_indicator = DelayIndicator(
+                (data[6] & 0x80 >> 7)
+            )
+            self.data["dropper_seatpost"].valve_state = ValveState(
+                (data[7] & 0x80) >> 7
+            )
 
             delta_update_count = (
                 self._event_count[1] + 256 - self._event_count[0]
@@ -84,13 +93,23 @@ class DropperSeatpost(AntPlusDevice):
 
             # if it's a new event (count change)
             if delta_update_count:
-                _logger.info(f"Seat post state change {self}: {self.data['dropper_seatpost']}")
-                self.on_device_data(page, "dropper_seatpost_status", self.data["dropper_seatpost"])
+                _logger.info(
+                    f"Seat post state change {self}: {self.data['dropper_seatpost']}"
+                )
+                self.on_device_data(
+                    page, "dropper_seatpost_status", self.data["dropper_seatpost"]
+                )
         # settings page
         elif page == 0x20:
-            self.data["dropper_seatpost"].slave_serial = int.from_bytes(data[1:3], byteorder='little')
-            self.data["dropper_seatpost"].command_sequence = data[3] # increment with each command
-            self.data["dropper_seatpost"].lock_setting = ValveState(data[4] & 0x01) # other bits reserved
+            self.data["dropper_seatpost"].slave_serial = int.from_bytes(
+                data[1:3], byteorder="little"
+            )
+            self.data["dropper_seatpost"].command_sequence = data[
+                3
+            ]  # increment with each command
+            self.data["dropper_seatpost"].lock_setting = ValveState(
+                data[4] & 0x01
+            )  # other bits reserved
 
     def set_data(
         self,
@@ -101,8 +120,12 @@ class DropperSeatpost(AntPlusDevice):
         page[0] = 0x20
         data.command_sequence += 1
         page[3] = data.command_sequence
-        page[4] = (data.lock_setting.value & 0x01)
-        page[7] = int(data.configured_unlock_delay * 100) & 0x7F if int(data.configured_unlock_delay) != 0x7F else 0x7F
+        page[4] = data.lock_setting.value & 0x01
+        page[7] = (
+            int(data.configured_unlock_delay * 100) & 0x7F
+            if int(data.configured_unlock_delay) != 0x7F
+            else 0x7F
+        )
         page[7] |= 1 << 7 if store_unlock_delay else 0x00
 
         self.channel.send_acknowledged_data(page)

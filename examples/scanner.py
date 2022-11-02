@@ -31,13 +31,17 @@ def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
     # local function to call when a device is found - also does the auto-create if enabled
     def on_found(device_tuple):
         device_id, device_type, device_trans = device_tuple
-        print(f"Found new device #{device_id} {DeviceType(device_type)}; device_type: {device_type}, transmission_type: {device_trans}")
+        print(
+            f"Found new device #{device_id} {DeviceType(device_type)}; device_type: {device_type}, transmission_type: {device_trans}"
+        )
 
         if auto_create and len(devices) < 16:
             try:
                 dev = auto_create_device(node, device_id, device_type, device_trans)
                 # closure callback of on_device_data with device
-                dev.on_device_data = lambda _, page_name, data: on_device_data(dev, page_name, data)
+                dev.on_device_data = lambda _, page_name, data: on_device_data(
+                    dev, page_name, data
+                )
                 devices.append(dev)
             except Exception as e:
                 print(f"Could not auto create device: {e}")
@@ -48,7 +52,9 @@ def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
 
     # start scanner, exit on keyboard and clean up USB device on exit
     try:
-        print(f"Starting scanner for #{device_id}, type {device_type}, press Ctrl-C to finish")
+        print(
+            f"Starting scanner for #{device_id}, type {device_type}, press Ctrl-C to finish"
+        )
         node.start()
     except KeyboardInterrupt:
         print(f"Closing ANT+ node...")
@@ -62,6 +68,7 @@ def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
             dev.close_channel()
 
         node.stop()
+
 
 if __name__ == "__main__":
     example_scan()

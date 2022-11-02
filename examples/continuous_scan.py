@@ -6,12 +6,10 @@
 from ant.easy.node import Node
 from ant.easy.channel import Channel
 from ant.base.commons import format_list
+from ant.devices import ANTPLUS_NETWORK_KEY
 
 import logging
 import time
-
-# Definition of Variables
-NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
 
 def main():
@@ -30,10 +28,18 @@ def main():
         deviceNumber = data[10] * 256 + data[9]
         deviceType = data[11]
         ActualTime = time.time() - TimeProgramStart
-        print(ActualTime, "RX-Ack:", deviceNumber, ", ", deviceType, ":", format_list(data))
+        print(
+            ActualTime,
+            "RX-Ack:",
+            deviceNumber,
+            ", ",
+            deviceType,
+            ":",
+            format_list(data),
+        )
 
     node = Node()
-    node.set_network_key(0x00, NETWORK_KEY)  # 1. Set Network Key
+    node.set_network_key(0x00, ANTPLUS_NETWORK_KEY)  # 1. Set Network Key
     # CHANNEL CONFIGURATION
     channel = node.new_channel(
         Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x00

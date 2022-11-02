@@ -36,15 +36,16 @@ class _ErrorSubparser:
         self.error_message = error_message
 
     def add_subparser(self, subparser_list):
-        err_parser = \
-            subparser_list.add_parser(self.subparser_name,
-                                      description = self.error_message)
+        err_parser = subparser_list.add_parser(
+            self.subparser_name, description=self.error_message
+        )
         err_parser.add_argument("args", nargs="*")
 
         err_parser.set_defaults(func=self._print_error)
 
     def _print_error(self, _):
         raise ImportError(self.error_message)
+
 
 def _load_subparser(subparser_name, subparsers):
     """Load a subparser for a CLI command in a safe manner.
@@ -54,13 +55,13 @@ def _load_subparser(subparser_name, subparsers):
     the CLI."""
 
     try:
-        result = importlib.import_module(f'.subparsers.{subparser_name}',
-                                         package='ant')
+        result = importlib.import_module(f".subparsers.{subparser_name}", package="ant")
         result.add_subparser(subparsers)
 
     except ImportError as e:
-        result = _ErrorSubparser(subparser_name,
-                                 f'Command "{subparser_name}" is unavailable: "{e}"')
+        result = _ErrorSubparser(
+            subparser_name, f'Command "{subparser_name}" is unavailable: "{e}"'
+        )
         result.add_subparser(subparsers)
 
 
@@ -84,12 +85,12 @@ def _main(args=None):
     subparsers.required = True
 
     # module's 'subparsers' sub-directory
-    subparsers_dir = pathlib.Path(__file__).parent / 'subparsers'
+    subparsers_dir = pathlib.Path(__file__).parent / "subparsers"
     for cur_file_name in os.listdir(subparsers_dir):
-        if cur_file_name.startswith('__'):
+        if cur_file_name.startswith("__"):
             continue
 
-        if cur_file_name.endswith('.py'):
+        if cur_file_name.endswith(".py"):
             subparser_name = cur_file_name[:-3]
             _load_subparser(subparser_name, subparsers)
         elif (subparsers_dir / cur_file_name / "__init__.py").is_file():
