@@ -67,8 +67,10 @@ def install_udev_rules(raise_exception):
 def check_root():
     return os.geteuid() == 0
 
+
 def is_linux():
     return platform.system() == "Linux"
+
 
 class InstallUdevRules(Command):
     description = "install udev rules (requires root privileges)"
@@ -88,28 +90,32 @@ class CustomInstall(install):
     def run(self):
         install.run(self)
 
+
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
 
+
 def read(rel_path):
     here = os.path.abspath(os.path.dirname(__file__))
-    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+    with codecs.open(os.path.join(here, rel_path), "r") as fp:
         return fp.read()
+
 
 def get_version(rel_path):
     for line in read(rel_path).splitlines():
-        if line.startswith('__version__'):
+        if line.startswith("__version__"):
             delim = '"' if '"' in line else "'"
             return line.split(delim)[1]
     else:
         raise RuntimeError("Unable to find version string.")
 
+
 setup(
     name="openant",
-    version=get_version('openant/__init__.py'),
+    version=get_version("openant/__init__.py"),
     description="ANT, ANT-FS and ANT+ Python Library",
-    long_description=open('README.md', 'r').read(),
+    long_description=open("README.md", "r").read(),
     author="Gustav Tiger, John Whittington",
     author_email="gustav@tiger.name, git@jbrengineering.co.uk",
     url="https://github.com/tuna-f1sh/openant",
@@ -126,16 +132,12 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    entry_points = {
-        'console_scripts': ['openant=openant.__init__:_main']
-    },
-    packages=find_packages(exclude=['test', 'tests']),
-    python_requires='>=3.7',
-    install_requires=[
-        "pyusb>=1.0a2"
-    ],
-    extras_require = {
-        'influx':  ["influxdb-client"],
+    entry_points={"console_scripts": ["openant=openant.__init__:_main"]},
+    packages=find_packages(exclude=["test", "tests"]),
+    python_requires=">=3.7",
+    install_requires=["pyusb>=1.0a2"],
+    extras_require={
+        "influx": ["influxdb-client"],
     },
     cmdclass={
         "udev_rules": InstallUdevRules,
