@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          coverage run --source=ant setup.py test
+          coverage run --source=openant setup.py test
 
       - name: Coveralls
         env:
