@@ -4,7 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 88
-target-version = ['py37']
+target-version = ['py310']
 
 [tool.pytest.ini_options]
-addopts = "--ignore=ant"  # don't repeat tests in symbolic link
+addopts = "--verbose --doctest-modules"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
+testpaths = "openant"

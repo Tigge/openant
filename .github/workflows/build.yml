@@ -26,21 +26,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install with dependencies
         run: |
           pip install -r requirements.txt
           pip install pytest
-          # pip install coveralls
 
       - name: Run tests
         run: pytest
-          # coverage run --source=openant setup.py test
-
-      # - name: Coveralls
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     coveralls --service=github
 
       - name: Build
         run: python setup.py build
