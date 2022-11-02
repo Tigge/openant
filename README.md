@@ -1,25 +1,18 @@
-openant
-=======
+# Features
 
-[![Build Status](https://github.com/Tigge/openant/workflows/Build/badge.svg?branch=master)](https://github.com/Tigge/openant/actions)
-[![Coverage Status](http://img.shields.io/coveralls/Tigge/openant.svg?style=flat)](https://coveralls.io/r/Tigge/openant)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+* ANT base interface.
+* ANT-FS (with command pipe, file listings, downloading, uploading, etc).
+* ANT+ device profiles (ant.devices).
+* Three libs (ant.base basic ANT library, ant.easy blocking version using ant.base, ant.fs ANT-FS library).
 
-A python library to download and upload files from ANT-FS compliant devices (Garmin products).
+# Requirements
 
-Features
---------
+* Python >= 3.6
 
- - ANT
- - ANT-FS (with command pipe, file listings, downloading, uploading, etc)
- - Three libs (ant.base basic ANT library, ant.easy blocking version using ant.base, ant.fs ANT-FS library)
+## ANT USB Stick
 
-Requirements
-------------
-
-- Python >= 3.6
-- PyUSB >= 1.1.0
-- Root access (for installation only)
+* [ANTUSB2 Stick](http://www.thisisant.com/developer/components/antusb2/) (0fcf:1008: Dynastream Innovations, Inc.)
+* [ANTUSB-m Stick](http://www.thisisant.com/developer/components/antusb-m/) (0fcf:1009: Dynastream Innovations, Inc.)
 
 Automatic install
 -----------------
@@ -54,10 +47,10 @@ These should only be necessary to install manually, if you don't want to use the
         sudo python setup.py udev_rules
 
 
-Windows install
+## Windows install
 --------------
-Windows does not use udev_rules and therefore does not need to be installed. The installation of udev_rules is
-bypassed for Windows. libusb is supported by Windows. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. 
+
+Windows does not use udev_rules and therefore does not need to be installed. The installation of udev_rules is bypassed for Windows. libusb is supported by Windows. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. 
 
 - Install [PyUSB](https://github.com/pyusb/pyusb).
 
@@ -71,15 +64,7 @@ bypassed for Windows. libusb is supported by Windows. Follow libusb's driver ins
 
     *(Or alternatively from [sources available on GitHub](https://github.com/karpierz/libusb))*
 
-Supported devices
------------------
-
-### ANT USB Sticks
-
- - [ANTUSB2 Stick](http://www.thisisant.com/developer/components/antusb2/)
- (0fcf:1008: Dynastream Innovations, Inc.)
- - [ANTUSB-m Stick](http://www.thisisant.com/developer/components/antusb-m/)
- (0fcf:1009: Dynastream Innovations, Inc.)
+## Supported devices
 
 ### ANT-FS Devices
 
@@ -95,3 +80,17 @@ Any compliant ANT-FS device should in theory work, but those specific devices ha
  - Garmin vívoactive HR
 
 Please let me know if you have any success with devices that are not listed here.
+
+## InfluxDB CLI Tool
+
+Stream DeviceData from a ANT+ device to a InfluxDB instance. Useful for plotting real-time data and for post review.
+
+Requires install with [influx] (`pip install openant[influx]`) or influxdb-client module installed manually and InfluxDB server >= 2.0. See `openant influx --help` for the server setup. To quickly get a local instance running with Docker:
+
+```
+docker run --rm -p 8086:8086 \
+      -v $PWD:/var/lib/influxdb2 \
+      influxdb:latest
+```
+
+Navigate to 'http://localhost:8086' and setup a user/org (default org used is 'my-org'). Then setup a bucket to use (default 'my-bucket') and a API access token (Load Data > API Tokens).

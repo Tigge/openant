@@ -77,7 +77,7 @@ class LevData(DeviceData):
     gear_front: int = 0
     speed: float = field(default=0.0, metadata={"unit": "km/h"})
     odometer: float = field(default=0.0, metadata={"unit": "km"})
-    remaining_range: float = field(default=0.0, metadata={"unit": "km"})
+    remaining_range: int = field(default=0, metadata={"unit": "km"})
     fuel_consumption: float = field(default=0.0, metadata={"unit": "Wh/km"})
     assist: int = 0
     battery_soc: int = 0

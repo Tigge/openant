@@ -127,11 +127,16 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     entry_points = {
-        'console_scripts': ['openant=ant.__init__:main']
+        'console_scripts': ['openant=ant.__init__:_main']
     },
     packages=find_packages(exclude=['test']),
     python_requires='>=3.7',
-    install_requires=["pyusb>=1.0a2"],
+    install_requires=[
+        "pyusb>=1.0a2"
+    ],
+    extras_require = {
+        'influx':  ["influxdb-client"],
+    },
     cmdclass={
         "udev_rules": InstallUdevRules,
         "install": CustomInstall,

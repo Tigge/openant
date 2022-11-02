@@ -23,10 +23,45 @@ from . import base
 from . import easy
 from . import fs
 
-import argparse, logging
+import argparse, logging, importlib, pathlib, os
 
 __all__ = ["base", "easy", "fs"]
-__version__ = "1.0.1"
+__version__ = "1.0.2"
+
+
+# subparser importer taken from cantools module
+class _ErrorSubparser:
+    def __init__(self, subparser_name, error_message):
+        self.subparser_name = subparser_name
+        self.error_message = error_message
+
+    def add_subparser(self, subparser_list):
+        err_parser = \
+            subparser_list.add_parser(self.subparser_name,
+                                      description = self.error_message)
+        err_parser.add_argument("args", nargs="*")
+
+        err_parser.set_defaults(func=self._print_error)
+
+    def _print_error(self, _):
+        raise ImportError(self.error_message)
+
+def _load_subparser(subparser_name, subparsers):
+    """Load a subparser for a CLI command in a safe manner.
+
+    i.e., if the subparser cannot be loaded due to an import error or
+    similar, no exception is raised if another command was invoked on
+    the CLI."""
+
+    try:
+        result = importlib.import_module(f'.subparsers.{subparser_name}',
+                                         package='ant')
+        result.add_subparser(subparsers)
+
+    except ImportError as e:
+        result = _ErrorSubparser(subparser_name,
+                                 f'Command "{subparser_name}" is unavailable: "{e}"')
+        result.add_subparser(subparsers)
 
 
 def _main(args=None):
@@ -48,10 +83,18 @@ def _main(args=None):
     )
     subparsers.required = True
 
-    from .subparsers import scan
+    # module's 'subparsers' sub-directory
+    subparsers_dir = pathlib.Path(__file__).parent / 'subparsers'
+    for cur_file_name in os.listdir(subparsers_dir):
+        if cur_file_name.startswith('__'):
+            continue
 
-    # add subparsers
-    scan.add_subparser(subparsers)
+        if cur_file_name.endswith('.py'):
+            subparser_name = cur_file_name[:-3]
+            _load_subparser(subparser_name, subparsers)
+        elif (subparsers_dir / cur_file_name / "__init__.py").is_file():
+            subparser_name = cur_file_name
+            _load_subparser(subparser_name, subparsers)
 
     # get the args
     args = parser.parse_args(args)
