@@ -222,13 +222,7 @@ try:
 
             # get an endpoint instance
             cfg = self.dev.get_active_configuration()
-            interface_number = cfg[(0, 0)].bInterfaceNumber
-            alternate_setting = usb.control.get_interface(self.dev, interface_number)
-            intf = usb.util.find_descriptor(
-                cfg,
-                bInterfaceNumber=interface_number,
-                bAlternateSetting=alternate_setting,
-            )
+            intf = cfg[(0, 0)]
 
             self._out = usb.util.find_descriptor(
                 intf,
