@@ -59,7 +59,7 @@ def _load_subparser(subparser_name, subparsers):
     the CLI."""
 
     try:
-        result = importlib.import_module(f".subparsers.{subparser_name}", package="ant")
+        result = importlib.import_module(f".subparsers.{subparser_name}", package="openant")
         result.add_subparser(subparsers)
 
     except ImportError as e:
