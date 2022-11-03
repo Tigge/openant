@@ -28,8 +28,9 @@ import os
 from . import base
 from . import easy
 from . import fs
+from . import devices
 
-__all__ = ["base", "easy", "fs"]
+__all__ = ["base", "easy", "fs", "devices"]
 __version__ = "1.1.0"
 
 

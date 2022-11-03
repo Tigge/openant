@@ -17,7 +17,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Install with dependencies
+      - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pytest
@@ -27,3 +27,25 @@ jobs:
 
       - name: Build
         run: python setup.py build
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r docs/doc-requirements.txt
+    - name: Build documentation
+      run: |
+        cd docs
+        make html
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sphinx-out
+        path: ./docs/_build/
+        retention-days: 5

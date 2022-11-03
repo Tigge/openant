@@ -73,3 +73,13 @@ Any compliant ANT-FS device should in theory work, but those specific devices ha
  - Garmin vívoactive HR
 
 Please let me know if you have any success with devices that are not listed here.
+
+# Develop
+
+## Create Documentation
+
+Install requirements from './docs'. From './docs' run `make html`. To autogenerate any new module content run `make rst` or `sphinx-apidoc -f -o docs/src openant` in root directory.
+
+## Run Tests
+
+`pytest`

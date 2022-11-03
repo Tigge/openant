@@ -11,6 +11,9 @@ openant = {editable = true, path = "."}
 ipython = "*"
 pytest = "*"
 pylint = "*"
+sphinx = "*"
+furo = "*"
+sphinx-mdinclude = "*"
 
 [requires]
 python_version = "3.9"
