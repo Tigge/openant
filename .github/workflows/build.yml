@@ -1,17 +1,8 @@
-name: Build
+name: Test and Build
 
 on: [push, pull_request]
 
 jobs:
-  black:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Test if requires format with Black
-        uses: psf/black@stable
-        with:
-          options: "--check --verbose"
-
   build:
     runs-on: ubuntu-latest
     strategy:

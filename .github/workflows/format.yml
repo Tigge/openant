@@ -1,0 +1,19 @@
+name: Check Black format
+
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test if requires format with Black
+        uses: psf/black@stable
+        with:
+          options: "--check --verbose"

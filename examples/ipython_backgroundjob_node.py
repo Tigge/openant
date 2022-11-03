@@ -15,6 +15,7 @@ from openant.devices.dropper_seatpost import (
 
 device = None
 
+
 def node_runner(node, device):
     try:
         print(f"Starting {device}, press Ctrl-C to finish")
@@ -25,12 +26,15 @@ def node_runner(node, device):
         device.close_channel()
         node.stop()
 
+
 def on_found():
     print(f"Device {device} found and receiving")
+
 
 def on_device_data(page: int, page_name: str, data):
     if isinstance(data, DropperSeatpostData):
         print(f"Dropper seatpost state: {data.valve_state}")
+
 
 node = Node()
 node.set_network_key(0x00, ANTPLUS_NETWORK_KEY)
