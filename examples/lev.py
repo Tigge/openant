@@ -23,7 +23,7 @@ def main(device_id=0):
         print(f"Starting {device}, press Ctrl-C to finish")
         node.start()
     except KeyboardInterrupt:
-        print(f"Closing ANT+ device...")
+        print("Closing ANT+ device...")
     finally:
         device.close_channel()
         node.stop()

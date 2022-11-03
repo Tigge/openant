@@ -5,17 +5,9 @@ from typing import Tuple
 
 from ..easy.node import Node
 from .common import AntPlusDevice, CommonData, DeviceType
+from .utilities import read_json
 
 _logger = logging.getLogger(__name__)
-
-
-def read_json(json_file):
-    try:
-        with open(json_file, "r") as f:
-            parsed = json.load(f)
-        return parsed
-    except FileNotFoundError:
-        return False
 
 
 class Scanner(AntPlusDevice):

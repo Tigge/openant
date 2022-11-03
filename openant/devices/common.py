@@ -1,16 +1,16 @@
-import datetime
-import array
+"""
+Common ANT+ data and parent class for child devices
+"""
+import dataclasses
 import datetime
 import logging
-from typing import Optional
-
-from ..easy.node import Node
-from ..easy.channel import Channel
-from ..easy.exception import AntException
-
-import dataclasses
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Optional
+
+from ..easy.channel import Channel
+from ..easy.exception import AntException
+from ..easy.node import Node
 
 _logger = logging.getLogger(__name__)
 
@@ -70,6 +70,16 @@ class DeviceData:
     """
 
     def to_influx_json(self, tags: dict):
+        """
+        Converts DeviceData into json dict expected by InfluxDB 1 -> `write_points` and compatiable with InfluxDB 2 `write`
+
+        :param tags dict: tags to include in write
+
+        >>> from openant.devices.power_meter import PowerData
+        >>> p = PowerData()
+        >>> p.to_influx_json({"taggy": "blah"}) #doctest: +ELLIPSIS
+        {'measurement': 'PowerData', 'tags': {'taggy': 'blah'}, 'time': ..., 'fields': {'instantaneous_power': 0, 'average_power': 0, 'left_power': -1, 'right_power': -1, 'torque': 0.0, 'angular_velocity': 0.0, 'cadence': 255}}
+        """
         fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
 
         for f in fields:
@@ -111,6 +121,7 @@ class CommonData(DeviceData):
     software_ver: str = ""
     hardware_rev: int = 0xFF
     model_no: int = 0xFFFF
+    battery_number: int = 0xFF
     last_battery_id: int = (
         0xFF  # 0xFF is not used, otherwise 0:3 is battery number, 4:7 is ID
     )
@@ -120,7 +131,7 @@ class CommonData(DeviceData):
     timedate: Optional[datetime.datetime] = None
 
 
-class AntPlusDevice(object):
+class AntPlusDevice:
     """
     Base class to create ANT+ devices with. Handles attached state and common data pages in `_on_data`.
 
@@ -202,6 +213,7 @@ class AntPlusDevice(object):
         pass
 
     def open_channel(self):
+        """Configures and opens the channel for the device"""
         self.channel = self.node.new_channel(
             Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01
         )
@@ -210,7 +222,6 @@ class AntPlusDevice(object):
         self.channel.on_burst_data = self._on_data
         self.channel.on_acknowledge = self._on_data
 
-        # setup slave channel
         self.channel.set_id(self.device_id, self.device_type, self.trans_type)
         self.channel.enable_extended_messages(1)
 
@@ -230,7 +241,7 @@ class AntPlusDevice(object):
         :param page int: datapage to request (default command status)
         """
         # init with byte 7 0x01 (request data page)
-        data = array.array("B", [0x46, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x01])
+        data = [0x46, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x01]
 
         # serial no invalid for most
         data[1] = 0xFF
@@ -241,16 +252,15 @@ class AntPlusDevice(object):
 
         self.send_acknowledged_data(data)
 
-    def send_acknowledged_data(self, data: array.array):
-        """
-        Attempt ack send but catches exception if fails: wrapper for send_acknowledged_data
-        """
+    def send_acknowledged_data(self, data: list[int]):
+        """Attempt ack send but catches exception if fails: wrapper for send_acknowledged_data"""
         try:
             self.channel.send_acknowledged_data(data)
         except AntException as e:
             _logger.warning(f"Failed to get acknowledgement of TX page {data[0]}: {e}")
 
     def on_data(self, _):
+        """Override this to capture raw data when recieved in child classes"""
         pass
 
     def _on_data(self, data):

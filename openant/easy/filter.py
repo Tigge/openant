@@ -64,7 +64,7 @@ def wait_for_message(match, process, queue, condition):
 
 def wait_for_event(ok_codes, queue, condition):
     def match(params):
-        channel, event, data = params
+        _, _, data = params
         return data[0] in ok_codes
 
     def process(params):
@@ -80,19 +80,16 @@ def wait_for_response(event_id, queue, condition):
     """
 
     def match(params):
-        channel, event, data = params
+        _, event, _ = params
         return event == event_id
 
     def process(params):
-        channel, event, data = params
+        _, _, data = params
         if data[0] == Message.Code.RESPONSE_NO_ERROR:
             return params
         else:
             raise Exception(
-                "Responded with error "
-                + str(data[0])
-                + ":"
-                + Message.Code.lookup(data[0])
+                f"Responded with error {str(data[0])}: {Message.Code.lookup(data[0])}"
             )
 
     return wait_for_message(match, process, queue, condition)
@@ -105,7 +102,7 @@ def wait_for_special(event_id, queue, condition):
     """
 
     def match(params):
-        channel, event, data = params
+        _, event, _ = params
         return event == event_id
 
     def process(params):

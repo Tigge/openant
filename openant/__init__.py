@@ -19,11 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+import argparse
+import logging
+import importlib
+import pathlib
+import os
+
 from . import base
 from . import easy
 from . import fs
-
-import argparse, logging, importlib, pathlib, os
 
 __all__ = ["base", "easy", "fs"]
 __version__ = "1.0.2"
@@ -76,7 +80,7 @@ def _main(args=None):
     parser.add_argument(
         "--version",
         action="version",
-        version="%(prog)s {version}".format(version=__version__),
+        version=f"%(prog)s {__version__}",
     )
 
     subparsers = parser.add_subparsers(

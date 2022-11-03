@@ -22,6 +22,9 @@
 
 
 import logging
+from typing import Generator, Optional
+
+from usb.core import Device
 
 _logger = logging.getLogger("ant.base.driver")
 
@@ -135,7 +138,7 @@ try:
                 # print "serial write", type(data), data
                 self._serial.write(data)
             except serial.SerialTimeoutException as e:
-                raise DriverTimeoutException(e)
+                raise DriverTimeoutException(e) from e
 
         def close(self):
             self._serial.close()
@@ -152,8 +155,14 @@ try:
     import time
 
     class USBDriver(Driver):
+        # default USB2
+        ID_VENDOR = 0x0FCF
+        ID_PRODUCT = 0x1008
+
         def __init__(self):
-            pass
+            self.dev: Optional[Generator[Device, None, None]] = None
+            self._in = None
+            self._out = None
 
         @classmethod
         def find(cls):
@@ -204,7 +213,7 @@ try:
             self.dev.set_configuration()
             try:
                 self.dev.reset()
-            except NotImplementedError as e:
+            except NotImplementedError as _:
                 _logger.warning(
                     "Could not reset the device, not implemented in usb backend"
                 )

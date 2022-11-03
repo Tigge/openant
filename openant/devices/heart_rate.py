@@ -1,3 +1,6 @@
+"""
+ANT+ heart rate monitor device profile
+"""
 import logging
 
 from dataclasses import dataclass, field

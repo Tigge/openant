@@ -48,19 +48,15 @@ class Channel:
 
     def on_broadcast_data(self, data):
         assert data
-        pass
 
     def on_burst_data(self, data):
         assert data
-        pass
 
     def on_acknowledge(self, data):
         assert data
-        pass
 
     def on_acknowledge_data(self, data):
         assert data
-        pass
 
     def wait_for_event(self, ok_codes):
         return wait_for_event(ok_codes, self._node._events, self._node._event_cond)
@@ -118,21 +114,21 @@ class Channel:
         self._ant.enable_extended_messages(self.id, enable)
         return self.wait_for_response(Message.ID.ENABLE_EXT_RX_MESGS)
 
-    def set_search_waveform(self, waveform):
+    def set_search_waveform(self, waveform: int):
         self._ant.set_search_waveform(self.id, waveform)
         return self.wait_for_response(Message.ID.SET_SEARCH_WAVEFORM)
 
-    def request_message(self, messageId):
+    def request_message(self, messageId: int):
         _logger.debug("requesting message %#02x", messageId)
         self._ant.request_message(self.id, messageId)
         _logger.debug("done requesting message %#02x", messageId)
         return self.wait_for_special(messageId)
 
-    def send_broadcast_data(self, data):
+    def send_broadcast_data(self, data: list[int]):
         _logger.debug("send broadcast data %s", self.id)
         self._ant.send_broadcast_data(self.id, data)
 
-    def send_acknowledged_data(self, data):
+    def send_acknowledged_data(self, data: list[int]):
         try:
             _logger.debug("send acknowledged data %s", self.id)
             self._ant.send_acknowledged_data(self.id, data)
@@ -142,11 +138,11 @@ class Channel:
             _logger.warning("failed to send acknowledged data %s, retrying", self.id)
             self.send_acknowledged_data(data)
 
-    def send_burst_transfer_packet(self, channelSeq, data, first):
+    def send_burst_transfer_packet(self, channelSeq, data: list[int], first):
         _logger.debug("send burst transfer packet %s", data)
         self._ant.send_burst_transfer_packet(channelSeq, data, first)
 
-    def send_burst_transfer(self, data):
+    def send_burst_transfer(self, data: list[int]):
         try:
             _logger.debug("send burst transfer %s", self.id)
             self._ant.send_burst_transfer(self.id, data)

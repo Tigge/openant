@@ -1,10 +1,9 @@
 import logging
+from dataclasses import dataclass, field
 from enum import Enum
 
-from dataclasses import dataclass, field
-
 from ..easy.node import Node
-from .common import DeviceData, AntPlusDevice, DeviceType
+from .common import AntPlusDevice, DeviceData, DeviceType
 
 _logger = logging.getLogger(__name__)
 
@@ -22,8 +21,7 @@ class LevErrorMessage(Enum):
     def _missing_(cls, v):
         if v < 16:
             return LevErrorMessage.Unknown
-        else:
-            return LevErrorMessage.ManufacturerSpecific
+        return LevErrorMessage.ManufacturerSpecific
 
 
 class GearState(Enum):

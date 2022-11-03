@@ -55,7 +55,7 @@ def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
         )
         node.start()
     except KeyboardInterrupt:
-        print(f"Closing ANT+ node...")
+        print("Closing ANT+ node...")
     finally:
         scanner.close_channel()
         if file_path:

@@ -1,3 +1,7 @@
+"""
+Non specific device helper functions
+"""
+import json
 from typing import Union
 from ..devices import device_profiles
 from ..devices.common import DeviceType, Node
@@ -25,9 +29,17 @@ def auto_create_device(
     else:
         dt = device_type
 
-    if dt in device_profiles:
-        profile = device_profiles[dt]
-
-        return profile(node, device_id=device_id, trans_type=trans_type)
-    else:
+    if dt not in device_profiles:
         raise ValueError(f"{dt} not in device profiles {list(device_profiles.keys())}")
+
+    profile = device_profiles[dt]
+    return profile(node, device_id=device_id, trans_type=trans_type)
+
+
+def read_json(json_file):
+    try:
+        with open(json_file, "r") as f:
+            parsed = json.load(f)
+        return parsed
+    except FileNotFoundError:
+        return False

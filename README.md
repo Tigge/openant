@@ -17,6 +17,8 @@ Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device supp
     * `openant scan`: Scan for nearby devices and optionally print device data.
     * `openant influx`: Stream device data to InfluxDB instance.
 
+A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices and not intended to be used as a reference. Refer to the [thisisant.com website](https://www.thisisant.com/) for full ANT documentation and ANT+ device profiles. The intention of this module is for quick R&D of ANT capable devices.
+
 ## Roadmap
 
 * [ ] Expand tests, maybe use some form of USB emulation like [umap2](https://github.com/nccgroup/umap2) or a loopback.
@@ -30,7 +32,7 @@ Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device supp
 * Python >= 3.7
 * libusb 1.0 (for pyusb)
 
-Run `pip install openant` or `pip install git+https://github.com/tuna-f1sh/openant#egg=openant` for HEAD. A 'Pipfile' is also provided for use with `pipenv`.
+Run ~~`pip install openant`~~ (not possible until fork merged) or `pip install git+https://github.com/tuna-f1sh/openant#egg=openant` for HEAD. A 'Pipfile' is also provided for use with `pipenv`.
 
 If using on Linux, a udev rule for the Dynastream ANTUSB stick can be installed with `sudo python setup.py udev_rules`. Windows does not use udev_rules and therefore does not need to be installed. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. macOS should work with just libusb installed.
 

@@ -24,7 +24,6 @@
 import datetime
 import logging
 import struct
-import sys
 
 _logger = logging.getLogger("openant.fs.file")
 

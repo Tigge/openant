@@ -30,6 +30,7 @@ import logging
 
 import usb.core
 import usb.util
+from usb import USBError
 
 from .message import Message
 from .commons import format_list
@@ -224,7 +225,7 @@ class Ant:
 
                 self._last_data = message._data
 
-            except usb.USBError as e:
+            except USBError as e:
                 if not isinstance(e, usb.core.USBTimeoutError):
                     _logger.warning("%s, %r", type(e), e.args)
                 else:
@@ -245,14 +246,14 @@ class Ant:
                     self.channel_event_function(channel, event, data)
                 else:
                     _logger.warning("Unknown message typ '%s': %r", event_type, event)
-            except queue.Empty as e:
+            except queue.Empty as _:
                 pass
 
-    def write_message_timeslot(self, message):
+    def write_message_timeslot(self, message: Message):
         with self._message_queue_cond:
             self._message_queue.append(message)
 
-    def write_message(self, message):
+    def write_message(self, message: Message):
         data = message.get()
         self._driver.write(data)
         _logger.debug("Write data: %s", format_list(data))

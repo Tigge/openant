@@ -5,8 +5,7 @@ from typing import List, Optional
 from ..easy.node import Node
 
 from ..devices import device_profiles, ANTPLUS_NETWORK_KEY
-from ..devices.scanner import read_json
-from ..devices.utilities import auto_create_device
+from ..devices.utilities import auto_create_device, read_json
 from ..devices.common import DeviceData, AntPlusDevice
 from ..devices.fitness_equipment import FitnessEquipment, Workout
 

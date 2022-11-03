@@ -1,4 +1,3 @@
-# from openant.base import Message
 import array
 import logging
 import sys
@@ -27,7 +26,7 @@ class App(Application):
 
     def on_authentication(self, beacon):
         print("on authentication")
-        serial = self.authentication_serial()
+        # serial = self.authentication_serial()
         # passkey = self.authentication_pair("Friendly little name")
         passkey = array.array("B", b"\xea\x55\xdf\xa6\x57\x30\x47\x99")
         self.authentication_passkey(passkey)

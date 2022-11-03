@@ -5,7 +5,7 @@ import queue
 import logging
 import math
 
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -97,14 +97,46 @@ class Workout:
     loop: bool = False
 
     @staticmethod
-    def from_arrays(powers: List[int], periods: List[int], **kwargs):
+    def from_arrays(powers: List[int], periods: List[float], **kwargs):
+        """
+        Create workout from arrays of powers and periods
+
+        :param powers List[int]: power setpoints
+        :param periods List[float]: period to hold each power (s)
+        :raises ValueError: powers and periods not equal length
+
+        >>> Workout.from_arrays([100, 200, 300, 400], [5, 5.5, 10.2, 11.1])
+        Workout(intervals=[(100, 5), (200, 5.5), (300, 10.2), (400, 11.1)], cycles=1, loop=False)
+        """
         if len(powers) != len(periods):
             raise ValueError("Power levels and periods must be equal in length")
 
         return Workout(intervals=[*zip(powers, periods)], **kwargs)
 
     @staticmethod
-    def from_ramp(start: int, stop: int, step: int, period: int, peak=None, **kwargs):
+    def from_ramp(
+        start: int,
+        stop: int,
+        step: int,
+        period: float,
+        peak: Optional[int] = None,
+        **kwargs,
+    ):
+        """
+        Build Workout from `start`, `stop` and power `step` with `period` between
+
+        :param start int: start power (W)
+        :param stop int: stop power (W)
+        :param step int: step power (W)
+        :param period float: period at each level (s)
+        :param peak int: peak power if triangle wave (W)
+        :raises ValueError: start > stop, stop < start, step == 0, period == 0, peak != 0 && peak < stop | peak < start
+
+        >>> Workout.from_ramp(100, 500, 50, 10.0)
+        Workout(intervals=[(100, 10.0), (150, 10.0), (200, 10.0), (250, 10.0), (300, 10.0), (350, 10.0), (400, 10.0), (450, 10.0)], cycles=1, loop=False)
+        >>> Workout.from_ramp(100, 100, 50, 10.0, peak=500, cycles=4)
+        Workout(intervals=[(100, 10.0), (150, 10.0), (200, 10.0), (250, 10.0), (300, 10.0), (350, 10.0), (400, 10.0), (450, 10.0), (500, 10.0), (450, 10.0), (400, 10.0), (350, 10.0), (300, 10.0), (250, 10.0), (200, 10.0), (150, 10.0)], cycles=4, loop=False)
+        """
         if start > stop:
             raise ValueError("Start power must be less than stop power")
 
@@ -146,6 +178,7 @@ class FitnessEquipment(AntPlusDevice):
             trans_type=trans_type,
         )
 
+        self.command_status = CommandStatus.Unknown
         self._power_update_event_count = [0, 0]
         self._accumulated_power = [0, 0]
 
@@ -190,8 +223,9 @@ class FitnessEquipment(AntPlusDevice):
             # sit waiting for a workout
             workout = self._workout_queue.get()
 
-            while workout.loop:
-                self.run_workout(workout)
+            if workout.loop:
+                while workout.loop:
+                    self.run_workout(workout)
             else:
                 self.run_workout(workout)
 
@@ -325,10 +359,10 @@ class FitnessEquipment(AntPlusDevice):
 
             self.command_status = CommandStatus(data[3])
 
-            if (
-                self.command_status != CommandStatus.Pass
-                and self.command_status != CommandStatus.Unitialised
-                and self.command_status != CommandStatus.Pending
+            if self.command_status not in (
+                CommandStatus.Pass,
+                CommandStatus.Unitialised,
+                CommandStatus.Pending,
             ):
                 _logger.warning("Last command went wrong: {self.command_status.name}")
 
@@ -337,7 +371,7 @@ class FitnessEquipment(AntPlusDevice):
             )
 
     def set_target_power(self, power: int):
-        data = array.array("B", [0x31, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0])
+        data = [0x31, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0]
 
         if power > 4000:
             raise ValueError("Target power cannot exceed 4000 W")
@@ -357,7 +391,7 @@ class FitnessEquipment(AntPlusDevice):
         self.request_dp(71)
 
     def set_basic_resistance(self, resistance: float):
-        data = array.array("B", [0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0])
+        data = [0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0]
 
         if resistance > 100.0:
             raise ValueError("Target resistance cannot exceed 100%")
