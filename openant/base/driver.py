@@ -42,6 +42,7 @@ class DriverTimeoutException(DriverException):
 
 
 class Driver:
+    """Use as parent class to create ANT driver"""
     @classmethod
     def find(cls):
         pass
@@ -69,6 +70,7 @@ try:
     import serial
 
     class SerialDriver(Driver):
+        """CDC serial ANT device"""
 
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1004
@@ -155,6 +157,9 @@ try:
     import time
 
     class USBDriver(Driver):
+        """
+        Parent USBDriver class - overwrite and replace ID_VENDOR, ID_PRODUCT for the VID/PID of Dynastream compatiable device
+        """
         # default USB2
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1008
@@ -259,10 +264,12 @@ try:
             self._out.write(data)
 
     class USB2Driver(USBDriver):
+        """ANTUSB2 stick: http://www.thisisant.com/developer/components/antusb2/"""
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1008
 
     class USB3Driver(USBDriver):
+        """ANTUSB-m stick: http://www.thisisant.com/developer/components/antusb-m/"""
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1009
 
@@ -274,6 +281,11 @@ except ImportError:
 
 
 def find_driver():
+    """
+    Auto-find avialable driver
+
+    :raises DriverNotFound: unable to find any compatiable drivers
+    """
     print("Driver available:", drivers)
 
     for driver in reversed(drivers):

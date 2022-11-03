@@ -7,11 +7,10 @@ OpenANT Module Documentation
 ===================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
+   cli
    ./src/modules
 
-README File
-===================================
-
-.. mdinclude:: ../README.md
+.. mdinclude:: 
+   ../README.md

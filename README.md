@@ -23,7 +23,6 @@ A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices
 
 * [ ] Expand tests, maybe use some form of USB emulation like [umap2](https://github.com/nccgroup/umap2) or a loopback.
 * [ ] Add ANT+ devices.
-* [ ] Improve documentation and auto generate hosted pages.
 
 # Installation
 
@@ -79,7 +78,3 @@ Please let me know if you have any success with devices that are not listed here
 ## Create Documentation
 
 Install requirements from './docs'. From './docs' run `make html`. To autogenerate any new module content run `make rst` or `sphinx-apidoc -f -o docs/src openant` in root directory.
-
-## Run Tests
-
-`pytest`

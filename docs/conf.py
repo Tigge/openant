@@ -43,8 +43,6 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3/", None)}
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**tests**' 'setup.py']
 
-
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
