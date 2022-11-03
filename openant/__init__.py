@@ -30,7 +30,7 @@ from . import easy
 from . import fs
 
 __all__ = ["base", "easy", "fs"]
-__version__ = "1.0.2"
+__version__ = "1.1.0"
 
 
 # subparser importer taken from cantools module
