@@ -22,6 +22,7 @@
 
 
 import logging
+from typing import List
 
 from ..base.message import Message
 from ..easy.exception import TransferFailedException
@@ -124,11 +125,11 @@ class Channel:
         _logger.debug("done requesting message %#02x", messageId)
         return self.wait_for_special(messageId)
 
-    def send_broadcast_data(self, data: list[int]):
+    def send_broadcast_data(self, data: List[int]):
         _logger.debug("send broadcast data %s", self.id)
         self._ant.send_broadcast_data(self.id, data)
 
-    def send_acknowledged_data(self, data: list[int]):
+    def send_acknowledged_data(self, data: List[int]):
         try:
             _logger.debug("send acknowledged data %s", self.id)
             self._ant.send_acknowledged_data(self.id, data)
@@ -138,11 +139,11 @@ class Channel:
             _logger.warning("failed to send acknowledged data %s, retrying", self.id)
             self.send_acknowledged_data(data)
 
-    def send_burst_transfer_packet(self, channelSeq, data: list[int], first):
+    def send_burst_transfer_packet(self, channelSeq, data: List[int], first):
         _logger.debug("send burst transfer packet %s", data)
         self._ant.send_burst_transfer_packet(channelSeq, data, first)
 
-    def send_burst_transfer(self, data: list[int]):
+    def send_burst_transfer(self, data: List[int]):
         try:
             _logger.debug("send burst transfer %s", self.id)
             self._ant.send_burst_transfer(self.id, data)

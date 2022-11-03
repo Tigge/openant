@@ -24,6 +24,6 @@ disable = [
 logging-format-style = "new"
 
 [tool.pytest.ini_options]
-addopts = "--verbose --doctest-modules"
+addopts = "--verbose --doctest-modules --ignore=openant/subparsers/influx.py"
 doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
 testpaths = "openant"

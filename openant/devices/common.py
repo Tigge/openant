@@ -6,7 +6,7 @@ import datetime
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from ..easy.channel import Channel
 from ..easy.exception import AntException
@@ -252,7 +252,7 @@ class AntPlusDevice:
 
         self.send_acknowledged_data(data)
 
-    def send_acknowledged_data(self, data: list[int]):
+    def send_acknowledged_data(self, data: List[int]):
         """Attempt ack send but catches exception if fails: wrapper for send_acknowledged_data"""
         try:
             self.channel.send_acknowledged_data(data)
