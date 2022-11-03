@@ -125,8 +125,8 @@ class CommonData(DeviceData):
     last_battery_id: int = (
         0xFF  # 0xFF is not used, otherwise 0:3 is battery number, 4:7 is ID
     )
-    last_battery_data: BatteryData = (
-        BatteryData()
+    last_battery_data: BatteryData = field(
+        default_factory=BatteryData
     )  # the last one recieved or only if last_battery_id = 0xFF
     timedate: Optional[datetime.datetime] = None
 
