@@ -14,10 +14,10 @@ class BikeSpeedData(DeviceData):
     """ANT+ bike speed data."""
 
     cumulative_operating_time: int = field(default=0, metadata={"unit": "seconds"})
-    bike_speed_event_time: list[float] = field(
+    bike_speed_event_time: List[float] = field(
         default_factory=lambda: [0.0, 0.0], metadata={"unit": "seconds"}
     )
-    cumulative_speed_revolution: list[int] = field(
+    cumulative_speed_revolution: List[int] = field(
         default_factory=lambda: [0, 0], metadata={"unit": "events"}
     )
     manufacturer_id_lsb: int = 0xFF
@@ -52,10 +52,10 @@ class BikeCadenceData(DeviceData):
     """ANT+ bike cadence data."""
 
     cumulative_operating_time: int = field(default=0, metadata={"unit": "seconds"})
-    bike_cadence_event_time: list[float] = field(
+    bike_cadence_event_time: List[float] = field(
         default_factory=lambda: [0.0, 0.0], metadata={"unit": "seconds"}
     )
-    cumulative_cadence_revolution: list[int] = field(
+    cumulative_cadence_revolution: List[int] = field(
         default_factory=lambda: [0, 0], metadata={"unit": "events"}
     )
     manufacturer_id_lsb: int = 0xFF
