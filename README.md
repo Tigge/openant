@@ -2,6 +2,7 @@ Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device supp
 
 * Python 2 support is dropped in favour of fully supporting Python 3.
 * Module folder name changed to match module name 'ant' -> 'openant' in order to be more Pythonic. Symbolic link remains for legacy but should use `import openant`/`from openant.` from now on.
+* Typing, docstrings and sphinx docs (needs further development).
 
 # Features
 
