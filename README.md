@@ -18,7 +18,7 @@ Fork of [openant](https://github.com/Tigge/openant) that brings ANT+ device supp
     * `openant scan`: Scan for nearby devices and optionally print device data.
     * `openant influx`: Stream device data to InfluxDB instance.
 
-A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices and not intended to be used as a reference. Refer to the [thisisant.com website](https://www.thisisant.com/) for full ANT documentation and ANT+ device profiles. The intention of this module is for quick R&D of ANT capable devices.
+A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices and not intended to be used as a reference. Refer to the [thisisant.com website](https://www.thisisant.com/) for full ANT documentation and ANT+ device profiles. The intention of this module is for quick R&D of ANT capable devices. In case non-obvious, this module is not an official tool.
 
 # Installation
 
