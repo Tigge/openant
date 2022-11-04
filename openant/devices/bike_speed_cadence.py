@@ -82,6 +82,8 @@ class BikeCadenceData(DeviceData):
 
 
 class BikeSpeed(AntPlusDevice):
+    """Device profile for speed sensor"""
+
     def __init__(
         self,
         node: Node,
@@ -164,6 +166,8 @@ class BikeSpeed(AntPlusDevice):
 
 
 class BikeCadence(AntPlusDevice):
+    """Device profile for cadence sensor"""
+
     def __init__(
         self,
         node: Node,
@@ -248,6 +252,8 @@ class BikeCadence(AntPlusDevice):
 
 
 class BikeSpeedCadence(AntPlusDevice):
+    """Device profile for speed and cadence sensor, only broadcasts one device data page"""
+
     def __init__(
         self,
         node: Node,

@@ -1,3 +1,6 @@
+"""
+ANT `Message` class and general defines
+"""
 # Ant
 #
 # Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>
@@ -35,6 +38,8 @@ _logger = logging.getLogger("openant.base.message")
 
 
 class Message:
+    """Return message `IDs` and `Codes`"""
+
     class ID:
         INVALID = 0x00
 

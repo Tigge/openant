@@ -1,3 +1,6 @@
+"""
+Drivers to get data from an ANT capable device
+"""
 # Ant
 #
 # Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>
@@ -42,7 +45,7 @@ class DriverTimeoutException(DriverException):
 
 
 class Driver:
-    """Use as parent class to create ANT driver"""
+    """Use as parent class to create ANT driver, compatiable with `Ant` class"""
 
     @classmethod
     def find(cls):

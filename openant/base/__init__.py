@@ -1,3 +1,6 @@
+"""
+Base ANT data interfacing module
+"""
 # Ant
 #
 # Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>

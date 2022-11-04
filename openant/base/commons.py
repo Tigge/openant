@@ -1,3 +1,6 @@
+"""
+Miscellaneous ANT functions
+"""
 # Ant
 #
 # Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>

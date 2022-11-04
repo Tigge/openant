@@ -1,3 +1,6 @@
+"""
+Base ANT interfacing
+"""
 # Ant
 #
 # Copyright (c) 2012, Gustav Tiger <gustav@tiger.name>
@@ -40,6 +43,8 @@ _logger = logging.getLogger("openant.base.ant")
 
 
 class Ant:
+    """Provides ANT data interface and manages data from a `Driver` via a worker thread"""
+
     _RESET_WAIT = 1
 
     def __init__(self):
@@ -391,7 +396,9 @@ class Ant:
             self.send_burst_transfer_packet(channel_seq, packet_data, first=i == 0)
 
     def response_function(self, channel, event, data):
+        """Overload to act on generic responses"""
         pass
 
     def channel_event_function(self, channel, event, data):
+        """Overload to act on channel events"""
         pass
