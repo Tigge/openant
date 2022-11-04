@@ -126,11 +126,14 @@ setup(
         "Intended Audience :: Science/Research"
         "Intended Audience :: Sport/Recreation Industry"
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Embedded Systems",
+        "Environment :: Console",
     ],
     entry_points={"console_scripts": ["openant=openant.__init__:_main"]},
     packages=find_packages(exclude=["test", "tests"]),

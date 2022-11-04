@@ -1,5 +1,15 @@
 """
-Common ANT+ data and parent class for child devices
+Common ANT+ data and parent class for child devices.
+
+When creating a new device using AntPlusDevice as the parent. The `on_data` callback can be used to decode device specific data - see a device in this module as an example.
+
+Creating a device then just requires a openant.easy.node.Node() wtih network configured
+
+.. code-block:: python
+
+    node = Node()
+    node.set_network_key(0x00, ANTPLUS_NETWORK_KEY)
+    generic_device = AntPlusDevice(node)
 """
 import dataclasses
 import datetime

@@ -49,7 +49,7 @@ from ..fs.commandpipe import CreateFile, Response, Time, TimeResponse
 from ..fs.file import Directory
 from ..fs.commons import crc
 
-_logger = logging.getLogger("ant.fs.manager")
+_logger = logging.getLogger("openant.fs.manager")
 
 
 class AntFSException(Exception):

@@ -23,7 +23,7 @@
 
 import logging
 
-_logger = logging.getLogger("ant.easy.exception")
+_logger = logging.getLogger("openant.easy.exception")
 
 
 class AntException(Exception):

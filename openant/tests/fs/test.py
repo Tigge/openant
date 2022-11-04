@@ -44,7 +44,7 @@ class App(Application):
 def main():
     try:
         # Set up logging
-        logger = logging.getLogger("ant")
+        logger = logging.getLogger("openant")
         logger.setLevel(logging.DEBUG)
         handler = logging.FileHandler("test.log", "w")
         # handler = logging.StreamHandler()

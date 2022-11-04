@@ -25,11 +25,15 @@ device = None
 
 
 def node_runner(node, device):
-    print(f"Starting {device}. Use `device.close_channel()` and `node.stop()` when done")
+    print(
+        f"Starting {device}. Use `device.close_channel()` and `node.stop()` when done"
+    )
     node.start()
+
 
 def on_found():
     print(f"Device {device} found and receiving")
+
 
 def on_device_data(page: int, page_name: str, data):
     if isinstance(data, DropperSeatpostData):
@@ -41,15 +45,18 @@ def on_device_data(page: int, page_name: str, data):
     elif isinstance(data, ShiftData):
         print(f"ShiftData: {data}")
 
+
 def begin(jobs, node, device):
     """Call this at iPython prompt to begin session"""
     jobs.new(node_runner, node, device)
 
+
 def end(jobs, node, device):
     """Call to finish iPython session. If running `begin` following this, one must re-create the `node`"""
     device.close_channel()
-    node.stop();
+    node.stop()
     jobs.flush()
+
 
 # for verbose logging
 # logging.basicConfig(level=logging.DEBUG)

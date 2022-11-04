@@ -26,7 +26,7 @@ import logging
 from ..base.message import Message
 from ..easy.exception import AntException, TransferFailedException
 
-_logger = logging.getLogger("ant.easy.filter")
+_logger = logging.getLogger("openant.easy.filter")
 
 
 def wait_for_message(match, process, queue, condition):

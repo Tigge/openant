@@ -31,7 +31,7 @@ from . import fs
 from . import devices
 
 __all__ = ["base", "easy", "fs", "devices"]
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 # subparser importer taken from cantools module
@@ -60,7 +60,9 @@ def _load_subparser(subparser_name, subparsers):
     the CLI."""
 
     try:
-        result = importlib.import_module(f".subparsers.{subparser_name}", package="openant")
+        result = importlib.import_module(
+            f".subparsers.{subparser_name}", package="openant"
+        )
         result.add_subparser(subparsers)
 
     except ImportError as e:
@@ -74,7 +76,6 @@ def _main(args=None):
     parser = argparse.ArgumentParser(description="ANT, ANT-FS and ANT+ Python Library")
     parser.add_argument(
         "--logging",
-        dest="logLevel",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         help="Set the logging level",
     )
@@ -106,8 +107,9 @@ def _main(args=None):
     args = parser.parse_args(args)
 
     # setup logging
-    if args.logLevel:
-        logging.basicConfig(level=logging.getLevelName(args.logLevel))
+    if args.logging:
+        print(f"Setting logLevel {args.logging}")
+        logging.basicConfig(level=logging.getLevelName(args.logging))
 
     # call the subparser run function
     args.func(args)

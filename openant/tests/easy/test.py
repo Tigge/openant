@@ -38,7 +38,7 @@ class AntEasyTests(unittest.TestCase):
     def test_search(self):
 
         try:
-            logger = logging.getLogger("ant")
+            logger = logging.getLogger("openant")
             logger.setLevel(logging.DEBUG)
             handler = logging.StreamHandler()
             handler.setFormatter(

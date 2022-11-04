@@ -28,7 +28,7 @@ from ..base.message import Message
 from ..easy.exception import TransferFailedException
 from ..easy.filter import wait_for_event, wait_for_response, wait_for_special
 
-_logger = logging.getLogger("ant.easy.channel")
+_logger = logging.getLogger("openant.easy.channel")
 
 
 class Channel:

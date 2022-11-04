@@ -25,13 +25,14 @@ import collections
 import threading
 import logging
 import queue
+from typing import Optional, List
 
 from ..base.ant import Ant
 from ..base.message import Message
 from ..easy.channel import Channel
 from ..easy.filter import wait_for_event, wait_for_response, wait_for_special
 
-_logger = logging.getLogger("ant.easy.node")
+_logger = logging.getLogger("openant.easy.node")
 
 
 class Node:
@@ -44,35 +45,61 @@ class Node:
 
         self._datas = queue.Queue()
 
+        # will replace with response from node at open
+        self.serial: Optional[int] = None
+        self.ant_version: Optional[str] = None
+        self.max_networks = 8
+        self.max_channels = 8
         self.channels = {}
 
         self.ant = Ant()
 
         self._running = True
 
-        self._worker_thread = threading.Thread(target=self._worker, name="ant.easy")
+        self._worker_thread = threading.Thread(target=self._worker, name="openant.easy")
         self._worker_thread.start()
 
-    def new_channel(self, ctype, network_number=0x00, ext_assign=None):
-        size = len(self.channels)
-        channel = Channel(size, self, self.ant)
-        self.channels[size] = channel
+    def new_channel(
+        self, ctype: int, network_number: int = 0x00, ext_assign: Optional[int] = None
+    ):
+        num = len(self.channels)
+        if num >= self.max_channels:
+            raise RuntimeError(
+                f"Cannot create new channel #{num}: >= supported number of channels {self.max_channels}"
+            )
+        elif network_number >= self.max_networks:
+            raise RuntimeError(
+                f"Cannot create new channel #{num}: network {network_number} out of range"
+            )
+        channel = Channel(num, self, self.ant)
+        self.channels[num] = channel
         channel._assign(ctype, network_number, ext_assign)
         return channel
 
-    def request_message(self, messageId):
+    def request_message(self, messageId: int):
         _logger.debug("requesting message %#02x", messageId)
         self.ant.request_message(0, messageId)
         _logger.debug("done requesting message %#02x", messageId)
         return self.wait_for_special(messageId)
 
-    def set_network_key(self, network, key):
+    def get_capabilities(self):
+        """Sends request for capabilities but will not wait so that it can be sent before main loop"""
+        self.ant.request_message(0, Message.ID.RESPONSE_CAPABILITIES)
+
+    def get_meta_data(self):
+        """Sends request for node meta data but will not wait so that it can be sent before main loop"""
+        self.ant.request_message(0, Message.ID.RESPONSE_SERIAL_NUMBER)
+        self.ant.request_message(0, Message.ID.RESPONSE_ANT_VERSION)
+
+    def set_network_key(self, network: int, key: List[int]):
+        if network >= self.max_networks:
+            raise RuntimeError(f"Network {network} out of range")
         self.ant.set_network_key(network, key)
         return self.wait_for_response(Message.ID.SET_NETWORK_KEY)
 
     def set_led(self, enabled):
         self.ant.set_led(enabled)
-        return self.wait_for_response(Message.ID.ENABLE_LED)
+        return self.wait_for_special(Message.ID.ENABLE_LED)
 
     def wait_for_event(self, ok_codes):
         return wait_for_event(ok_codes, self._events, self._event_cond)
@@ -84,12 +111,27 @@ class Node:
         return wait_for_special(event_id, self._responses, self._responses_cond)
 
     def _worker_response(self, channel, event, data):
-        self._responses_cond.acquire()
-        self._responses.append((channel, event, data))
-        self._responses_cond.notify()
-        self._responses_cond.release()
+        _logger.debug(f"_worker_response {channel}, {event}, {data}")
+        if event == Message.ID.RESPONSE_CAPABILITIES:
+            self.max_channels = data[0]
+            self.max_networks = data[1]
+            _logger.debug(
+                f"capabilities max_channels: {self.max_channels}, max_networks {self.max_networks}"
+            )
+        elif event == Message.ID.RESPONSE_SERIAL_NUMBER:
+            self.serial = int.from_bytes(data, byteorder="little")
+            _logger.debug(f"serial {self.serial}")
+        elif event == Message.ID.RESPONSE_ANT_VERSION:
+            self.ant_version = bytes(data).decode("ascii")
+            _logger.debug(f"ant_version {self.ant_version}")
+        else:
+            self._responses_cond.acquire()
+            self._responses.append((channel, event, data))
+            self._responses_cond.notify()
+            self._responses_cond.release()
 
     def _worker_event(self, channel, event, data):
+        _logger.debug(f"_worker_event {channel}, {event}, {data}")
         if event == Message.Code.EVENT_RX_BURST_PACKET:
             self._datas.put(("burst", channel, data))
         elif event == Message.Code.EVENT_RX_BROADCAST:
@@ -108,7 +150,9 @@ class Node:
         self.ant.response_function = self._worker_response
         self.ant.channel_event_function = self._worker_event
 
-        # TODO: check capabilities
+        # fire off requests but don't wait until start
+        self.get_capabilities()
+        self.get_meta_data()
         self.ant.start()
 
     def _main(self):

@@ -26,7 +26,7 @@ from typing import Generator, Optional
 
 from usb.core import Device
 
-_logger = logging.getLogger("ant.base.driver")
+_logger = logging.getLogger("openant.base.driver")
 
 
 class DriverException(Exception):
@@ -43,6 +43,7 @@ class DriverTimeoutException(DriverException):
 
 class Driver:
     """Use as parent class to create ANT driver"""
+
     @classmethod
     def find(cls):
         pass
@@ -160,6 +161,7 @@ try:
         """
         Parent USBDriver class - overwrite and replace ID_VENDOR, ID_PRODUCT for the VID/PID of Dynastream compatiable device
         """
+
         # default USB2
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1008
@@ -265,11 +267,13 @@ try:
 
     class USB2Driver(USBDriver):
         """ANTUSB2 stick: http://www.thisisant.com/developer/components/antusb2/"""
+
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1008
 
     class USB3Driver(USBDriver):
         """ANTUSB-m stick: http://www.thisisant.com/developer/components/antusb-m/"""
+
         ID_VENDOR = 0x0FCF
         ID_PRODUCT = 0x1009
 

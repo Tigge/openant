@@ -36,7 +36,7 @@ from .message import Message
 from .commons import format_list
 from .driver import find_driver
 
-_logger = logging.getLogger("ant.base.ant")
+_logger = logging.getLogger("openant.base.ant")
 
 
 class Ant:
@@ -59,7 +59,7 @@ class Ant:
 
         self._driver.open()
 
-        self._worker_thread = threading.Thread(target=self._worker, name="ant.base")
+        self._worker_thread = threading.Thread(target=self._worker, name="openant.base")
         self._worker_thread.start()
 
         self.reset_system()
@@ -274,8 +274,6 @@ class Ant:
                     format_list(data),
                     format_list(self._buffer),
                 )
-
-    # Ant functions
 
     def unassign_channel(self, channel):
         pass

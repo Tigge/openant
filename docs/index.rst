@@ -9,7 +9,6 @@ OpenANT Module Documentation
 .. toctree::
    :maxdepth: 4
 
-   cli
    ./src/modules
 
 .. mdinclude:: 
