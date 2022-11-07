@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 from dataclasses import dataclass, field
 
@@ -23,11 +23,17 @@ class BikeSpeedData(DeviceData):
     manufacturer_id_lsb: int = 0xFF
     serial_number: int = 0xFFFF
 
-    def calculate_speed(self, wheel_circumference_m: float):
+    def calculate_speed(self, wheel_circumference_m: float) -> Optional[float]:
         """
         Returns speed in km/h based on wheel circumference in meters, event time change and revolution change
 
         :param wheel_circumference_m float: wheel circumference in meters
+
+        >>> bs = BikeSpeedData()
+        >>> bs.bike_speed_event_time = [0.0, 1.0]
+        >>> bs.cumulative_speed_revolution = [0, 5]
+        >>> bs.calculate_speed(2.3)
+        41.4
         """
         delta_rev_count = (
             self.cumulative_speed_revolution[1] - self.cumulative_speed_revolution[0]
@@ -38,11 +44,16 @@ class BikeSpeedData(DeviceData):
         else:
             return None
 
-    def calculate_distance(self, wheel_circumference_m: float):
+    def calculate_distance(self, wheel_circumference_m: float) -> float:
         """
         Returns distance based on wheel circumference in meters and the total revolution events
 
         :param wheel_circumference_m float: wheel circumference in meters
+
+        >>> bs = BikeSpeedData()
+        >>> bs.cumulative_speed_revolution = [0, 5]
+        >>> bs.calculate_distance(2.3)
+        11.5
         """
         return wheel_circumference_m * self.cumulative_speed_revolution[1]
 
@@ -66,8 +77,15 @@ class BikeCadenceData(DeviceData):
         """Returns calculate_cadence as a property"""
         return self.calculate_cadence()
 
-    def calculate_cadence(self):
-        """Calculates cadence using delta values of RPM and time"""
+    def calculate_cadence(self) -> Optional[float]:
+        """Calculates cadence using delta values of RPM and time
+
+        >>> bc = BikeCadenceData()
+        >>> bc.bike_cadence_event_time = [0.0, 1.5]
+        >>> bc.cumulative_cadence_revolution = [0, 2]
+        >>> bc.calculate_cadence()
+        80.0
+        """
         delta_rev_count = (
             self.cumulative_cadence_revolution[1]
             - self.cumulative_cadence_revolution[0]
