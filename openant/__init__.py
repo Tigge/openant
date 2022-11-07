@@ -108,7 +108,6 @@ def _main(args=None):
 
     # setup logging
     if args.logging:
-        print(f"Setting logLevel {args.logging}")
         logging.basicConfig(level=logging.getLevelName(args.logging))
 
     # call the subparser run function

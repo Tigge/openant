@@ -118,19 +118,19 @@ try:
             except serial.SerialException as e:
                 raise DriverException(e)
 
-            print("Serial information:")
-            print("name:            ", self._serial.name)
-            print("port:            ", self._serial.port)
-            print("baudrate:        ", self._serial.baudrate)
-            print("bytesize:        ", self._serial.bytesize)
-            print("parity:          ", self._serial.parity)
-            print("stopbits:        ", self._serial.stopbits)
-            print("timeout:         ", self._serial.timeout)
-            print("writeTimeout:    ", self._serial.writeTimeout)
-            print("xonxoff:         ", self._serial.xonxoff)
-            print("rtscts:          ", self._serial.rtscts)
-            print("dsrdtr:          ", self._serial.dsrdtr)
-            print("interCharTimeout:", self._serial.interCharTimeout)
+            _logger.debug("Serial information:")
+            _logger.debug("name:            ", self._serial.name)
+            _logger.debug("port:            ", self._serial.port)
+            _logger.debug("baudrate:        ", self._serial.baudrate)
+            _logger.debug("bytesize:        ", self._serial.bytesize)
+            _logger.debug("parity:          ", self._serial.parity)
+            _logger.debug("stopbits:        ", self._serial.stopbits)
+            _logger.debug("timeout:         ", self._serial.timeout)
+            _logger.debug("writeTimeout:    ", self._serial.writeTimeout)
+            _logger.debug("xonxoff:         ", self._serial.xonxoff)
+            _logger.debug("rtscts:          ", self._serial.rtscts)
+            _logger.debug("dsrdtr:          ", self._serial.dsrdtr)
+            _logger.debug("interCharTimeout:", self._serial.interCharTimeout)
 
             self._serial.timeout = 0
 
@@ -293,10 +293,10 @@ def find_driver():
 
     :raises DriverNotFound: unable to find any compatiable drivers
     """
-    print("Driver available:", drivers)
+    _logger.info(f"Drivers available: {drivers}")
 
     for driver in reversed(drivers):
         if driver.find():
-            print(" - Using:", driver)
+            _logger.info(f"Using driver: {driver}")
             return driver()
     raise DriverNotFound

@@ -140,6 +140,7 @@ setup(
     python_requires=">=3.7",
     install_requires=["pyusb>=1.0a2"],
     extras_require={
+        "serial": ["pyserial"],
         "influx": ["influxdb-client"],
     },
     cmdclass={
