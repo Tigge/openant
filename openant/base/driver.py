@@ -26,10 +26,101 @@ Drivers to get data from an ANT capable device
 
 import logging
 from typing import Generator, Optional
+from enum import Enum
 
 from usb.core import Device
 
 _logger = logging.getLogger("openant.base.driver")
+
+
+class StandardOptions(Enum):
+    NoRxChannels = 0
+    NoTxChannels = 1
+    NoRxMessages = 2
+    NoTxMessages = 3
+    NoAckMessages = 4
+    NoBurstMessages = 5
+    Reserved = 6
+
+    @staticmethod
+    def from_byte(byte: int):
+        ret = set()
+        for i in range(StandardOptions.Reserved.value):
+            if byte >> i & 0x01:
+                ret.add(StandardOptions(i))
+        return ret
+
+    @classmethod
+    def _missing_(cls, _):
+        return StandardOptions.Reserved
+
+
+class AdvancedOptions(Enum):
+    NetworkEnabled = 0
+    SerialNumberEnabled = 3
+    PerChannelTxPowerEnabled = 4
+    LowPrioritySearchNEnabled = 5
+    ScriptEnabled = 6
+    SearchListEnabled = 7
+    Reserved = 8
+
+    @staticmethod
+    def from_byte(byte: int):
+        ret = set()
+        for i in range(AdvancedOptions.Reserved.value):
+            if byte >> i & 0x01:
+                ret.add(AdvancedOptions(i))
+        return ret
+
+    @classmethod
+    def _missing_(cls, _):
+        return AdvancedOptions.Reserved
+
+
+class AdvancedOptionsTwo(Enum):
+    LedEnabled = 0
+    ExtMessageEnabled = 1
+    ScanModeEnabled = 2
+    ProximitySearchEnabled = 4
+    ExtAssignEnabled = 5
+    FsAntFsEnabled = 6
+    Fit1Enabled = 7
+    Reserved = 8
+
+    @staticmethod
+    def from_byte(byte: int):
+        ret = set()
+        for i in range(AdvancedOptionsTwo.Reserved.value):
+            if byte >> i & 0x01:
+                ret.add(AdvancedOptionsTwo(i))
+        return ret
+
+    @classmethod
+    def _missing_(cls, _):
+        return AdvancedOptionsTwo.Reserved
+
+
+class AdvancedOptionsThree(Enum):
+    AdvancedBurstEnabled = 0
+    EventBufferingEnabled = 0
+    EventFilteringEnabled = 1
+    HighDutySearchEnabled = 2
+    SearchSharingEnabled = 4
+    SelectiveDataUpdateEnabled = 6
+    EncryptedChannelEnabled = 7
+    Reserved = 8
+
+    @staticmethod
+    def from_byte(byte: int):
+        ret = set()
+        for i in range(AdvancedOptionsThree.Reserved.value):
+            if byte >> i & 0x01:
+                ret.add(AdvancedOptionsThree(i))
+        return ret
+
+    @classmethod
+    def _missing_(cls, _):
+        return AdvancedOptionsThree.Reserved
 
 
 class DriverException(Exception):

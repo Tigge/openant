@@ -59,6 +59,9 @@ class Channel:
     def on_acknowledge_data(self, data):
         assert data
 
+    def on_broadcast_tx_data(self, data):
+        assert data
+
     def wait_for_event(self, ok_codes):
         return wait_for_event(ok_codes, self._node._events, self._node._event_cond)
 
@@ -77,7 +80,8 @@ class Channel:
         return self.wait_for_response(Message.ID.ASSIGN_CHANNEL)
 
     def _unassign(self):
-        pass
+        self._ant.unassign_channel(self.id)
+        return self.wait_for_response(Message.ID.UNASSIGN_CHANNEL)
 
     def open(self):
         self._ant.open_channel(self.id)

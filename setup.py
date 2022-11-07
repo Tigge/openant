@@ -136,7 +136,7 @@ setup(
         "Environment :: Console",
     ],
     entry_points={"console_scripts": ["openant=openant.__init__:_main"]},
-    packages=find_packages(exclude=["test", "tests"]),
+    packages=find_packages(exclude=["*test.*", "*tests"]),
     python_requires=">=3.7",
     install_requires=["pyusb>=1.0a2"],
     extras_require={

@@ -27,6 +27,14 @@ import logging
 import queue
 from typing import Optional, List
 
+from openant.base.driver import (
+    StandardOptions,
+    AdvancedOptions,
+    AdvancedOptionsTwo,
+    AdvancedOptionsThree,
+)
+from openant.easy.exception import AntException
+
 from ..base.ant import Ant
 from ..base.message import Message
 from ..easy.channel import Channel
@@ -50,7 +58,12 @@ class Node:
         self.ant_version: Optional[str] = None
         self.max_networks = 8
         self.max_channels = 8
-        self.channels = {}
+        self.channels: List[Channel] = []
+        self.standard_options = set()
+        self.advanced_options = set()
+        self.advanced_options_two = set()
+        self.advanced_options_three = set()
+        self.max_sensorcore_channels = 0
 
         self.ant = Ant()
 
@@ -72,9 +85,29 @@ class Node:
                 f"Cannot create new channel #{num}: network {network_number} out of range"
             )
         channel = Channel(num, self, self.ant)
-        self.channels[num] = channel
+        _logger.info(f"creating channel #{channel.id}: {channel}")
+        self.channels.append(channel)
         channel._assign(ctype, network_number, ext_assign)
+        _logger.debug(f"total channels {len(self.channels)}: {self.channels}")
         return channel
+
+    def remove_channel(self, channel: Channel):
+        if len(self.channels) == 0:
+            raise RuntimeError("No channels in local Node list")
+        _logger.info(f"removing channel #{channel.id}: {channel}")
+        try:
+            channel.close()
+            channel._unassign()
+            self.channels.remove(channel)
+        except AntException as e:
+            _logger.error(f"Exception removing channel #{channel.id}: {e}")
+
+    def remove_channel_id(self, channel_id: int):
+        if self.channels is None:
+            return
+        for i in range(len(self.channels)):
+            if self.channels[i].id == channel_id:
+                self.remove_channel(self.channels[i])
 
     def request_message(self, messageId: int):
         _logger.debug("requesting message %#02x", messageId)
@@ -115,15 +148,21 @@ class Node:
         if event == Message.ID.RESPONSE_CAPABILITIES:
             self.max_channels = data[0]
             self.max_networks = data[1]
-            _logger.debug(
-                f"capabilities max_channels: {self.max_channels}, max_networks {self.max_networks}"
+            self.standard_options = StandardOptions.from_byte(data[2])
+            self.advanced_options = AdvancedOptions.from_byte(data[3])
+            self.advanced_options_two = AdvancedOptionsTwo.from_byte(data[4])
+            self.max_sensorcore_channels = data[5]
+            if len(data) >= 7:
+                self.advanced_options_three = AdvancedOptionsThree.from_byte(data[4])
+            _logger.info(
+                f"capabilities max_channels: {self.max_channels}, max_networks {self.max_networks}, standard_options: {self.standard_options}, advanced_options: {self.advanced_options}; {self.advanced_options_two}"
             )
         elif event == Message.ID.RESPONSE_SERIAL_NUMBER:
             self.serial = int.from_bytes(data, byteorder="little")
-            _logger.debug(f"serial {self.serial}")
+            _logger.info(f"serial {self.serial}")
         elif event == Message.ID.RESPONSE_ANT_VERSION:
             self.ant_version = bytes(data).decode("ascii")
-            _logger.debug(f"ant_version {self.ant_version}")
+            _logger.info(f"ant_version {self.ant_version}")
         else:
             self._responses_cond.acquire()
             self._responses.append((channel, event, data))

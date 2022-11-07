@@ -156,6 +156,8 @@ class Ant:
                         Message.ID.RESPONSE_CAPABILITIES,
                         Message.ID.RESPONSE_SERIAL_NUMBER,
                         Message.ID.ENABLE_EXT_RX_MESGS,
+                        Message.ID.UNASSIGN_CHANNEL,
+                        Message.ID.CLOSE_CHANNEL,
                     ]:
                         _logger.debug("Got response general, %r", message)
                         self._events.put(
@@ -281,7 +283,8 @@ class Ant:
                 )
 
     def unassign_channel(self, channel):
-        pass
+        message = Message(Message.ID.UNASSIGN_CHANNEL, [channel])
+        self.write_message(message)
 
     def assign_channel(self, channel, channelType, networkNumber, ext_assign):
         if ext_assign is None:

@@ -223,7 +223,7 @@ class AntPlusDevice:
         pass
 
     def open_channel(self):
-        """Configures and opens the channel for the device"""
+        """Configures and opens the channel for the device on the Node"""
         self.channel = self.node.new_channel(
             Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01
         )
@@ -242,7 +242,8 @@ class AntPlusDevice:
         self.channel.open()
 
     def close_channel(self):
-        self.channel.close()
+        """Closes and removes the device channel on the Node"""
+        self.node.remove_channel(self.channel)
 
     def request_dp(self, page: int = 71):
         """
