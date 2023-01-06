@@ -116,16 +116,12 @@ setup(
     version=get_version("openant/__init__.py"),
     description="ANT, ANT-FS and ANT+ Python Library",
     long_description=open("README.md", "r").read(),
+    long_description_content_type="text/markdown",
     author="Gustav Tiger, John Whittington",
-    author_email="gustav@tiger.name, git@jbrengineering.co.uk",
     url="https://github.com/tuna-f1sh/openant",
     classifiers=[
-        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
-        "Intended Audience :: Science/Research"
-        "Intended Audience :: Sport/Recreation Industry"
-        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",

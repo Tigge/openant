@@ -27,7 +27,7 @@ A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices
 * Python >= 3.7
 * libusb 1.0 (for pyusb)
 
-Run ~~`pip install openant`~~ (not possible until fork merged) or `pip install git+https://github.com/tuna-f1sh/openant#egg=openant` for HEAD. A 'Pipfile' is also provided for use with `pipenv`.
+Run `pip install openant` or `pip install git+https://github.com/tuna-f1sh/openant#egg=openant` for HEAD. A 'Pipfile' is also provided for use with `pipenv`.
 
 If using on Linux, a udev rule for the Dynastream ANTUSB stick can be installed with `sudo python setup.py udev_rules`. Windows does not use udev_rules and therefore does not need to be installed. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. macOS should work with just libusb installed.
 
