@@ -118,7 +118,7 @@ setup(
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
     author="Gustav Tiger, John Whittington",
-    url="https://github.com/tuna-f1sh/openant",
+    url="https://github.com/Tigge/openant",
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
