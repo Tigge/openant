@@ -25,6 +25,7 @@
 import os
 import shutil
 import platform
+import codecs
 
 from distutils.util import execute
 from distutils.cmd import Command
@@ -53,8 +54,8 @@ def udev_trigger():
 def install_udev_rules(raise_exception):
     if check_root():
         shutil.copy("resources/42-ant-usb-sticks.rules", "/etc/udev/rules.d")
-        execute(udev_reload_rules, [], "Reloading udev rules")
-        execute(udev_trigger, [], "Triggering udev rules")
+        execute(udev_reload_rules, (), "Reloading udev rules")
+        execute(udev_trigger, (), "Triggering udev rules")
     else:
         msg = 'You must have root privileges to install udev rules. Run "sudo python setup.py udev_rules"'
         if raise_exception:
@@ -66,8 +67,10 @@ def install_udev_rules(raise_exception):
 def check_root():
     return os.geteuid() == 0
 
+
 def is_linux():
     return platform.system() == "Linux"
+
 
 class InstallUdevRules(Command):
     description = "install udev rules (requires root privileges)"
@@ -86,49 +89,60 @@ class InstallUdevRules(Command):
 class CustomInstall(install):
     def run(self):
         install.run(self)
-        if is_linux():
-            install_udev_rules(True)
 
 
 class CustomDevelop(develop):
     def run(self):
         develop.run(self)
-        if is_linux():
-            install_udev_rules(False)
 
 
-try:
-    with open("README.md") as file:
-        long_description = file.read()
-except IOError:
-    long_description = ""
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), "r") as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith("__version__"):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
 
 setup(
     name="openant",
-    version="0.4",
-    description="ANT and ANT-FS Python Library",
-    long_description=long_description,
-    author="Gustav Tiger",
-    author_email="gustav@tiger.name",
+    version=get_version("openant/__init__.py"),
+    description="ANT, ANT-FS and ANT+ Python Library",
+    long_description=open("README.md", "r").read(),
+    long_description_content_type="text/markdown",
+    author="Gustav Tiger, John Whittington",
     url="https://github.com/Tigge/openant",
     classifiers=[
-        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
-        "Intended Audience :: Science/Research"
-        "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Embedded Systems",
+        "Environment :: Console",
     ],
-    packages=find_packages(),
+    entry_points={"console_scripts": ["openant=openant.__init__:_main"]},
+    packages=find_packages(exclude=["*test.*", "*tests"]),
+    python_requires=">=3.7",
     install_requires=["pyusb>=1.0a2"],
+    extras_require={
+        "serial": ["pyserial"],
+        "influx": ["influxdb-client"],
+    },
     cmdclass={
         "udev_rules": InstallUdevRules,
         "install": CustomInstall,
         "develop": CustomDevelop,
     },
-    test_suite="ant.tests",
+    test_suite="openant.tests",
 )
