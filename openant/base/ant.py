@@ -175,7 +175,7 @@ class Ant:
                                 (message._data[0], message._id, message._data[1:]),
                             )
                         )
-                    # Response (other)
+                    # Response (other); Message ID (data[1]) != 0x01)
                     elif (
                         message._id == Message.ID.RESPONSE_CHANNEL
                         and message._data[1] != 0x01
@@ -187,7 +187,7 @@ class Ant:
                                 (message._data[0], message._data[1], message._data[2:]),
                             )
                         )
-                    # Channel event
+                    # Channel event (Message ID (data[1]) == 0x01 for prefix EVENT_)
                     elif (
                         message._id == Message.ID.RESPONSE_CHANNEL
                         and message._data[1] == 0x01
@@ -196,7 +196,8 @@ class Ant:
                         self._events.put(
                             (
                                 "event",
-                                (message._data[0], message._data[1], message._data[2:]),
+                                # pass the message code at 2 not message id for event code and it is 0x01, None data
+                                (message._data[0], message._data[2], None),
                             )
                         )
                     elif message._id == Message.ID.BROADCAST_DATA:
