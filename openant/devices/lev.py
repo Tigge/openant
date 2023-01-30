@@ -255,7 +255,7 @@ class Lev(AntPlusDevice):
         page[1] = wheel_circumference & 0xFF
         page[2] = wheel_circumference & 0x0F
         if assist_level != 0xFF or regenerative_level != 0xFF:
-            page[3] |= (assist_level & 0x07) << 3 if assist_level != 0xFF else 0
+            page[3] |= ((assist_level & 0x07) << 3) if assist_level != 0xFF else 0
             page[3] |= regenerative_level & 0x07 if regenerative_level != 0xFF else 0
         else:
             page[3] = 0xFF

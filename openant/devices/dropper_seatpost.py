@@ -26,7 +26,7 @@ class DelayIndicator(Enum):
 class DropperSeatpostData(DeviceData):
     """ANT+ dropper seatpost data (shift)"""
 
-    configured_unlock_delay: float = field(default=0.0, metadata={"unit": "s"})
+    configured_unlock_delay: float = field(default=0x7f, metadata={"unit": "s"})
     delay_indicator: DelayIndicator = DelayIndicator.Unknown
     valve_state: ValveState = ValveState.Unknown
     lock_setting: ValveState = ValveState.Unknown
@@ -78,7 +78,7 @@ class DropperSeatpost(AntPlusDevice):
 
             delay = data[6] & 0x7F
             self.data["dropper_seatpost"].configured_unlock_delay = (
-                0x00 if delay == 0x7F else delay * 1e-2
+                0x7F if delay == 0x7F else delay * 1e-2
             )  # in 100 ms
             self.data["dropper_seatpost"].delay_indicator = DelayIndicator(
                 (data[6] & 0x80 >> 7)
@@ -126,7 +126,7 @@ class DropperSeatpost(AntPlusDevice):
             if int(data.configured_unlock_delay) != 0x7F
             else 0x7F
         )
-        page[7] |= 1 << 7 if store_unlock_delay else 0x00
+        page[7] |= (1 << 7) if store_unlock_delay else 0x00
 
         self.channel.send_acknowledged_data(page)
 

@@ -9,6 +9,7 @@ import logging
 from openant.devices import ANTPLUS_NETWORK_KEY
 from openant.easy.node import Node
 from openant.devices.power_meter import PowerMeter, PowerData
+from openant.devices.lev import Lev
 from openant.devices.shift import Shifting, ShiftData
 from openant.devices.dropper_seatpost import (
     DropperSeatpost,
@@ -44,6 +45,8 @@ def on_device_data(page: int, page_name: str, data):
         print(f"PowerData: {data}")
     elif isinstance(data, ShiftData):
         print(f"ShiftData: {data}")
+    else:
+        print(f"DeviceData: {data}")
 
 
 def begin(jobs, node, device):
@@ -65,7 +68,9 @@ jobs = bg.BackgroundJobManager()
 node = Node()
 node.set_network_key(0x00, ANTPLUS_NETWORK_KEY)
 
-device = FitnessEquipment(node, device_id=0)
+# device = FitnessEquipment(node, device_id=0)
+device = DropperSeatpost(node, device_id=0)
+# device = Lev(node, device_id=3)
 
 device.on_found = on_found
 device.on_device_data = on_device_data

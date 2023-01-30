@@ -31,6 +31,7 @@ class DeviceType(Enum):
     """
 
     Unknown = 255
+    ControlsDevice = 10
     PowerMeter = 11
     FitnessEquipment = 17
     ControllableDevice = 16
@@ -245,14 +246,14 @@ class AntPlusDevice:
         """Closes and removes the device channel on the Node"""
         self.node.remove_channel(self.channel)
 
-    def request_dp(self, page: int = 71):
+    def request_dp(self, page: int = 71, no_times: int = 1):
         """
         Request datapage using the request page
 
         :param page int: datapage to request (default command status)
         """
         # init with byte 7 0x01 (request data page)
-        data = [0x46, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x01]
+        data = [0x46, 0xFF, 0xFF, 0xFF, 0xFF, no_times & 0x7F, 0x00, 0x01]
 
         # serial no invalid for most
         data[1] = 0xFF
