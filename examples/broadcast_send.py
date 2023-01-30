@@ -7,7 +7,6 @@
 #
 # For further details on Speed & Distance Sensor, check out the thisisant.com webpage
 
-import array
 import logging
 import time
 
@@ -33,7 +32,7 @@ class AntSendDemo:
     def __init__(self):
 
         self.ANTMessageCount = 0
-        self.ANTMessagePayload = array.array("B", [0, 0, 0, 0, 0, 0, 0, 0])
+        self.ANTMessagePayload = [0, 0, 0, 0, 0, 0, 0, 0]
 
         # Init Variables, needed
         self.LastStrideTime = 0

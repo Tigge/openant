@@ -302,8 +302,22 @@ class Ant:
         message = Message(Message.ID.OPEN_CHANNEL, [channel])
         self.write_message(message)
 
-    def open_rx_scan_mode(self):
-        message = Message(Message.ID.OPEN_RX_SCAN_MODE, [0, 1])  # [0-Channel, 1-Enable]
+    def open_rx_scan_mode(self, channel=0):
+        """
+        Enable RX scanning mode
+
+        In scanning mode, the radio is active in receive mode 100% of the time
+        so no other channels but the scanning channel can run. The scanning
+        channel picks up any message regardless of period that is being
+        transmitted on its RF frequency and matches its channel ID mask. It can
+        receive from multiple devices simultaneously.
+
+        A CLOSE_ALL_CHANNELS message from ANT will indicate an invalid attempt
+        to start the scanning mode while any channels are open.
+
+        :param channel int: channel number to use (doesn't really matter)
+        """
+        message = Message(Message.ID.OPEN_RX_SCAN_MODE, [channel, 1])  # [Channel, 1-Enable]
         self.write_message(message)
 
     def close_channel(self, channel):
@@ -361,7 +375,7 @@ class Ant:
 
     def send_broadcast_data(self, channel, data):
         assert len(data) == 8
-        message = Message(Message.ID.BROADCAST_DATA, array.array("B", [channel]) + data)
+        message = Message(Message.ID.BROADCAST_DATA, array.array("B", [channel] + data))
         self.write_message(message)
 
     def send_acknowledged_data(self, channel, data):

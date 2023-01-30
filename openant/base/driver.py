@@ -333,7 +333,7 @@ try:
             )
 
             _logger.debug(
-                "UBS Endpoint out: %s, %s", self._out, self._out.bEndpointAddress
+                "USB Endpoint out: %s, %s", self._out, self._out.bEndpointAddress
             )
 
             self._in = usb.util.find_descriptor(
@@ -344,13 +344,16 @@ try:
             )
 
             _logger.debug(
-                "UBS Endpoint in: %s, %s", self._in, self._in.bEndpointAddress
+                "USB Endpoint in: %s, %s", self._in, self._in.bEndpointAddress
             )
 
             assert self._out is not None and self._in is not None
 
         def close(self):
             usb.util.dispose_resources(self.dev)
+            if self.dev is not None:
+                self.dev.attach_kernel_driver(0)
+            _logger.debug("usbdriver.closed")
             pass
 
         def read(self):
