@@ -91,8 +91,8 @@ class ControlsDeviceData(DeviceData):
     command_status: CommandStatus = CommandStatus.Uninitialized
     last_received_command_page: int = 0xFF
     last_control_command: ControlCommand = ControlCommand.NoCommand
-    response_data: list[int] = field(
-        default_factory=lambda: [0xFF] * 4
+    response_data: List[int] = field(
+        default_factory=lambda: [0xFF, 0xFF, 0xFF, 0xFF]
     )
 
 
