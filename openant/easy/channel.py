@@ -33,8 +33,8 @@ _logger = logging.getLogger("openant.easy.channel")
 
 class Channel:
     class Type:
-        BIDIRECTIONAL_RECEIVE = 0x00
-        BIDIRECTIONAL_TRANSMIT = 0x10
+        BIDIRECTIONAL_RECEIVE = 0x00 # AKA slave
+        BIDIRECTIONAL_TRANSMIT = 0x10 # AKA master
 
         SHARED_BIDIRECTIONAL_RECEIVE = 0x20
         SHARED_BIDIRECTIONAL_TRANSMIT = 0x30

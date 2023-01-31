@@ -21,6 +21,10 @@ from openant.devices.fitness_equipment import (
     FitnessEquipmentData,
     Workout,
 )
+from openant.devices.controls_device import (
+    GenericRemoteControl,
+    ControlCommand
+)
 
 device = None
 
@@ -69,8 +73,9 @@ node = Node()
 node.set_network_key(0x00, ANTPLUS_NETWORK_KEY)
 
 # device = FitnessEquipment(node, device_id=0)
-device = DropperSeatpost(node, device_id=0)
+# device = DropperSeatpost(node, device_id=0)
 # device = Lev(node, device_id=3)
+device = GenericRemoteControl(node, device_id=0)
 
 device.on_found = on_found
 device.on_device_data = on_device_data

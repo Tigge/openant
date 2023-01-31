@@ -31,10 +31,9 @@ class DeviceType(Enum):
     """
 
     Unknown = 255
-    ControlsDevice = 10
     PowerMeter = 11
     FitnessEquipment = 17
-    ControllableDevice = 16
+    ControlsDevice = 16
     BloodPressure = 18
     Geocache = 19
     Environment = 25
@@ -128,7 +127,7 @@ class CommonData(DeviceData):
     """
 
     manufacturer_id: int = 0xFFFF
-    serial_no: int = 0xFFFF
+    serial_no: int = 0xFFFFFFFF
     software_ver: str = ""
     hardware_rev: int = 0xFF
     model_no: int = 0xFFFF
@@ -140,6 +139,27 @@ class CommonData(DeviceData):
         default_factory=BatteryData
     )  # the last one recieved or only if last_battery_id = 0xFF
     timedate: Optional[datetime.datetime] = None
+
+    def manufacturer_page_payload(self) -> List[int]:
+        payload = [0x50, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00]
+        payload[3] = self.hardware_rev
+        payload[4] = self.manufacturer_id & 0xFF
+        payload[5] = (self.manufacturer_id >> 8) & 0xFF
+        payload[6] = self.model_no & 0xFF
+        payload[7] = (self.model_no >> 8) & 0xFF
+
+        return payload
+
+    def product_info_page_payload(self) -> List[int]:
+        payload = [0x51, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00]
+        # TODO doesn't cover rev
+        try:
+            payload[3] = int(float(self.software_ver)) * 10
+        except:
+            payload[3] = 0x00
+        payload[4:8] = self.serial_no.to_bytes(4, byteorder='little')
+
+        return payload
 
 
 class AntPlusDevice:
@@ -160,16 +180,23 @@ class AntPlusDevice:
         rf_freq: int = 57,
         name: str = "unknown",
         trans_type: int = 0,
+        master: bool = False,
     ):
         self.device_id = device_id
         self.device_type = device_type
         self.period = period
         self.rf_freq = rf_freq
-        self.trans_type = trans_type
+        # LSB is 0x05 for master
+        if master and trans_type == 0:
+            self.trans_type = 5
+        else:
+            self.trans_type = 0
         self.name = name
+        self.master = master
 
         self._found = False
         self._attached = False
+        self._page_count = 0 # for interleaving pages
 
         self.data = {
             "common": CommonData(),
@@ -223,23 +250,35 @@ class AntPlusDevice:
         assert data
         pass
 
-    def open_channel(self):
+    def open_channel(self, extended=True, channel_type=None, ext_assign: Optional[int]=0x01):
         """Configures and opens the channel for the device on the Node"""
+        if channel_type is None:
+            channel_type = Channel.Type.BIDIRECTIONAL_RECEIVE if not self.master else Channel.Type.BIDIRECTIONAL_TRANSMIT
+
         self.channel = self.node.new_channel(
-            Channel.Type.BIDIRECTIONAL_RECEIVE, 0x00, 0x01
+            channel_type, 0x00, ext_assign
         )
 
-        self.channel.on_broadcast_data = self._on_data
-        self.channel.on_burst_data = self._on_data
-        self.channel.on_acknowledge = self._on_data
+        # configure callbacks based on if slave or master device
+        if not self.master:
+            self.channel.on_broadcast_data = self._on_data
+            self.channel.on_burst_data = self._on_data
+            self.channel.on_acknowledge = self._on_data
+            # only search timeout if slave as searching
+            self.channel.set_search_timeout(0xFF)
+        else:
+            self.channel.on_broadcast_tx_data = self._on_tx_data
+            self.channel.on_acknowledge_data = self._on_ack_data
 
         self.channel.set_id(self.device_id, self.device_type, self.trans_type)
-        self.channel.enable_extended_messages(1)
 
-        self.channel.set_search_timeout(0xFF)
+        if extended:
+            self.channel.enable_extended_messages(1)
+
         self.channel.set_period(self.period)
         self.channel.set_rf_freq(self.rf_freq)
 
+        _logger.debug(f"opening {self.name} channel #{self.channel.id}, TYPE 0x{channel_type:02x} dID {self.device_id}; dType {self.device_type}; dTrans 0x{self.trans_type:02x} {self.rf_freq} @ {self.period} ms")
         self.channel.open()
 
     def close_channel(self):
@@ -391,3 +430,60 @@ class AntPlusDevice:
 
         # run user on_update after sub-class pages read
         self._on_update(data)
+
+    def on_tx_data(self) -> Optional[List[int]]:
+        """
+        Override to add device specific TX pages, use self._page_count for page counter.
+
+        Common pages are sent automatically.
+
+        """
+        pass
+
+    def _on_tx_data(self, data):
+        """Sends page data on EVENT_TX interval based on channel period"""
+        # manufacturer’s identification
+        if self._page_count == 0:
+            payload = self.data["common"].manufacturer_page_payload()
+        # product information
+        elif self._page_count == 65:
+            payload = self.data["common"].product_info_page_payload()
+        # device specific
+        else:
+            payload = self.on_tx_data()
+
+        if payload is not None:
+            _logger.debug(f"Sending EVENT_TX #{self._page_count} payload {payload}")
+            self.channel.send_broadcast_data(payload)
+
+        if self._page_count == 129:
+            self._page_count = 0
+        else:
+            self._page_count += 1
+
+    def on_ack_data(self, data) -> Optional[List[int]]:
+        """
+        Override to act on broadcast ACK data recieved.
+
+        Common page requests are replied automatically
+        """
+        assert data
+        pass
+
+    def _on_ack_data(self, data):
+        """Replies to common page requests or forwards to `on_ack_data` callback"""
+        page = data[0]
+
+        if page == 80: # manufacturer
+            payload = self.data["common"].manufacturer_page_payload()
+        elif page == 81: # product
+            payload = self.data["common"].product_info_page_payload()
+        elif page == 82: # battery
+            # TODO
+            # payload = self.battery_status_page_payload()
+            payload = None
+        else:
+            payload = self.on_ack_data(data)
+
+        if payload is not None:
+            self.channel.send_broadcast_data(payload)

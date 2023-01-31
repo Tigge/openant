@@ -196,8 +196,8 @@ class Ant:
                         self._events.put(
                             (
                                 "event",
-                                # pass the message code at 2 not message id for event code and it is 0x01, None data
-                                (message._data[0], message._data[2], None),
+                                # pass the message code at 2 not message id for event code and it is 0x01
+                                (message._data[0], message._data[2], message._data[2:]),
                             )
                         )
                     elif message._id == Message.ID.BROADCAST_DATA:

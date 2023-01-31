@@ -99,7 +99,7 @@ class Node:
             channel.close()
             channel._unassign()
             self.channels.remove(channel)
-        except AntException as e:
+        except Exception as e:
             _logger.error(f"Exception removing channel #{channel.id}: {e}")
 
     def remove_channel_id(self, channel_id: int):
