@@ -198,7 +198,7 @@ class Lev(AntPlusDevice):
             self.data["lev"].odometer = (
                 int.from_bytes(data[1:4], byteorder="little") * 0.01
             )  # 0.01 km units
-            self.data["lev"].fuel_consumption = data[4] + ((data[5] & 0x0F) << 8) * 0.1
+            self.data["lev"].fuel_consumption = (data[4] + ((data[5] & 0x0F) << 8)) * 0.1
             self.data["lev"].speed = (
                 data[6] + ((data[7] & 0x0F) << 8)
             ) * 0.1  # 0.1 km/h units
@@ -224,8 +224,8 @@ class Lev(AntPlusDevice):
             self.on_device_data(page, "system_speed_2", self.data["lev"])
         # battery information
         elif page == 0x04:
-            self.data["lev"].battery_cycles = data[2] + ((data[3] & 0x0F) << 8) * 0.1
-            self.data["lev"].fuel_consumption = data[4] + ((data[3] & 0xF0) << 8) * 0.1
+            self.data["lev"].battery_cycles = data[2] + ((data[3] & 0x0F) << 8)
+            self.data["lev"].fuel_consumption = (data[4] + ((data[3] & 0xF0) << 4)) * 0.1
             self.data["lev"].battery_voltage = data[5] / 4
             self.data["lev"].battery_distance_charge = int.from_bytes(
                 data[6:8], byteorder="little"

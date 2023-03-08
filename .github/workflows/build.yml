@@ -87,7 +87,7 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
           skip_existing: true
-      - name: Publish GitHub release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Publish GitHub release
+      #   uses: softprops/action-gh-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
