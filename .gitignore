@@ -1,3 +1,4 @@
+Pipfile.lock
 engine/
 influxd.*
 .env
