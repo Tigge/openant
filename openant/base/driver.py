@@ -351,8 +351,13 @@ try:
 
         def close(self):
             usb.util.dispose_resources(self.dev)
-            if self.dev is not None:
-                self.dev.attach_kernel_driver(0)
+            try:
+                if self.dev is not None:
+                    self.dev.attach_kernel_driver(0)
+            except NotImplementedError as e:
+                _logger.warning(
+                    "Could not re-attach kernel driver, not implemented in usb backend"
+                )
             _logger.debug("usbdriver.closed")
             pass
 
