@@ -44,7 +44,12 @@ _logger = logging.getLogger("openant.easy.node")
 
 
 class Node:
-    def __init__(self):
+    def __init__(self, keep_broadcast_page_history_depth: int=0):
+        """
+
+        Args:
+            keep_broadcast_page_history_depth (int, optional): Tells the ANT driver how many raw pages to keep in history. Defaults to 0.
+        """
 
         self._responses_cond = threading.Condition()
         self._responses = collections.deque()
@@ -65,7 +70,7 @@ class Node:
         self.advanced_options_three = set()
         self.max_sensorcore_channels = 0
 
-        self.ant = Ant()
+        self.ant = Ant(keep_broadcast_page_history_depth=keep_broadcast_page_history_depth)
 
         self._running = True
 

@@ -34,6 +34,8 @@ import logging
 import usb.core
 import usb.util
 from usb import USBError
+import collections
+import datetime
 
 from .message import Message
 from .commons import format_list
@@ -43,11 +45,16 @@ _logger = logging.getLogger("openant.base.ant")
 
 
 class Ant:
-    """Provides ANT data interface and manages data from a `Driver` via a worker thread"""
+    """Provides ANT data interface and manages data from a `Driver` via a worker thread
+
+    if `keep_broadcast_page_history_depth`, keeps a history of the raw pages, stored data is
+    a tuple with utc timestamp of when the packet was received as well as the packet data with that contains
+    bytes from the channel number through the end of the ANT packet
+    """
 
     _RESET_WAIT = 1
 
-    def __init__(self):
+    def __init__(self, keep_broadcast_page_history_depth: int = 0):
 
         self._driver = find_driver()
 
@@ -61,6 +68,9 @@ class Ant:
         self._last_data = array.array("B", [])
 
         self._running = True
+
+        self.keep_broadcast_page_history_depth = keep_broadcast_page_history_depth
+        self.broadcast_page_history = collections.deque(maxlen=keep_broadcast_page_history_depth)
 
         self._driver.open()
 
@@ -131,6 +141,9 @@ class Ant:
 
                 if message is None:
                     break
+
+                if message._id == Message.ID.BROADCAST_DATA and self.keep_broadcast_page_history_depth > 0:
+                    self.broadcast_page_history.append((datetime.datetime.utcnow(), message._data[1:]))
 
                 # TODO: flag and extended for broadcast, acknowledge, and burst
 
