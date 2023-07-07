@@ -37,4 +37,5 @@ __all__ = [
     "dropper_seatpost",
     "lev",
     "bike_speed_cadence",
+    "core_temp",
 ]
