@@ -10,12 +10,14 @@ from . import heart_rate
 from . import dropper_seatpost
 from . import lev
 from . import bike_speed_cadence
+from . import environment
 
 # standard ANT+ network key
 ANTPLUS_NETWORK_KEY = [0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45]
 
 # List of available device profiles used for `auto_create_device`
 device_profiles = {
+    common.DeviceType.Environment: environment.Environment,
     common.DeviceType.PowerMeter: power_meter.PowerMeter,
     common.DeviceType.FitnessEquipment: fitness_equipment.FitnessEquipment,
     common.DeviceType.TirePressureMonitor: tire_pressure_monitor.TirePressureMonitor,
@@ -38,4 +40,5 @@ __all__ = [
     "lev",
     "bike_speed_cadence",
     "core_temp",
+    "environment",
 ]
