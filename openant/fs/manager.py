@@ -194,7 +194,7 @@ class Application:
         return c
 
     def _send_command(self, c):
-        data = c.get()
+        data = c.get().tolist()
         if len(data) == 8:
             self._channel.send_acknowledged_data(data)
         else:
