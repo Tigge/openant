@@ -134,7 +134,7 @@ setup(
     entry_points={"console_scripts": ["openant=openant.__init__:_main"]},
     packages=find_packages(exclude=["*test.*", "*tests"]),
     python_requires=">=3.7",
-    install_requires=["pyusb>=1.0a2"],
+    install_requires=["pyusb>=1.1.1"],
     extras_require={
         "serial": ["pyserial"],
         "influx": ["influxdb-client"],
