@@ -110,24 +110,6 @@ class Application:
             NETWORK_KEY = [0xA8, 0xA4, 0x23, 0xB9, 0xF5, 0x5E, 0x63, 0xC1]
             self._node.set_network_key(0x00, NETWORK_KEY)
 
-            print("Request basic information...")
-
-            m = self._node.request_message(Message.ID.RESPONSE_CAPABILITIES)
-            print("  Capabilities: ", m[2])
-
-            # m = self._node.request_message(Message.ID.RESPONSE_ANT_VERSION)
-            # print "  ANT version:  ", struct.unpack("<10sx", m[2])[0]
-
-            # m = self._node.request_message(Message.ID.RESPONSE_SERIAL_NUMBER)
-            # print "  Serial number:", struct.unpack("<I", m[2])[0]
-
-            print("Starting system...")
-
-            # NETWORK_KEY= [0xa8, 0xa4, 0x23, 0xb9, 0xf5, 0x5e, 0x63, 0xc1]
-            # self._node.set_network_key(0x00, NETWORK_KEY)
-
-            print("Key done...")
-
             self._channel = self._node.new_channel(Channel.Type.BIDIRECTIONAL_RECEIVE)
             self._channel.on_broadcast_data = self._on_data
             self._channel.on_burst_data = self._on_data
