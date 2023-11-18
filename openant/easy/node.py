@@ -145,6 +145,7 @@ class Node:
 
     def _worker_response(self, channel, event, data):
         _logger.debug(f"_worker_response {channel}, {event}, {data}")
+        # capture capabilities, serial number, and ant version for local properties
         if event == Message.ID.RESPONSE_CAPABILITIES:
             self.max_channels = data[0]
             self.max_networks = data[1]
@@ -163,11 +164,11 @@ class Node:
         elif event == Message.ID.RESPONSE_ANT_VERSION:
             self.ant_version = bytes(data).decode("ascii")
             _logger.info(f"ant_version {self.ant_version}")
-        else:
-            self._responses_cond.acquire()
-            self._responses.append((channel, event, data))
-            self._responses_cond.notify()
-            self._responses_cond.release()
+
+        self._responses_cond.acquire()
+        self._responses.append((channel, event, data))
+        self._responses_cond.notify()
+        self._responses_cond.release()
 
     def _worker_event(self, channel, event, data):
         _logger.debug(f"_worker_event {channel}, {event}, {data}")
