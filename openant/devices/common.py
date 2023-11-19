@@ -334,7 +334,7 @@ class AntPlusDevice:
 
             elif self.device_id != device_id:
                 raise RuntimeError(
-                    "Device ID #{device_id} does not match ID channel was set to #{self.device_id}!"
+                    f"Device ID #{device_id:05} does not match Device ID channel was set to #{self.device_id:05}!"
                 )
 
             _logger.info(
