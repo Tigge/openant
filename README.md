@@ -88,6 +88,8 @@ openant influx --config --verbose devices.json config
 
 Any compliant ANT-FS device should in theory work, but those specific devices have been reported as working:
 
+## Garmin
+
  - Garmin Forerunner 60
  - Garmin Forerunner 405CX
  - Garmin Forerunner 310XT
@@ -97,6 +99,11 @@ Any compliant ANT-FS device should in theory work, but those specific devices ha
  - Garmin Swim
  - Garmin vívoactive HR
 
+## Wahoo
+
+ - Wahoo Tickr 2 - Heart Rate data
+ - Wahoo Kickr Core - Power data
+ 
 Please let me know if you have any success with devices that are not listed here.
 
 # Develop
