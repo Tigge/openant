@@ -318,7 +318,7 @@ try:
                 _logger.warning(
                     "Could not reset the device, not implemented in usb backend"
                 )
-            if is_windows:
+            if is_windows():
                 time.sleep(2)
 
             # get an endpoint instance
