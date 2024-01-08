@@ -332,7 +332,7 @@ class Application:
         data = self.download(0, callback)
         return Directory.parse(data)
 
-    def set_time(self, time=datetime.datetime.utcnow()):
+    def set_time(self, time=datetime.datetime.now(datetime.timezone.utc)):
         """
         :param time: datetime in UTC, or None to set to current time
         """
