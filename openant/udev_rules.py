@@ -25,8 +25,6 @@
 import os
 import shutil
 import platform
-
-from distutils.util import execute
 from subprocess import call
 
 
@@ -60,8 +58,8 @@ def install_udev_rules(raise_exception):
 
     if check_root():
         shutil.copy("resources/42-ant-usb-sticks.rules", "/etc/udev/rules.d")
-        execute(udev_reload_rules, (), "Reloading udev rules")
-        execute(udev_trigger, (), "Triggering udev rules")
+        udev_reload_rules()
+        udev_trigger()
     else:
         msg = 'You must have root privileges to install udev rules. Run "sudo python setup.py udev_rules"'
         if raise_exception:
