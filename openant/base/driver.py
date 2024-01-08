@@ -199,7 +199,6 @@ try:
                 return None
 
         def open(self):
-
             # TODO find correct port on our own, could be done with
             # serial.tools.list_ports, but that seems to have some
             # problems at the moment.

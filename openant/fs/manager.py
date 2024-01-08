@@ -100,7 +100,6 @@ class Application:
     _frequency = 19  # 0 to 124, x - 2400 (in MHz)
 
     def __init__(self):
-
         self._queue = queue.Queue()
         self._beacons = queue.Queue()
 
@@ -242,7 +241,6 @@ class Application:
 
         iteration = 0
         while True:
-
             # Request Upload
 
             # Continue using Last Data Offset (special MAX_ULONG value)

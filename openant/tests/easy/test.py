@@ -36,7 +36,6 @@ class AntEasyTests(unittest.TestCase):
         os.environ.get("ANT_TEST_USB_STICK", True), "Testing with USB stick not enabled"
     )
     def test_search(self):
-
         try:
             logger = logging.getLogger("openant")
             logger.setLevel(logging.DEBUG)

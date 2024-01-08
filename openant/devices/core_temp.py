@@ -10,7 +10,6 @@ from .common import DeviceData, AntPlusDevice, DeviceType, BatteryStatus
 _logger = logging.getLogger(__name__)
 
 
-
 class CoreTempDataQuality(Enum):
     Poor = 0
     Fair = 1
@@ -23,9 +22,11 @@ class CoreTempDataQuality(Enum):
     def _missing_(cls, _):
         return PressureSensorAlarm.Unknown
 
+
 @dataclass
 class CoteTemperatureData(DeviceData):
     """ANT+ core temp data"""
+
     quality: CoreTempDataQuality = None
     skin_temp: float = field(default=0, metadata={"unit": "°C"})
     core_temp: float = field(default=0, metadata={"unit": "°C"})
@@ -43,7 +44,7 @@ class CoreTemperature(AntPlusDevice):
             node,
             device_type=DeviceType.CoreTemp.value,
             device_id=device_id,
-            period=16384, # 2Hz
+            period=16384,  # 2Hz
             name=name,
             trans_type=trans_type,
         )
@@ -64,8 +65,11 @@ class CoreTemperature(AntPlusDevice):
         # core temp main page
         elif page == 0x01:
             self._event_cout = data[1]
-            self.data["core_temp"].skin_temp = (data[3] | ((data[4] & 0xF0) << 4)) * 0.05
-            self.data["core_temp"].core_temp = int.from_bytes(data[6:8], byteorder="little") * 0.01
+            self.data["core_temp"].skin_temp = (
+                data[3] | ((data[4] & 0xF0) << 4)
+            ) * 0.05
+            self.data["core_temp"].core_temp = (
+                int.from_bytes(data[6:8], byteorder="little") * 0.01
+            )
 
         self.on_device_data(page, "core_temp", self.data["core_temp"])
-

@@ -26,7 +26,7 @@ class DelayIndicator(Enum):
 class DropperSeatpostData(DeviceData):
     """ANT+ dropper seatpost data (shift)"""
 
-    configured_unlock_delay: float = field(default=0x7f, metadata={"unit": "s"})
+    configured_unlock_delay: float = field(default=0x7F, metadata={"unit": "s"})
     delay_indicator: DelayIndicator = DelayIndicator.Unknown
     valve_state: ValveState = ValveState.Unknown
     lock_setting: ValveState = ValveState.Unknown

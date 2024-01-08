@@ -33,7 +33,6 @@ _logger = logging.getLogger("openant.fs.commandpipe")
 
 class CommandPipe(object):
     class Type:
-
         REQUEST = 0x01
         RESPONSE = 0x02
         TIME = 0x03

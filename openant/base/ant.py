@@ -48,7 +48,6 @@ class Ant:
     _RESET_WAIT = 1
 
     def __init__(self):
-
         self._driver = find_driver()
 
         self._message_queue_cond = threading.Condition()
@@ -100,7 +99,6 @@ class Ant:
         )
 
     def _on_burst_data(self, message):
-
         sequence = message._data[0] >> 5
         channel = message._data[0] & 0b00011111
         data = message._data[1:]
@@ -122,7 +120,6 @@ class Ant:
             )
 
     def _worker(self):
-
         _logger.debug("Ant runner started")
 
         while self._running:
@@ -140,7 +137,6 @@ class Ant:
                     message._id == Message.ID.BROADCAST_DATA
                     and message._data == self._last_data
                 ):
-
                     # Notifications
                     if message._id in [
                         Message.ID.STARTUP_MESSAGE,
@@ -318,7 +314,9 @@ class Ant:
 
         :param channel int: channel number to use (doesn't really matter)
         """
-        message = Message(Message.ID.OPEN_RX_SCAN_MODE, [channel, 1])  # [Channel, 1-Enable]
+        message = Message(
+            Message.ID.OPEN_RX_SCAN_MODE, [channel, 1]
+        )  # [Channel, 1-Enable]
         self.write_message(message)
 
     def close_channel(self, channel):

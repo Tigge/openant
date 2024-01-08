@@ -123,7 +123,6 @@ def device_data_influx_importer(
     except KeyboardInterrupt:
         print(f"Closing ANT+ devices...")
     finally:
-
         for dev in devices:
             dev.close_channel()
 

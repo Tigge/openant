@@ -5,14 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "openant"
 description = "ANT, ANT-FS and ANT+ Python Library"
-readme = "README.md"
 authors = [
     {name = "Gustav Tiger", email = "gustav@tiger.name"},
     {name = "John Whittington"}
 ]
-homepage = "https://github.com/Tigge/openant"
-python-requires = ">=3.7"
-license = "MIT"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
 classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Healthcare Industry",
@@ -35,6 +33,7 @@ dynamic = ["readme", "version"]
 serial = ["pyserial"]
 influx = ["influxdb-client"]
 test = ["pytest", "black", "pylint"]
+docs = ["sphinx>=5.2.3", "furo>=2021.3.20b30", "sphinx_mdinclude"]
 
 [project.scripts]
 openant = "openant.__init__:_main"

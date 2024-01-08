@@ -29,11 +29,14 @@ import platform
 from distutils.util import execute
 from subprocess import call
 
+
 def check_root():
     return os.geteuid() == 0
 
+
 def udev_reload_rules():
     call(["udevadm", "control", "--reload-rules"])
+
 
 def udev_trigger():
     call(
@@ -46,9 +49,10 @@ def udev_trigger():
         ]
     )
 
+
 def install_udev_rules(raise_exception):
     if not platform.system() == "Linux":
-        msg = 'Udev rules are only supported on Linux'
+        msg = "Udev rules are only supported on Linux"
         if raise_exception:
             raise OSError(msg)
         else:
@@ -64,6 +68,7 @@ def install_udev_rules(raise_exception):
             raise OSError(msg)
         else:
             print(msg)
+
 
 if __name__ == "__main__":
     install_udev_rules(True)
