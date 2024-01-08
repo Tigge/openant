@@ -1,10 +1,54 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools >= 67.7.2"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "openant"
+description = "ANT, ANT-FS and ANT+ Python Library"
+readme = "README.md"
+authors = [
+    {name = "Gustav Tiger", email = "gustav@tiger.name"},
+    {name = "John Whittington"}
+]
+homepage = "https://github.com/Tigge/openant"
+python-requires = ">=3.7"
+license = "MIT"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Embedded Systems",
+    "Environment :: Console"
+]
+dependencies = [
+    "pyusb>=1.1.1"
+]
+dynamic = ["readme", "version"]
+
+[project.optional-dependencies]
+serial = ["pyserial"]
+influx = ["influxdb-client"]
+test = ["pytest", "black", "pylint"]
+
+[project.scripts]
+openant = "openant.__init__:_main"
+
+[tool.setuptools]
+packages = ["openant"]
+
+[tool.setuptools.dynamic]
+readme = { file = "README.md" }
+version = { attr = "openant.__version__" }
 
 [tool.black]
 line-length = 88
-target-version = ['py37', 'py38', 'py39', 'py310']
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
 
 [tool.pylint]
 disable = [
