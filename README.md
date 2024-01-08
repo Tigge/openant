@@ -38,9 +38,7 @@ See the note regarding Linux and the udev rule above to ensure the user has perm
 Requires install with [influx] (`pip install openant[influx]`) or influxdb-client module installed manually and InfluxDB server >= 2.0. See `openant influx --help` for the server setup. To quickly get a local instance running with Docker:
 
 ```
-docker run --rm -p 8086:8086 \
-      -v $PWD:/var/lib/influxdb2 \
-      influxdb:latest
+docker run --rm -p 8086:8086 -v $PWD:/var/lib/influxdb2 influxdb:latest
 ```
 
 Navigate to 'http://localhost:8086' and setup a user/org (default org used is 'my-org'). Then setup a bucket to use (default 'my-bucket') and a API access token (Load Data > API Tokens).
