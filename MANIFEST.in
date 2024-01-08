@@ -1,4 +1,0 @@
-include README
-include LICENCE
-include resources/42-ant-usb-sticks.rules
-include examples/*.py

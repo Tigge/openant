@@ -45,6 +45,9 @@ packages = ["openant"]
 readme = { file = "README.md" }
 version = { attr = "openant.__version__" }
 
+[tool.setuptools.package-data]
+openant = ["resources/42-ant-usb-sticks.rules", "examples/*.py"]
+
 [tool.black]
 line-length = 88
 target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
