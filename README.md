@@ -18,7 +18,7 @@ A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices
 
 ## Requirements
 
-* Python >= 3.7
+* Python >= 3.8
 
 Run `pip install openant` or `pip install git+https://github.com/Tigge/openant#egg=openant` for HEAD.
 
