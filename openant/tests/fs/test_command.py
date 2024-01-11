@@ -87,7 +87,6 @@ class DownloadResponseTest(unittest.TestCase):
         self.assertEqual(response._get_argument("crc"), 44476)
 
     def test_not_readable(self):
-
         # Download response, failed
         data = array.array(
             "B", b"\x44\x89\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x77\xef\x24\xae"

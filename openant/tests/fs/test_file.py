@@ -32,7 +32,6 @@ from openant.fs.file import File
 
 class DirectoryParse(unittest.TestCase):
     def test_parse(self):
-
         self.dir = array.array(
             "B",
             b"\x01\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00"

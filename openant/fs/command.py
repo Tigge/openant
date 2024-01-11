@@ -32,7 +32,6 @@ _logger = logging.getLogger("openant.fs.command")
 
 class Command:
     class Type:
-
         # Commands
         LINK = 0x02
         DISCONNECT = 0x03

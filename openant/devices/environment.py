@@ -19,11 +19,11 @@ class EnvironmentData(DeviceData):
 
 class Environment(AntPlusDevice):
     def __init__(
-            self,
-            node: Node,
-            device_id: int = 0,
-            name: str = "environment",
-            trans_type: int = 0,
+        self,
+        node: Node,
+        device_id: int = 0,
+        name: str = "environment",
+        trans_type: int = 0,
     ):
         super().__init__(
             node,
@@ -43,6 +43,8 @@ class Environment(AntPlusDevice):
         if page == 1:
             # Data page 1, temperature info
             # bytes 6,7 indicate temperature, LSB first
-            self.data["environment"].temperature = int.from_bytes(data[6:8], byteorder="little") * 0.01
+            self.data["environment"].temperature = (
+                int.from_bytes(data[6:8], byteorder="little") * 0.01
+            )
 
             self.on_device_data(page, "environment", self.data["environment"])

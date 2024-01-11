@@ -18,12 +18,11 @@ A note on ANT/ANT-FS/ANT+: this module is for development and testing of devices
 
 ## Requirements
 
-* Python >= 3.7
-* libusb 1.0 (for pyusb)
+* Python >= 3.8
 
-Run `pip install openant` or `pip install git+https://github.com/Tigge/openant#egg=openant` for HEAD. A 'Pipfile' is also provided for use with `pipenv`.
+Run `pip install openant` or `pip install git+https://github.com/Tigge/openant#egg=openant` for HEAD.
 
-If using on Linux, a udev rule for the Dynastream ANTUSB stick can be installed with `sudo python setup.py udev_rules`. Windows does not use udev_rules and therefore does not need to be installed. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. macOS should work with just libusb installed.
+If using on Linux, a udev rule for the Dynastream ANTUSB stick can be installed with `sudo python -m openant.udev_rules`. macOS/Windows does not use udev_rules and therefore does not need to be installed. Follow libusb's driver installation [instructions](https://github.com/libusb/libusb/wiki/Windows#Driver_Installation) for Windows. macOS should work with just libusb installed.
 
 ### ANT USB Stick
 
@@ -39,9 +38,7 @@ See the note regarding Linux and the udev rule above to ensure the user has perm
 Requires install with [influx] (`pip install openant[influx]`) or influxdb-client module installed manually and InfluxDB server >= 2.0. See `openant influx --help` for the server setup. To quickly get a local instance running with Docker:
 
 ```
-docker run --rm -p 8086:8086 \
-      -v $PWD:/var/lib/influxdb2 \
-      influxdb:latest
+docker run --rm -p 8086:8086 -v $PWD:/var/lib/influxdb2 influxdb:latest
 ```
 
 Navigate to 'http://localhost:8086' and setup a user/org (default org used is 'my-org'). Then setup a bucket to use (default 'my-bucket') and a API access token (Load Data > API Tokens).

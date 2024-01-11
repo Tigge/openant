@@ -30,12 +30,13 @@ class ControlCapabilities(Enum):
     def to_byte(caps: set):
         ret = 0x00
         for c in caps:
-            ret |= (1 << c.value)
+            ret |= 1 << c.value
         return ret
 
     @classmethod
     def _missing_(cls, _):
         return ControlCapabilities.Reserved
+
 
 class ControlCommand(Enum):
     MenuUp = 0
@@ -48,8 +49,8 @@ class ControlCommand(Enum):
     Reset = 34
     Length = 35
     Lap = 36
-    Reserved = 0x7FFF # 5 - 31, 37 - 32767
-    Custom = 0xFFFE # 32768 - 65534
+    Reserved = 0x7FFF  # 5 - 31, 37 - 32767
+    Custom = 0xFFFE  # 32768 - 65534
     NoCommand = 0xFFFF
 
     @staticmethod
@@ -64,18 +65,20 @@ class ControlCommand(Enum):
             else:
                 return ControlCommand.NoCommand
 
+
 class CommandStatus(Enum):
     Pass = 0
     Fail = 3
     NotSupported = 4
     Rejected = 5
     Pending = 6
-    Reserved = 254 # 5 - 254
+    Reserved = 254  # 5 - 254
     Uninitialized = 255
 
     @classmethod
     def _missing_(cls, _):
         return CommandStatus.Uninitialized
+
 
 @dataclass
 class ControlsDeviceData(DeviceData):
@@ -83,17 +86,13 @@ class ControlsDeviceData(DeviceData):
 
     slave_serial: int = 0xFFFF
     slave_manufacturer_id: int = 0xFFFF
-    capabilities: Set[ControlCapabilities] = field(
-        default_factory=lambda: set()
-    )
+    capabilities: Set[ControlCapabilities] = field(default_factory=lambda: set())
     current_notifications: int = 0x00
-    command_sequence: int = 0 # inc each request
+    command_sequence: int = 0  # inc each request
     command_status: CommandStatus = CommandStatus.Uninitialized
     last_received_command_page: int = 0xFF
     last_control_command: ControlCommand = ControlCommand.NoCommand
-    response_data: List[int] = field(
-        default_factory=lambda: [0xFF, 0xFF, 0xFF, 0xFF]
-    )
+    response_data: List[int] = field(default_factory=lambda: [0xFF, 0xFF, 0xFF, 0xFF])
 
 
 class ControlsDevice(AntPlusDevice):
@@ -123,10 +122,16 @@ class ControlsDevice(AntPlusDevice):
 
     def on_tx_data(self) -> Optional[List[int]]:
         # Control Device Availability, parent _on_tx_data handles common pages
-        return [0x02, 
-                self.data["control"].current_notifications,
-                0x00, 0x00, 0x00, 0x00, 0x00, # reserved
-                ControlCapabilities.to_byte(self.data["control"].capabilities)]
+        return [
+            0x02,
+            self.data["control"].current_notifications,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,  # reserved
+            ControlCapabilities.to_byte(self.data["control"].capabilities),
+        ]
 
     def on_ack_data(self, data) -> Optional[List[int]]:
         """Commands are sent as ACK"""
@@ -155,20 +160,27 @@ class ControlsDevice(AntPlusDevice):
             pass
         # command status
         elif page == 0x47:
-            payload = [0x47,
-                       self.data["control"].last_received_command_page, 
-                       self.data["control"].command_sequence,
-                       self.data["control"].command_status,
-                       self.data["control"].response_data,
-                       0x00, 0x00, 0x00, 0x00
-                       ]
+            payload = [
+                0x47,
+                self.data["control"].last_received_command_page,
+                self.data["control"].command_sequence,
+                self.data["control"].command_status,
+                self.data["control"].response_data,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+            ]
             payload[4:8] = self.data["control"].response_data
 
             return payload
 
     def _on_command(self, page: int):
         # ensure command status has been set
-        if self.data["control"].command_status.value == CommandStatus.Uninitialized.value:
+        if (
+            self.data["control"].command_status.value
+            == CommandStatus.Uninitialized.value
+        ):
             self.data["control"].command_status = CommandStatus.Pass
         # save last data
         self.data["control"].last_received_command_page = page
@@ -186,7 +198,7 @@ class ControlsDevice(AntPlusDevice):
 
     def send_control_command_raw(self, command_int: int):
         page = [0x00] * 8
-        page[0] = 0x49 # command page
+        page[0] = 0x49  # command page
 
         data = self.data["control"]
         data.command_sequence += 1
@@ -207,23 +219,25 @@ class ControlsDevice(AntPlusDevice):
 
     # TODO command busrt
 
+
 class GenericRemoteControl(ControlsDevice):
-    def __init__(self, node: Node, device_id = 0):
+    def __init__(self, node: Node, device_id=0):
         super().__init__(
             node,
-            device_id = device_id,
-            master = False,
+            device_id=device_id,
+            master=False,
             name="generic_remote",
         )
 
         self.data["control"].capabilities.add(ControlCapabilities.GenericControl)
 
+
 class GenericControllableDevice(ControlsDevice):
-    def __init__(self, node: Node, device_id = 0):
+    def __init__(self, node: Node, device_id=0):
         super().__init__(
             node,
-            device_id = device_id,
-            master = True,
+            device_id=device_id,
+            master=True,
             name="generic_controllable_device",
         )
 

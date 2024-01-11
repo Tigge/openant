@@ -410,7 +410,6 @@ class FitnessEquipment(AntPlusDevice):
         self.request_dp(71)
 
     def close_channel(self):
-
         if self._worker_thread.is_alive():
             self._stopper.set()
 

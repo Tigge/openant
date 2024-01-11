@@ -157,7 +157,7 @@ class CommonData(DeviceData):
             payload[3] = int(float(self.software_ver)) * 10
         except:
             payload[3] = 0x00
-        payload[4:8] = self.serial_no.to_bytes(4, byteorder='little')
+        payload[4:8] = self.serial_no.to_bytes(4, byteorder="little")
 
         return payload
 
@@ -196,7 +196,7 @@ class AntPlusDevice:
 
         self._found = False
         self._attached = False
-        self._page_count = 0 # for interleaving pages
+        self._page_count = 0  # for interleaving pages
 
         self.data = {
             "common": CommonData(),
@@ -214,7 +214,6 @@ class AntPlusDevice:
 
     @staticmethod
     def on_device_data(page: int, page_name: str, data: DeviceData):
-
         """Override this to capture device specific page data updates"""
         assert page
         assert page_name
@@ -250,14 +249,18 @@ class AntPlusDevice:
         assert data
         pass
 
-    def open_channel(self, extended=True, channel_type=None, ext_assign: Optional[int]=0x01):
+    def open_channel(
+        self, extended=True, channel_type=None, ext_assign: Optional[int] = 0x01
+    ):
         """Configures and opens the channel for the device on the Node"""
         if channel_type is None:
-            channel_type = Channel.Type.BIDIRECTIONAL_RECEIVE if not self.master else Channel.Type.BIDIRECTIONAL_TRANSMIT
+            channel_type = (
+                Channel.Type.BIDIRECTIONAL_RECEIVE
+                if not self.master
+                else Channel.Type.BIDIRECTIONAL_TRANSMIT
+            )
 
-        self.channel = self.node.new_channel(
-            channel_type, 0x00, ext_assign
-        )
+        self.channel = self.node.new_channel(channel_type, 0x00, ext_assign)
 
         # configure callbacks based on if slave or master device
         if not self.master:
@@ -278,7 +281,9 @@ class AntPlusDevice:
         self.channel.set_period(self.period)
         self.channel.set_rf_freq(self.rf_freq)
 
-        _logger.debug(f"opening {self.name} channel #{self.channel.id}, TYPE 0x{channel_type:02x} dID {self.device_id}; dType {self.device_type}; dTrans 0x{self.trans_type:02x} {self.rf_freq} @ {self.period} ms")
+        _logger.debug(
+            f"opening {self.name} channel #{self.channel.id}, TYPE 0x{channel_type:02x} dID {self.device_id}; dType {self.device_type}; dTrans 0x{self.trans_type:02x} {self.rf_freq} @ {self.period} ms"
+        )
         self.channel.open()
 
     def close_channel(self):
@@ -315,7 +320,6 @@ class AntPlusDevice:
         pass
 
     def _on_data(self, data):
-
         # extended (> 8) has the device number and id beyond page
         if len(data) > 8 and not self._attached:
             device_id = data[9] + (data[10] << 8)
@@ -474,11 +478,11 @@ class AntPlusDevice:
         """Replies to common page requests or forwards to `on_ack_data` callback"""
         page = data[0]
 
-        if page == 80: # manufacturer
+        if page == 80:  # manufacturer
             payload = self.data["common"].manufacturer_page_payload()
-        elif page == 81: # product
+        elif page == 81:  # product
             payload = self.data["common"].product_info_page_payload()
-        elif page == 82: # battery
+        elif page == 82:  # battery
             # TODO
             # payload = self.battery_status_page_payload()
             payload = None

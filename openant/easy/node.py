@@ -45,7 +45,6 @@ _logger = logging.getLogger("openant.easy.node")
 
 class Node:
     def __init__(self):
-
         self._responses_cond = threading.Condition()
         self._responses = collections.deque()
         self._event_cond = threading.Condition()
