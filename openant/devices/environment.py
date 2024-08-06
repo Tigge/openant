@@ -15,6 +15,8 @@ class EnvironmentData(DeviceData):
     """ANT+ environment data."""
 
     temperature: float = field(default=-1, metadata={"unit": "C"})
+    min_24h_temperature: float = field(default=-1, metadata={"unit": "C"})
+    max_24h_temperature: float = field(default=-1, metadata={"unit": "C"})
 
 
 class Environment(AntPlusDevice):
@@ -43,8 +45,16 @@ class Environment(AntPlusDevice):
         if page == 1:
             # Data page 1, temperature info
             # bytes 6,7 indicate temperature, LSB first
+            low_msn = (data[4] & 0xF0)>>4
+            high_lsn = (data[4] & 0x0F)<<4
             self.data["environment"].temperature = (
                 int.from_bytes(data[6:8], byteorder="little") * 0.01
+            )
+            self.data["environment"].min_24h_temperature = (
+                int.from_bytes([data[3], low_msn], byteorder="little") * 0.1
+            )
+            self.data["environment"].max_24h_temperature = (
+                (int.from_bytes([data[5],high_lsn], byteorder="big")>>4) * 0.1
             )
 
             self.on_device_data(page, "environment", self.data["environment"])
