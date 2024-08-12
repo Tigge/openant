@@ -20,7 +20,7 @@ def example_scan(file_path=None, device_id=0, device_type=0, auto_create=False):
     # local function to call when device updates common data
     def on_update(device_tuple, common):
         device_id = device_tuple[0]
-        print(f"Device #{device_id} commond data update: {common}")
+        print(f"Device #{device_id} common data update: {common}")
 
     # local function to call when device update device speific page data
     def on_device_data(device, page_name, data):
