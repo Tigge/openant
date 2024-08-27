@@ -45,7 +45,7 @@ def main():
             print(f"FitnessEquipment {page_name} ({page}) update: {data}")
 
     for d in devices:
-        d.on_found = lambda: on_found(d)
+        d.on_found = lambda d=d: on_found(d)
         d.on_device_data = on_device_data
 
     try:
