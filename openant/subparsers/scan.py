@@ -36,7 +36,7 @@ def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
             try:
                 dev = auto_create_device(node, device_id, device_type, device_trans)
                 # closure callback of on_device_data with device
-                dev.on_device_data = lambda _, page_name, data: on_device_data(
+                dev.on_device_data = lambda _, page_name, data, dev=dev: on_device_data(
                     dev, page_name, data
                 )
                 devices.append(dev)

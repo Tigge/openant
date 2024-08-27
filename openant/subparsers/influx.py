@@ -109,11 +109,12 @@ def device_data_influx_importer(
         print(f"Device {device} found and receiving")
 
         if type(device) == FitnessEquipment:
-            device.start_workouts(workouts)
+            if workouts is not None:
+                device.start_workouts(workouts)
 
     for dev in devices:
-        dev.on_found = lambda: on_found(dev)
-        dev.on_device_data = lambda page, page_name, data: write_device_data(
+        dev.on_found = lambda dev=dev: on_found(dev)
+        dev.on_device_data = lambda page, page_name, data, dev=dev: write_device_data(
             dev, page_name, data
         )
 
