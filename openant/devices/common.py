@@ -320,6 +320,9 @@ class AntPlusDevice:
         pass
 
     def _on_data(self, data):
+
+        print(f"{self} raw data: {data}")
+        
         # extended (> 8) has the device number and id beyond page
         if len(data) > 8 and not self._attached:
             device_id = data[9] + (data[10] << 8)
