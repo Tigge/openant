@@ -430,7 +430,7 @@ class AntPlusDevice:
                     year, month, day, hour, minute, second
                 )
             except ValueError as e:
-                _logger.warning(f"Invalid date and time: {e}")
+                _logger.warning(f"Invalid date and time: {e}. Device {device} raw_data: {data}")
 
         # run other pages for sub-classes
         self.on_data(data)
