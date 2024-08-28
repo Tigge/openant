@@ -428,9 +428,12 @@ class AntPlusDevice:
             month = data[6]
             year = data[7] + 2000
 
-            self.data["common"].timedate = datetime.datetime(
-                year, month, day, hour, minute, second
-            )
+            try:
+                self.data["common"].timedate = datetime.datetime(
+                    year, month, day, hour, minute, second
+                )
+            except ValueError as e:
+                _logger.warning(f"Invalid date and time: {e}")
 
         # run other pages for sub-classes
         self.on_data(data)

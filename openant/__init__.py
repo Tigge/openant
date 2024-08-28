@@ -31,7 +31,7 @@ from . import fs
 from . import devices
 
 __all__ = ["base", "easy", "fs", "devices"]
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # subparser importer taken from cantools module
