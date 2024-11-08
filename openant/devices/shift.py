@@ -28,7 +28,7 @@ class ShiftingSystemID(Enum):
     def _missing_(cls, _):
         return ShiftingSystemID.Unknown
 
-class FunctionSetEventTypes(Enum):
+class FunctionSetEventType(Enum):
     Single = 0
     Double = 1
     Long = 2
@@ -37,13 +37,13 @@ class FunctionSetEventTypes(Enum):
 
     @classmethod
     def _missing_(cls, _):
-        return FunctionSetEventTypes.Unknown
+        return FunctionSetEventType.Unknown
 
 
 @dataclass
 class FunctionSetEvent:
     function_set_id: int = field(default=0)
-    function_set_event_type: FunctionSetEventTypes = field(default=FunctionSetEventTypes.Unknown)
+    function_set_event_type: FunctionSetEventType = field(default=FunctionSetEventType.Unknown)
 
 @dataclass
 class FunctionSetConfiguration:
