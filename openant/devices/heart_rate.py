@@ -16,13 +16,13 @@ class HeartRateData(DeviceData):
     """ANT+ heart rate data (tpms)."""
 
     page_specific: int = 0xFFFFFF
-    beat_time: float = -1
+    beat_time: float = -1.0
     beat_count: int = 0
     heart_rate: int = field(default=0, metadata={"unit": "bpm"})
     operating_time: int = 0xFFFFFF
     manufacturer_id_lsb: int = 0xFF
     serial_number: int = 0xFFFF
-    previous_heart_beat_time: float = -1
+    previous_heart_beat_time: float = -1.0
     battery_percentage: int = 0xFF
 
 
