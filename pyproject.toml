@@ -37,8 +37,9 @@ docs = ["sphinx>=5.2.3", "furo>=2021.3.20b30", "sphinx_mdinclude"]
 [project.scripts]
 openant = "openant.__init__:_main"
 
-[tool.setuptools]
-packages = ["openant"]
+# specify to avoid symbolic link ant
+[tool.setuptools.packages.find]
+include = ["openant*"]
 
 [tool.setuptools.dynamic]
 readme = { file = "README.md" }
