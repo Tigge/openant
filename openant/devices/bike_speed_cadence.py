@@ -22,6 +22,9 @@ class BikeSpeedData(DeviceData):
     )
     manufacturer_id_lsb: int = 0xFF
     serial_number: int = 0xFFFF
+    # cached calculated values from user provided wheel circumference
+    calculated_speed: Optional[float] = None
+    calculated_distance: Optional[float] = None
 
     def calculate_speed(self, wheel_circumference_m: float) -> Optional[float]:
         """
@@ -40,7 +43,8 @@ class BikeSpeedData(DeviceData):
         )
         delta_event_time = self.bike_speed_event_time[1] - self.bike_speed_event_time[0]
         if delta_event_time > 0:
-            return (wheel_circumference_m * delta_rev_count) / delta_event_time * 3.6
+            self.calculated_speed = (wheel_circumference_m * delta_rev_count) / delta_event_time * 3.6
+            return self.calculated_speed
         else:
             return None
 
@@ -55,7 +59,8 @@ class BikeSpeedData(DeviceData):
         >>> bs.calculate_distance(2.3)
         11.5
         """
-        return wheel_circumference_m * self.cumulative_speed_revolution[1]
+        self.calculated_distance = wheel_circumference_m * self.cumulative_speed_revolution[1]
+        return self.calculated_distance
 
 
 @dataclass
@@ -71,11 +76,13 @@ class BikeCadenceData(DeviceData):
     )
     manufacturer_id_lsb: int = 0xFF
     serial_number: int = 0xFFFF
+    calculated_cadence: Optional[float] = None
 
     @property
     def cadence(self):
-        """Returns calculate_cadence as a property"""
-        return self.calculate_cadence()
+        """Returns calculate_cadence as a property or cached value"""
+        if self.calculate_cadence() is None:
+            return self.calculated_cadence
 
     def calculate_cadence(self) -> Optional[float]:
         """Calculates cadence using delta values of RPM and time
@@ -94,7 +101,8 @@ class BikeCadenceData(DeviceData):
             self.bike_cadence_event_time[1] - self.bike_cadence_event_time[0]
         )
         if delta_event_time > 0:
-            return (60 * delta_rev_count) / delta_event_time
+            self.calculated_cadence = (60 * delta_rev_count) / delta_event_time
+            return self.calculated_cadence
         else:
             return None
 
@@ -122,7 +130,7 @@ class BikeSpeed(AntPlusDevice):
         self.data = {**self.data, "bike_speed": BikeSpeedData()}
 
     @staticmethod
-    def update_speed_data(bike_speed_data: BikeSpeedData, data: List[int]):
+    def update_speed_data(bike_speed_data: BikeSpeedData, data: List[int], wheel_circumference_m: Optional[float] = None):
         if len(data) != 4:
             raise ValueError("data length must be == 4")
 
@@ -138,6 +146,9 @@ class BikeSpeed(AntPlusDevice):
             0
         ] = bike_speed_data.cumulative_speed_revolution[1]
         bike_speed_data.cumulative_speed_revolution[1] = cumulative_speed_revolution
+        if wheel_circumference_m:
+            bike_speed_data.calculate_speed(wheel_circumference_m)
+            bike_speed_data.calculate_distance(wheel_circumference_m)
 
     def on_data(self, data):
         page = data[0]
@@ -224,6 +235,7 @@ class BikeCadence(AntPlusDevice):
         bike_cadence_data.cumulative_cadence_revolution[
             1
         ] = cumulative_cadence_revolution
+        bike_cadence_data.calculate_cadence()
 
     def on_data(self, data):
         page = data[0]
@@ -278,6 +290,7 @@ class BikeSpeedCadence(AntPlusDevice):
         device_id: int = 0,
         name: str = "bike_speed_cadence",
         trans_type: int = 0,
+        wheel_circumference_m: Optional[float] = None,
     ):
         # power meter is 11 so make ANT+ device with that device type
         super().__init__(
@@ -289,6 +302,7 @@ class BikeSpeedCadence(AntPlusDevice):
             trans_type=trans_type,
         )
 
+        self.wheel_circumference_m = wheel_circumference_m
         self.data = {
             **self.data,
             "bike_speed": BikeSpeedData(),
@@ -303,7 +317,7 @@ class BikeSpeedCadence(AntPlusDevice):
         # only one page
         if (page & 0x0F) <= 5:
             BikeCadence.update_cadence_data(self.data["bike_cadence"], data[0:4])
-            BikeSpeed.update_speed_data(self.data["bike_speed"], data[4:8])
+            BikeSpeed.update_speed_data(self.data["bike_speed"], data[4:8], self.wheel_circumference_m)
 
             self.on_device_data(page, "bike_cadence", self.data["bike_cadence"])
             self.on_device_data(page, "bike_speed", self.data["bike_speed"])
