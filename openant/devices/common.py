@@ -91,6 +91,8 @@ class DeviceData:
         {'measurement': 'PowerData', 'tags': {'taggy': 'blah'}, 'time': ..., 'fields': {'instantaneous_power': 0, 'average_power': 0, 'left_power': -1, 'right_power': -1, 'torque': 0.0, 'angular_velocity': 0.0, 'cadence': 255}}
         """
         fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
+        # remove any list/nested data types
+        fields = {k: v for k, v in fields.items() if v is not isinstance(v, (list, dict, set))}
 
         for f in fields:
             if isinstance(fields[f], Enum):

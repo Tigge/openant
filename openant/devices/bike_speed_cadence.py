@@ -1,3 +1,4 @@
+import datetime
 import logging
 from typing import List, Optional
 
@@ -97,6 +98,24 @@ class BikeCadenceData(DeviceData):
             return (60 * delta_rev_count) / delta_event_time
         else:
             return None
+
+    def to_influx_json(self, tags: dict):
+        fields = {
+            "cadence": self.cadence,
+            "serial_number": self.serial_number,
+        }
+
+        return {
+            "measurement": type(self).__name__,
+            "tags": tags,
+            "time": int(
+                datetime.datetime.utcnow()
+                .replace(tzinfo=datetime.timezone.utc)
+                .timestamp()
+                * 1e9
+            ),
+            "fields": fields,
+        }
 
 
 class BikeSpeed(AntPlusDevice):
