@@ -92,9 +92,13 @@ class DeviceData:
         """
         fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
 
-        for f in fields:
-            if isinstance(fields[f], Enum):
-                fields[f] = fields[f].value
+        # convert enums to values and filter out non numeric fields
+        filtered = {}
+        for k, v in fields.items():
+            if isinstance(v, Enum):
+                filtered.update({k: v.value})
+            elif isinstance(v, (int, float)):
+                filtered.update({k: v})
 
         return {
             "measurement": type(self).__name__,
@@ -105,7 +109,7 @@ class DeviceData:
                 .timestamp()
                 * 1e9
             ),
-            "fields": fields,
+            "fields": filtered,
         }
 
 
