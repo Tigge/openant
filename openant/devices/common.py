@@ -50,7 +50,7 @@ class DeviceType(Enum):
     DropperSeatpost = 115
 
     @classmethod
-    def _missing_(cls, _):
+    def _missing_(cls, _): # type: ignore
         return DeviceType.Unknown
 
 
@@ -69,7 +69,7 @@ class BatteryStatus(Enum):
     Invalid = 7
 
     @classmethod
-    def _missing_(cls, _):
+    def _missing_(cls, _): # type: ignore
         return BatteryStatus.Unknown
 
 
@@ -104,8 +104,7 @@ class DeviceData:
             "measurement": type(self).__name__,
             "tags": tags,
             "time": int(
-                datetime.datetime.utcnow()
-                .replace(tzinfo=datetime.timezone.utc)
+                datetime.datetime.now(datetime.UTC)
                 .timestamp()
                 * 1e9
             ),
@@ -159,7 +158,7 @@ class CommonData(DeviceData):
         # TODO doesn't cover rev
         try:
             payload[3] = int(float(self.software_ver)) * 10
-        except:
+        except Exception as _:
             payload[3] = 0x00
         payload[4:8] = self.serial_no.to_bytes(4, byteorder="little")
 
@@ -317,7 +316,10 @@ class AntPlusDevice:
         try:
             self.channel.send_acknowledged_data(data)
         except AntException as e:
-            _logger.warning(f"Failed to get acknowledgement of TX page {data[0]}: {e}")
+            if data[0] == 0x46:  # request page
+                _logger.warning(f"Failed to get acknowledgement of TX request page (0x46) {data[6]:#x}: {e}")
+            else:
+                _logger.warning(f"Failed to get acknowledgement of TX page {data[0]:#x}: {e}")
 
     def on_data(self, data):
         """Override this to capture raw data when recieved in child classes"""
