@@ -319,9 +319,10 @@ class AntPlusDevice:
         except AntException as e:
             _logger.warning(f"Failed to get acknowledgement of TX page {data[0]}: {e}")
 
-    def on_data(self, _):
+    def on_data(self, data):
         """Override this to capture raw data when recieved in child classes"""
         pass
+        assert data
 
     def _on_data(self, data):
         # extended (> 8) has the device number and id beyond page
@@ -434,7 +435,7 @@ class AntPlusDevice:
                     year, month, day, hour, minute, second
                 )
             except ValueError as e:
-                _logger.warning(f"Invalid date and time: {e}. Device {device} raw_data: {data}")
+                _logger.warning(f"Invalid date and time: {e}. Device {self.device_id} raw_data: {data}")
 
         # run other pages for sub-classes
         self.on_data(data)

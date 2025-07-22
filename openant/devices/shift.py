@@ -25,7 +25,8 @@ class ShiftingSystemID(Enum):
     Unknown = 15
 
     @classmethod
-    def _missing_(cls, _):
+    def _missing_(cls, value):
+        assert value
         return ShiftingSystemID.Unknown
 
 class FunctionSetEventType(Enum):
@@ -36,7 +37,8 @@ class FunctionSetEventType(Enum):
     Unknown = 4
 
     @classmethod
-    def _missing_(cls, _):
+    def _missing_(cls, value):
+        assert value
         return FunctionSetEventType.Unknown
 
 
@@ -66,21 +68,21 @@ class ShiftData(DeviceData):
     invalid_outboard_front: int = field(default=0)
     shift_failure_rear: int = field(default=0)
     shift_failure_front: int = field(default=0)
-    function_set_1_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_2_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_3_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_4_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_5_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_6_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_7_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
-    function_set_8_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration())
+    function_set_1_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_2_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_3_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_4_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_5_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_6_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_7_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
+    function_set_8_configuration: FunctionSetConfiguration = field(default_factory=FunctionSetConfiguration)
     event_count: int = field(default=0)
-    event_1: FunctionSetEvent = field(default_factory=FunctionSetEvent())
-    event_2: FunctionSetEvent = field(default_factory=FunctionSetEvent())
-    event_3: FunctionSetEvent = field(default_factory=FunctionSetEvent())
-    event_4: FunctionSetEvent = field(default_factory=FunctionSetEvent())
-    event_5: FunctionSetEvent = field(default_factory=FunctionSetEvent())
-    event_6: FunctionSetEvent = field(default_factory=FunctionSetEvent())
+    event_1: FunctionSetEvent = field(default_factory=FunctionSetEvent)
+    event_2: FunctionSetEvent = field(default_factory=FunctionSetEvent)
+    event_3: FunctionSetEvent = field(default_factory=FunctionSetEvent)
+    event_4: FunctionSetEvent = field(default_factory=FunctionSetEvent)
+    event_5: FunctionSetEvent = field(default_factory=FunctionSetEvent)
+    event_6: FunctionSetEvent = field(default_factory=FunctionSetEvent)
     max_trim_rear: int = field(default=0)
     max_trim_front: int = field(default=0)
     current_trim_rear: int = field(default=0)
