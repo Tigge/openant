@@ -47,6 +47,7 @@ class DeviceType(Enum):
     Lev = 20
     Radar = 40
     Shifting = 34
+    BicycleLights = 35
     DropperSeatpost = 115
     CoreTemp = 127
 
