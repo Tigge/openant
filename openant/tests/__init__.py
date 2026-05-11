@@ -21,4 +21,4 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-__all__ = ["base", "easy", "fs"]
+__all__ = ["base", "devices", "easy", "fs"]
