@@ -47,6 +47,7 @@ class DeviceType(Enum):
     Lev = 20
     Radar = 40
     Shifting = 34
+    BicycleLights = 35
     DropperSeatpost = 115
     CoreTemp = 127
 
@@ -93,7 +94,7 @@ class DeviceData:
         """
         fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
 
-        # convert enums to values and filter out non numeric fields
+        # convert enums to values and filter out non-numeric fields
         filtered = {}
         for k, v in fields.items():
             if isinstance(v, Enum):
@@ -115,7 +116,7 @@ class DeviceData:
 
 @dataclass
 class BatteryData:
-    """Has it's own dataclass because there can be multiple instances of this in one device"""
+    """Has its own dataclass because there can be multiple instances of this in one device"""
 
     battery_id: int = 0
     voltage_fractional: float = field(default=0.0, metadata={"unit": "V"})
@@ -141,7 +142,7 @@ class CommonData(DeviceData):
     )
     last_battery_data: BatteryData = field(
         default_factory=BatteryData
-    )  # the last one recieved or only if last_battery_id = 0xFF
+    )  # the last one received or only if last_battery_id = 0xFF
     timedate: Optional[datetime.datetime] = None
 
     def manufacturer_page_payload(self) -> List[int]:
