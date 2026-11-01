@@ -1,7 +1,5 @@
 import argparse
 import json
-import time
-import traceback
 import uuid
 
 import paho.mqtt.client as mqtt
@@ -51,9 +49,11 @@ class MqttTarget(DataTarget):
             userdata=self,
         )
         mqttc.username_pw_set(args.user, args.password)
+        mqttc.reconnect_delay_set(min_delay=5, max_delay=120)
+        mqttc.on_connect = self.on_connect
+        mqttc.on_disconnect = self.on_disconnect
         mqttc.connect(args.host, args.port)
         mqttc.loop_start()
-        mqttc.on_disconnect = self.on_disconnect
         return mqttc
 
     def _determine_topic(self, device: AntPlusDevice) -> str:
@@ -62,28 +62,20 @@ class MqttTarget(DataTarget):
         return self.device_topics.get(key, topic)
 
     @staticmethod
+    def on_connect(
+        client: mqtt.Client, userdata, connect_flags, reason_code, properties
+    ):
+        print(f"Connected to MQTT server: {reason_code}")
+
+    @staticmethod
     def on_disconnect(
         client: mqtt.Client, userdata, disconnect_flags, reason_code, properties
     ):
         target: DataTarget = userdata
         if target.shutting_down:
-            print("Shutdown in progress, will not reconnect")
-            return
-        retries = 10
-        delay = 5
-        backoff = 1.5
-        while retries > 0:
-            try:
-                print(f"Reconnecting in {delay}")
-                time.sleep(delay)
-                client.reconnect()
-                print("Successful reconnect")
-                return
-            except Exception:
-                print("Reconnect failed")
-                traceback.print_exc()
-            retries -= 1
-            delay *= backoff
+            print("Disconnected from MQTT server (shutting down)")
+        else:
+            print(f"Disconnected from MQTT server ({reason_code}), will reconnect")
 
 
 def add_subparser(subparsers, name="mqtt"):
