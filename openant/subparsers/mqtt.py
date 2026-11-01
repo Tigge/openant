@@ -30,7 +30,6 @@ class MqttTarget(DataTarget):
         payload = {"_type": x["measurement"]}
         payload.update(x["fields"])
 
-        self.mqttc.loop_start()
         if self.args.topic_per_field:
             for field, value in payload.items():
                 field_topic = device_topic + "/" + field
@@ -38,11 +37,11 @@ class MqttTarget(DataTarget):
         else:
             payload = json.dumps(payload)
             self.mqttc.publish(device_topic, payload)
-        self.mqttc.loop_stop()
 
     def close(self) -> None:
         super().close()
         self.mqttc.disconnect()
+        self.mqttc.loop_stop()
 
     def _create_client(self, args: argparse.Namespace) -> mqtt.Client:
         mqttc = mqtt.Client(
@@ -53,6 +52,7 @@ class MqttTarget(DataTarget):
         )
         mqttc.username_pw_set(args.user, args.password)
         mqttc.connect(args.host, args.port)
+        mqttc.loop_start()
         mqttc.on_disconnect = self.on_disconnect
         return mqttc
 
