@@ -103,7 +103,7 @@ openant influx --verbose --config devices.json config
 ## ANT+ to MQTT
 
 Stream DeviceData from a ANT+ device to an MQTT server. Useful for integration with a wide range of systems. See 
-`openant influx --help`. See the notes on installation for this tool. Refer to MQTT server documentation for the 
+`openant mqtt --help`. See the notes on installation for this tool. Refer to MQTT server documentation for the 
 required flags.
 
 ### Changing publish behaviour
